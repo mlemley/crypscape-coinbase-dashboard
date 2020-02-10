@@ -22,7 +22,7 @@ cache:
     - $HOME/.android/build-cache
 
 before_script:
-  - echo `$__google_services_json` | base64 -d > ./app/google-services.json
+  - echo `$__google_services_json` | base64 -D > ./app/google-services.json
   - cat ./app/google-services.json
 
 script:
