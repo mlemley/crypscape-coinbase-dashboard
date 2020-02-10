@@ -23,6 +23,7 @@ cache:
 
 before_script:
   - echo `$__google_services_json` | base64 -d > ./app/google-services.json
+  - cat ./app/google-services.json
 
 script:
   - ./gradlew lintRelease testReleaseUnitTest
