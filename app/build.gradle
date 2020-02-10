@@ -104,7 +104,7 @@ dependencies {
     testImplementation "androidx.test:runner:$androidx_test_core_version"
     testImplementation "androidx.test:rules:$androidx_runner_version"
     testImplementation "androidx.test:runner:$androidx_runner_version"
-    testImplementation "androidx.fragment:fragment-testing:$androidx_fragment_testing_version"
+    implementation "androidx.fragment:fragment-testing:$androidx_fragment_testing_version"
     testImplementation "androidx.test.espresso:espresso-core:$androidx_espresso"
     testImplementation "org.robolectric:robolectric:$robolectric_version"
     testImplementation "com.google.truth:truth:$truth_version"
