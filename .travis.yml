@@ -21,5 +21,8 @@ cache:
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
 
+before_script:
+  - echo `$__google_services_json` | base64 -d > ./app/google-services.json
+
 script:
   - ./gradlew lintRelease testReleaseUnitTest
