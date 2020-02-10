@@ -1,0 +1,42 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="CrypScape" parent="Theme.MaterialComponents">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="CrypScape.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Dark" />
+
+    <style name="TextAppearance" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/avenir_book</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.Splash" />
+
+    <style name="TextAppearance.Splash.Cryp">
+        <item name="android:textSize">49.95sp</item>
+        <item name="android:textColor">@color/tv_white</item>
+        <item name="android:letterSpacing">.02</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="fontFamily">@font/avenir_light</item>
+    </style>
+
+    <style name="TextAppearance.Splash.Scape">
+        <item name="android:textSize">49.95sp</item>
+        <item name="android:textColor">@color/tv_white</item>
+        <item name="android:letterSpacing">.02</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="fontFamily">@font/avenir_heavy</item>
+    </style>
+</resources>

@@ -1,0 +1,116 @@
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "com.adarshr.test-logger"
+apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: "com.google.gms.google-services"
+
+println(version)
+println(buildVersionCode())
+
+testlogger {
+    //https://github.com/radarsh/gradle-test-logger-plugin
+    theme 'mocha'
+    slowThreshold 5000
+    showPassed false
+    showSkipped false
+    showPassedStandardStreams false
+    showSkippedStandardStreams false
+}
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "app.lemley.crypscape"
+        minSdkVersion 26
+        targetSdkVersion 29
+        versionCode buildVersionCode()
+        versionName version
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility = "1.8"
+        sourceCompatibility = "1.8"
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    lintOptions {
+        abortOnError true
+        htmlReport true
+        noLines false
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+            all {
+                systemProperty "robolectric.logging.enabled", false
+            }
+        }
+        testlogger {
+            theme 'standard-parallel' // task level
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.google.firebase:firebase-core:$firebase_core_version"
+    implementation "com.google.firebase:firebase-analytics:$firebase_core_version"
+    implementation "com.google.firebase:firebase-messaging:$firebase_messaging"
+    implementation "com.crashlytics.sdk.android:crashlytics:$firebase_crashlytics"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation "org.koin:koin-android:$koin_version"
+    implementation "org.koin:koin-android-scope:$koin_version"
+    implementation "org.koin:koin-android-viewmodel:$koin_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$androidx_lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_lifecycle_version"
+
+    implementation "androidx.appcompat:appcompat:$androidx_appcompat_version"
+    implementation "androidx.core:core-ktx:$ktx_core_version"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "com.google.android.material:material:$androidx_material_version"
+    implementation "androidx.constraintlayout:constraintlayout:$androidx_constraint_layout_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$androidx_lifecycle_version"
+
+    implementation "androidx.navigation:navigation-runtime-ktx:$ktx_navigation_version"
+    implementation "androidx.navigation:navigation-fragment-ktx:$ktx_navigation_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$ktx_navigation_version"
+
+    testImplementation "androidx.test:core:$androidx_test_core_version"
+    testImplementation "androidx.test.ext:junit:$androidx_test_ext_junit"
+    testImplementation "androidx.test.ext:truth:$androidx_test_core_version"
+    testImplementation "androidx.test:rules:$androidx_test_core_version"
+    testImplementation "androidx.test:runner:$androidx_test_core_version"
+    testImplementation "androidx.test:rules:$androidx_runner_version"
+    testImplementation "androidx.test:runner:$androidx_runner_version"
+    testImplementation "androidx.fragment:fragment-testing:$androidx_fragment_testing_version"
+    testImplementation "androidx.test.espresso:espresso-core:$androidx_espresso"
+    testImplementation "org.robolectric:robolectric:$robolectric_version"
+    testImplementation "com.google.truth:truth:$truth_version"
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "io.mockk:mockk:$mockk_version"
+
+    androidTestImplementation "androidx.test.ext:junit:$androidx_ext_junit_version"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidx_espresso"
+}

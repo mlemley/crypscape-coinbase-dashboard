@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1f2d3d</color>
+    <color name="colorPrimaryDark">#000a12</color>
+    <color name="colorAccent">#43a047</color>
+    <color name="textColorPrimary">#ffffff</color>
+
+    <!-- Lights -->
+    <color name="white">#ffffff</color>
+    <color name="tv_white">#f1f1f1</color>
+    <color name="lightGray">#eeeeee</color>
+    <color name="lightPeriwinkle">#dde2e8</color>
+    <color name="cloudyBlue">#b8c1cb</color>
+    <color name="bluishGray">#778f9b</color>
+    <color name="blueGray">#97a4ba</color>
+    <color name="light_blue_gray">#c4cfdd</color>
+
+    <!-- Darks -->
+    <color name="darkNavy">#000a12</color>
+    <color name="dark">#1f2d3d</color>
+
+    <!-- Greens -->
+    <color name="greenish_cyan">#50e3c2</color>
+    <color name="greenMid">#43a047</color>
+    <color name="seaWeed">#13ce66</color>
+    <color name="aqua_marine">#1de9b6</color>
+
+    <!-- Blues -->
+    <color name="clearBlue">#2d8eff</color>
+    <color name="skyBlue">#007aff</color>
+
+    <!-- Oranges -->
+    <color name="maize">#ffcc3d</color>
+    <color name="orangeYellow">#f5a623</color>
+
+    <!-- Reds -->
+    <color name="coral">#ff4949</color>
+    <color name="warm_pink">#ff4081</color>
+
+    <!-- dashboard -->
+    <color name="dashboard_background">#060e20</color>
+    <color name="dashboard_section_background">#172038</color>
+
+    <!-- Chart -->
+    <color name="chart_background">#172038</color>
+
+    <!-- CandleStick Chart Config -->
+    <color name="candlestick_set_color">#505050</color>
+    <color name="candlestick_shadow_color">#60000000</color>
+    <color name="candlestick_decreasing">#ff4081</color>
+    <color name="candlestick_increasing">#1de9b6</color>
+    <color name="candlestick_neutral">#778f9b</color>
+    <color name="candlestick_markers">#25b8c1cb</color>
+    <color name="candlestick_labels">#778f9b</color>
+
+    <!-- BollingerBand Chart Config -->
+    <color name="bollinger_band">#2d8eff</color>
+    <color name="bollinger_band_fill">#2d8eff</color>
+    <color name="bollinger_band_sma">#ff4949</color>
+    <color name="bollinger_band_tight_squeeze">#ffffff</color>
+    <color name="bollinger_band_squeeze">#778f9b</color>
+
+    <!-- Marketing Gradient -->
+    <color name="marketing_gradient_center">#211de9b6</color>
+    <color name="marketing_gradient_mid">#fd060f20</color>
+    <color name="marketing_gradient_end">#060e20</color>
+
+    <!-- Buy / Sell Indicator -->
+    <color name="sell_indicator">#ff4081</color>
+    <color name="buy_indicator">#1de9b6</color>
+    <color name="control_color">#172038</color>
+    <color name="holding_color">#d8d8d8</color>
+
+    <!-- Portfolio -->
+    <color name="portfolio_equity">#cb73f4</color>
+    <color name="portfolio_buy_and_hold">#46a3fb</color>
+</resources>
