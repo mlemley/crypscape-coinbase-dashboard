@@ -3,40 +3,40 @@ package app.lemley.crypscape.client.coinbase.model
 import com.google.gson.annotations.SerializedName
 
 data class Product(
-    val id: String,
+    val id: String = "",
 
     @SerializedName("base_currency")
-    val baseCurrency: String,
+    val baseCurrency: String = "",
 
     @SerializedName("quote_currency")
-    val quoteCurrency: String,
+    val quoteCurrency: String = "",
 
     @SerializedName("base_min_size")
-    val baseMinSize: Double,
+    val baseMinSize: Double = 0.0,
 
     @SerializedName("base_max_size")
-    val baseMaxSize: Double,
+    val baseMaxSize: Double = 0.0,
 
     @SerializedName("quote_increment")
-    val quoteIncrement: Double,
+    val quoteIncrement: Double = 0.0,
 
     @SerializedName("display_name")
-    val displayName: String,
+    val displayName: String = "",
 
     @SerializedName("status")
-    val status: String,
+    val status: String = "",
 
     @SerializedName("margin_enabled")
     val isMarginEnabled: Boolean = false,
 
     @SerializedName("status_message")
-    val statusMessage: String,
+    val statusMessage: String = "",
 
     @SerializedName("min_market_funds")
-    val minMarketFunds: Double,
+    val minMarketFunds: Double = 0.0,
 
     @SerializedName("max_market_funds")
-    val maxMarketFunds: Double,
+    val maxMarketFunds: Double = 0.0,
 
     @SerializedName("post_only")
     val isPostOnly: Boolean = false,

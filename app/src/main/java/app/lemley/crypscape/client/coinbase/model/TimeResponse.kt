@@ -7,6 +7,6 @@ data class TimeResponse(
     var iso: String,
     var epoch: BigDecimal
 ) {
-    val epochAsMillis: Long = epoch.setScale(3, RoundingMode.HALF_UP)
+    val epochAsMillis: Long get() = epoch.setScale(3, RoundingMode.HALF_UP)
         .movePointRight(3).longValueExact()
 }

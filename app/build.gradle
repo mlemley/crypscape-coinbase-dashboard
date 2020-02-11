@@ -99,7 +99,9 @@ dependencies {
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
 
     testImplementation "androidx.test:core:$androidx_test_core_version"
     testImplementation "androidx.test.ext:junit:$androidx_test_ext_junit"
