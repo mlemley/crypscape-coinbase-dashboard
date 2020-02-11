@@ -97,6 +97,10 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$ktx_navigation_version"
     implementation "androidx.navigation:navigation-ui-ktx:$ktx_navigation_version"
 
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+
     testImplementation "androidx.test:core:$androidx_test_core_version"
     testImplementation "androidx.test.ext:junit:$androidx_test_ext_junit"
     testImplementation "androidx.test.ext:truth:$androidx_test_core_version"
