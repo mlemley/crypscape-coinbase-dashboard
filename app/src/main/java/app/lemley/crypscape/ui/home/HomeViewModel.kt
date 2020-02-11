@@ -1,25 +1,18 @@
 package app.lemley.crypscape.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import app.lemley.crypscape.ui.base.Action
-import app.lemley.crypscape.ui.base.BaseViewModel
-import app.lemley.crypscape.ui.base.Event
-import app.lemley.crypscape.ui.base.Result
-import app.lemley.crypscape.ui.base.State
+import app.lemley.crypscape.ui.base.*
 import app.lemley.crypscape.usecase.UseCase
 import kotlinx.coroutines.flow.Flow
 
 class HomeViewModel : BaseViewModel<HomeViewModel.Events, HomeViewModel.HomeState>() {
 
-    sealed class Events: Event {
+    sealed class Events : Event {
 
     }
 
     data class HomeState(
-        val foo:Boolean = false
-    ): State
+        val foo: Boolean = false
+    ) : State
 
     override val useCases: List<UseCase>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
