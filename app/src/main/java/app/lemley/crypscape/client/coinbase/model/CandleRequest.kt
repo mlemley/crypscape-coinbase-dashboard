@@ -3,12 +3,15 @@ package app.lemley.crypscape.client.coinbase.model
 data class CandleRequest(
     val product: Product,
     val granularity: Granularity,
-    val start: String,
-    val end: String
+    val start: String? = null,
+    val end: String? = null
 ) {
-    fun asMap(): Map<String, String> = mapOf(
-        Pair("granularity", granularity.seconds.toString()),
-        Pair("start", start),
-        Pair("end", end)
-    )
+    fun asMap(): Map<String, String> = mutableMapOf(
+        Pair("granularity", granularity.seconds.toString())
+    ).also {
+        if (!start.isNullOrEmpty() && !end.isNullOrEmpty()) {
+            it.put("start", start)
+            it.put("end", end)
+        }
+    }
 }
