@@ -13,10 +13,10 @@ testlogger {
     //https://github.com/radarsh/gradle-test-logger-plugin
     theme 'mocha'
     slowThreshold 5000
-    showPassed false
-    showSkipped false
-    showPassedStandardStreams false
-    showSkippedStandardStreams false
+    showPassed true
+    showSkipped true
+    showPassedStandardStreams true
+    showSkippedStandardStreams true
 }
 
 android {
