@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
+apply plugin: "kotlin-kapt"
 apply plugin: "com.adarshr.test-logger"
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: "com.google.gms.google-services"
@@ -12,10 +13,10 @@ testlogger {
     //https://github.com/radarsh/gradle-test-logger-plugin
     theme 'mocha'
     slowThreshold 5000
-    showPassed false
-    showSkipped false
-    showPassedStandardStreams false
-    showSkippedStandardStreams false
+    showPassed true
+    showSkipped true
+    showPassedStandardStreams true
+    showSkippedStandardStreams true
 }
 
 android {
@@ -45,6 +46,12 @@ android {
         jvmTarget = "1.8"
     }
 
+    kapt {
+        arguments {
+            arg("room.schemaLocation", "$projectDir/schemas".toString())
+        }
+    }
+
     lintOptions {
         abortOnError true
         htmlReport true
@@ -68,6 +75,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.threeten:threetenbp:$local_date_time_backport"
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
     implementation "com.google.firebase:firebase-analytics:$firebase_core_version"
     implementation "com.google.firebase:firebase-messaging:$firebase_messaging"
@@ -97,6 +105,18 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$ktx_navigation_version"
     implementation "androidx.navigation:navigation-ui-ktx:$ktx_navigation_version"
 
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-guava:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
+
     testImplementation "androidx.test:core:$androidx_test_core_version"
     testImplementation "androidx.test.ext:junit:$androidx_test_ext_junit"
     testImplementation "androidx.test.ext:truth:$androidx_test_core_version"
@@ -104,7 +124,7 @@ dependencies {
     testImplementation "androidx.test:runner:$androidx_test_core_version"
     testImplementation "androidx.test:rules:$androidx_runner_version"
     testImplementation "androidx.test:runner:$androidx_runner_version"
-    testImplementation "androidx.fragment:fragment-testing:$androidx_fragment_testing_version"
+    implementation "androidx.fragment:fragment-testing:$androidx_fragment_testing_version"
     testImplementation "androidx.test.espresso:espresso-core:$androidx_espresso"
     testImplementation "org.robolectric:robolectric:$robolectric_version"
     testImplementation "com.google.truth:truth:$truth_version"

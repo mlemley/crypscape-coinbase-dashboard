@@ -12,6 +12,9 @@ open class CrypScapeApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         loadKoin()
+
+
+
     }
 
     protected open fun loadKoin() {

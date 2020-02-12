@@ -5,6 +5,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.lemley.crypscape.MainActivity
+import app.lemley.crypscape.app.Helpers.loadModules
 import app.lemley.crypscape.app.TestCrypScapeApplication
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -28,18 +29,14 @@ class SplashActivityTest {
         liveDataState: LiveData<SplashViewModel.SplashState> = mockk(relaxUnitFun = true)
     ): ActivityScenario<SplashActivity> {
 
-        ApplicationProvider.getApplicationContext<TestCrypScapeApplication>().also {
-            loadKoinModules(
-                module {
-                    viewModel {
-                        mockk<SplashViewModel>(relaxUnitFun = true) {
-                            every { state } returns liveDataState
-                        }
-                    }
+        val module = module {
+            viewModel {
+                mockk<SplashViewModel>(relaxUnitFun = true) {
+                    every { state } returns liveDataState
                 }
-            )
+            }
         }
-
+        loadModules(module)
         return ActivityScenario.launch(SplashActivity::class.java)
     }
 
