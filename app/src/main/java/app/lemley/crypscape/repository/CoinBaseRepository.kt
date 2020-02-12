@@ -2,9 +2,13 @@ package app.lemley.crypscape.repository
 
 
 class CoinBaseRepository(
-)  {
+    val currencyRepository: CoinBaseCurrencyRepository,
+    val productRepository: CoinBaseProductRepository
+) {
+
     fun syncProducts() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        currencyRepository.sync()
+        productRepository.sync()
     }
 
 }
