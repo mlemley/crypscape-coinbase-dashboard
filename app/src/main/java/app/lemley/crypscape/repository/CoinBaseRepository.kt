@@ -6,7 +6,7 @@ class CoinBaseRepository(
     val productRepository: CoinBaseProductRepository
 ) {
 
-    fun syncProducts() {
+    suspend fun syncProducts() {
         currencyRepository.sync()
         productRepository.sync()
     }

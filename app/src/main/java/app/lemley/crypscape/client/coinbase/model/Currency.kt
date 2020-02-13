@@ -2,6 +2,7 @@ package app.lemley.crypscape.client.coinbase.model
 
 import com.google.gson.annotations.SerializedName
 
+
 data class Currency(
     val id: String = "",
     val name: String = "",

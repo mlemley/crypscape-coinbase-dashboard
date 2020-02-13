@@ -36,11 +36,12 @@ class SyncProductUseCaseTest {
                 actualResult = it as SyncProductUseCase.ProductSyncComplete
             }
         }
-
         assertThat(actualResult).isEqualTo(SyncProductUseCase.ProductSyncComplete)
 
         verify {
-            coinBaseRepository.syncProducts()
+            runBlocking {
+                coinBaseRepository.syncProducts()
+            }
         }
 
     }

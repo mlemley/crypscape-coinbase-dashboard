@@ -4,6 +4,7 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 class CoinBaseRepositoryTest {
@@ -23,10 +24,14 @@ class CoinBaseRepositoryTest {
         val productRepository: CoinBaseProductRepository = mockk(relaxUnitFun = true)
         val repository = createRepository(currencyRepository, productRepository)
 
-        repository.syncProducts()
+        runBlocking {
+            repository.syncProducts()
+        }
 
         verifyOrder {
-            currencyRepository.sync()
+            runBlocking {
+                currencyRepository.sync()
+            }
             productRepository.sync()
         }
 
