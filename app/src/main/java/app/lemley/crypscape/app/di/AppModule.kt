@@ -15,6 +15,6 @@ object AppModule {
     val appModule = module {
         single(named("SplashLoadingMillis")) { 1_000 }
         factory { DelayedCallback() }
-        viewModel { SplashViewModel(get(), get(named("SplashLoadingMillis"))) }
+        viewModel { SplashViewModel(get()) }
     }
 }

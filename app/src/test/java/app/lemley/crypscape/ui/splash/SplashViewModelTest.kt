@@ -2,6 +2,7 @@ package app.lemley.crypscape.ui.splash
 
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.usecase.DelayedCallback
+import app.lemley.crypscape.usecase.SyncProductUseCase
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,20 +17,18 @@ import org.junit.Test
 class SplashViewModelTest {
 
     private fun createViewModel(
-        delayedCallback: DelayedCallback = mockk(relaxUnitFun = true),
-        millisDelay: Long = 1_000
+        syncProductUseCase: SyncProductUseCase = mockk(relaxUnitFun = true)
 
-    ): SplashViewModel = SplashViewModel(delayedCallback, millisDelay)
+    ): SplashViewModel = SplashViewModel(syncProductUseCase)
 
     @Test
     fun eventTransform() {
-        val delay: Long = 1_000
-        val viewModel = createViewModel(millisDelay = delay)
+        val viewModel = createViewModel()
         val events = flowOf(
             SplashViewModel.Events.Loaded
         )
         val expected = listOf(
-            DelayedCallback.DelayFor(delay)
+            SyncProductUseCase.SyncProductData
         )
         val actual = mutableListOf<Action>()
         runBlocking {
@@ -46,7 +45,7 @@ class SplashViewModelTest {
         val initState = viewModel.makeInitState()
 
         val inputs = listOf(
-            DelayedCallback.DelayCompletedResult
+            SyncProductUseCase.ProductSyncComplete
         )
         val expected = listOf(
             initState.copy(requiredActions = SplashViewModel.RequiredActions.ProgressForward)
