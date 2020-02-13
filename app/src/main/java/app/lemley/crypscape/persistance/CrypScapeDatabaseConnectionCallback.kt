@@ -4,6 +4,7 @@ import androidx.annotation.WorkerThread
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.lemley.crypscape.extensions.toInstant
+import app.lemley.crypscape.persistance.dao.PlatformDao
 import app.lemley.crypscape.persistance.entities.Platform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -11,7 +12,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.Instant
 
-class CrypScapeDatabaseConnectionCallback : RoomDatabase.Callback() {
+class CrypScapeDatabaseConnectionCallback(
+    val platformDao: PlatformDao
+) : RoomDatabase.Callback() {
 
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
@@ -24,7 +27,7 @@ class CrypScapeDatabaseConnectionCallback : RoomDatabase.Callback() {
 
     @WorkerThread
     private suspend fun populateInitialPlatforms() {
-        CrypScapeDb.Instance?.platformDao?.insert(
+        platformDao.insert(
             Platform(
                 name = "Coinbase Pro",
                 startDate = "2017-12-01T00:00Z".toInstant() ?: Instant.now()

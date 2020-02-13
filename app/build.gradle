@@ -75,7 +75,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.threeten:threetenbp:$local_date_time_backport"
+    implementation "com.jakewharton.threetenabp:threetenabp:$local_date_time_backport"
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
     implementation "com.google.firebase:firebase-analytics:$firebase_core_version"
     implementation "com.google.firebase:firebase-messaging:$firebase_messaging"
@@ -131,6 +131,8 @@ dependencies {
     testImplementation "com.google.truth:truth:$truth_version"
     testImplementation "junit:junit:$junit_version"
     testImplementation "io.mockk:mockk:$mockk_version"
+    // used to not have to run test with robolectric
+    testImplementation 'org.threeten:threetenbp:1.4.1'
 
     androidTestImplementation "androidx.test.ext:junit:$androidx_ext_junit_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidx_espresso"
