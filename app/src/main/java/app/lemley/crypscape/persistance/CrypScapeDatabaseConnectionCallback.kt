@@ -23,9 +23,10 @@ class CrypScapeDatabaseConnectionCallback : RoomDatabase.Callback() {
 
     @WorkerThread
     private suspend fun populateInitialPlatforms(db: SupportSQLiteDatabase) {
-/*
-        name = "Coinbase Pro",
-        startDate = "2017-12-01T00:00Z".toInstant() ?: Instant.now()
-*/
+        val startDate = "2017-12-01T00:00Z".toInstant() ?: Instant.now()
+        db.execSQL("""
+            insert into `platform`(name, startDate)  
+            values ("Coinbase Pro", ${startDate.toEpochMilli()})
+        """)
     }
 }
