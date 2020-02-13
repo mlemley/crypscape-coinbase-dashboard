@@ -31,8 +31,8 @@ class CoinBaseRepositoryTest {
         verifyOrder {
             runBlocking {
                 currencyRepository.sync()
+                productRepository.sync()
             }
-            productRepository.sync()
         }
 
         confirmVerified(currencyRepository, productRepository)

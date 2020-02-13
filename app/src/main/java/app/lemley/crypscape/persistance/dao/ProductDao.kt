@@ -29,8 +29,7 @@ abstract class ProductDao : BaseDao<Product>() {
 
     @WorkerThread
     fun insertOrUpdate(product: Product) {
-        var updated = false
-        by(product.platformId, product.baseCurrency, product.quoteCurrency)?.let {
+        var updated = by(product.platformId, product.baseCurrency, product.quoteCurrency)?.let {
             update(
                 it.copy(
                     baseMaxSize = product.baseMaxSize,
@@ -38,27 +37,9 @@ abstract class ProductDao : BaseDao<Product>() {
                     quoteIncrement = product.quoteIncrement
                 )
             )
-            updated = true
-        }
+            true
+        } ?: false
 
-        if (!updated)
-            insert(product)
+        if (!updated) insert(product.copy(platformId = product.platformId))
     }
-
-    fun newFrom(
-        platform: Platform,
-        baseCurrency: Currency,
-        quoteCurrency: Currency,
-        coinbaseProduct: CoinBaseProduct
-    ): Product =
-        Product(
-            platformId = platform.id,
-            baseCurrency = baseCurrency.id,
-            quoteCurrency = quoteCurrency.id,
-            serverId = coinbaseProduct.id,
-            baseMinSize = coinbaseProduct.baseMinSize,
-            baseMaxSize = coinbaseProduct.baseMaxSize,
-            quoteIncrement = coinbaseProduct.quoteIncrement
-        )
-
 }

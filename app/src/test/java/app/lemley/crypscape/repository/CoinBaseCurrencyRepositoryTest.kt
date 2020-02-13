@@ -19,7 +19,7 @@ import app.lemley.crypscape.client.coinbase.model.Currency as CBCurrency
 @ExperimentalCoroutinesApi
 class CoinBaseCurrencyRepositoryTest {
 
-    private fun createRepoository(
+    private fun createRepository(
         coinBaseApiClient: CoinBaseApiClient = mockk(relaxed = true),
         currencyDao: CurrencyDao = mockk(relaxed = true),
         platformDao: PlatformDao = mockk(relaxed = true)
@@ -48,7 +48,7 @@ class CoinBaseCurrencyRepositoryTest {
         val platformDao: PlatformDao = mockk(relaxed = true) {
             every { coinbasePro } returns platform
         }
-        val repository = createRepoository(coinBaseApiClient, currencyDao, platformDao)
+        val repository = createRepository(coinBaseApiClient, currencyDao, platformDao)
 
         repository.sync()
 
