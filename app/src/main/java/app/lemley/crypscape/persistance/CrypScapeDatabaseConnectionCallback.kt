@@ -4,7 +4,6 @@ import androidx.annotation.WorkerThread
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.lemley.crypscape.extensions.toInstant
-import app.lemley.crypscape.persistance.entities.Platform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -17,18 +16,17 @@ class CrypScapeDatabaseConnectionCallback : RoomDatabase.Callback() {
         super.onCreate(db)
         GlobalScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO) {
-                populateInitialPlatforms()
+                populateInitialPlatforms(db)
             }
         }
     }
 
     @WorkerThread
-    private suspend fun populateInitialPlatforms() {
-        CrypScapeDb.Instance?.platformDao?.insert(
-            Platform(
-                name = "Coinbase Pro",
-                startDate = "2017-12-01T00:00Z".toInstant() ?: Instant.now()
-            )
-        )
+    private suspend fun populateInitialPlatforms(db: SupportSQLiteDatabase) {
+        val startDate = "2017-12-01T00:00Z".toInstant() ?: Instant.now()
+        db.execSQL("""
+            insert into `platform`(name, startDate)  
+            values ("Coinbase Pro", ${startDate.toEpochMilli()})
+        """)
     }
 }

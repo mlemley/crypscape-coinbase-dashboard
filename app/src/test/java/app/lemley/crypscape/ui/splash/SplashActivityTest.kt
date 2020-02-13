@@ -2,11 +2,9 @@ package app.lemley.crypscape.ui.splash
 
 import androidx.lifecycle.LiveData
 import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.lemley.crypscape.MainActivity
 import app.lemley.crypscape.app.Helpers.loadModules
-import app.lemley.crypscape.app.TestCrypScapeApplication
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
@@ -16,7 +14,6 @@ import kotlinx.coroutines.FlowPreview
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.android.viewmodel.dsl.viewModel
-import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 import org.robolectric.Shadows.shadowOf
 
@@ -55,7 +52,7 @@ class SplashActivityTest {
         val liveDataState: LiveData<SplashViewModel.SplashState> = mockk(relaxUnitFun = true)
         createScenario(liveDataState).onActivity { activity ->
             verify {
-                activity.viewModel.dispatchEvent(SplashViewModel.Events.Loaded)
+                activity.viewModel.dispatchEvent(SplashViewModel.Events.Init)
             }
         }.close()
     }

@@ -2,13 +2,17 @@ package app.lemley.crypscape.ui.splash
 
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.usecase.DelayedCallback
+import app.lemley.crypscape.usecase.SyncProductUseCase
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 
 @FlowPreview
@@ -16,20 +20,21 @@ import org.junit.Test
 class SplashViewModelTest {
 
     private fun createViewModel(
-        delayedCallback: DelayedCallback = mockk(relaxUnitFun = true),
-        millisDelay: Long = 1_000
+        syncProductUseCase: SyncProductUseCase = mockk(relaxUnitFun = true),
+        delayedCallback: DelayedCallback = mockk(relaxUnitFun = true)
 
-    ): SplashViewModel = SplashViewModel(delayedCallback, millisDelay)
+    ): SplashViewModel = SplashViewModel(syncProductUseCase, delayedCallback, 0)
 
     @Test
     fun eventTransform() {
-        val delay: Long = 1_000
-        val viewModel = createViewModel(millisDelay = delay)
+        val viewModel = createViewModel()
         val events = flowOf(
-            SplashViewModel.Events.Loaded
+            SplashViewModel.Events.Init,
+            SplashViewModel.Events.ProductsLoaded
         )
         val expected = listOf(
-            DelayedCallback.DelayFor(delay)
+            SyncProductUseCase.SyncProductData,
+            DelayedCallback.DelayFor(0)
         )
         val actual = mutableListOf<Action>()
         runBlocking {
@@ -40,8 +45,25 @@ class SplashViewModelTest {
         assertThat(expected).isEqualTo(actual)
     }
 
+    @Ignore
     @Test
-    fun plus() {
+    fun plus__dispatches_products_loaded_event__when_product_loaded_result_occurs() {
+        val delayedCallback: DelayedCallback = mockk()
+        val viewModel = createViewModel(delayedCallback = delayedCallback)
+
+        runBlocking {
+
+            with(viewModel) {
+                makeInitState() + SyncProductUseCase.ProductSyncComplete
+            }
+
+        }
+
+        //assertThat(viewModel.events.alTo(listOf(SplashViewModel.Events.ProductsLoaded))
+    }
+
+    @Test
+    fun plus__progresses_forward_after_delay() {
         val viewModel = createViewModel()
         val initState = viewModel.makeInitState()
 

@@ -1,5 +1,9 @@
 # Crypscape Android TV / Phone Dashboard ![CI Status](https://travis-ci.org/mlemley/crypscape-coinbase-dashboard.svg?branch=master)
 
+A public [Trello](https://trello.com/invite/b/TOLmIP4n/66375b8835746d871ade6b2a4af1dd28/crypscape-open-dashboard) board will be used to prioritize feature sets and track issues.
+
+Voting will be used to prioritize the backlog.
+
 ## CI / CD
 
 Using [Travis Ci](https://travis-ci.org/mlemley/crypscape-coinbase-dashboard/) for continuous integration / delivery

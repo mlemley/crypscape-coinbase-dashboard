@@ -1,6 +1,6 @@
-package app.lemley.crypscape.client.coinbase.model
+package app.lemley.crypscape.client.coinbase
 
-import app.lemley.crypscape.client.coinbase.CoinBaseApi
+import app.lemley.crypscape.client.coinbase.model.CoinBaseApiClient
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 object CoinBaseApiFactory {
-    const val apiBaseUrl = "https://api.pro.coinbase.com"
+    private const val apiBaseUrl = "https://api.pro.coinbase.com"
 
     private val coinBaseClient = OkHttpClient().newBuilder()
         // add interceptors here
@@ -22,5 +22,9 @@ object CoinBaseApiFactory {
         .build()
 
     fun coinBaseApiClient(baseUrl: String = apiBaseUrl): CoinBaseApiClient =
-        CoinBaseApiClient(retrofit(baseUrl).create(CoinBaseApi::class.java))
+        CoinBaseApiClient(
+            retrofit(
+                baseUrl
+            ).create(CoinBaseApi::class.java)
+        )
 }
