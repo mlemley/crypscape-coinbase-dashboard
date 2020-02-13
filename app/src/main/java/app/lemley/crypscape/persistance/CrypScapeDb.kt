@@ -20,7 +20,7 @@ import com.crypscape.mobile.db.converter.DateConverter
         Currency::class,
         Product::class
     ],
-    version = 0
+    version = 1
 )
 @TypeConverters(DateConverter::class)
 abstract class CrypScapeDb : RoomDatabase() {

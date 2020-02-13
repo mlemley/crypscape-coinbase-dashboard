@@ -21,11 +21,12 @@ val persistenceModule = module {
             .build()
     }
 
-    single { CrypScapeDatabaseConnectionCallback(get()) }
+    single { CrypScapeDatabaseConnectionCallback() }
 
     // Expose DAO's
 
-    single { get<CrypScapeDb>().platformDao }
-    single { get<CrypScapeDb>().candleDao }
-    single { get<CrypScapeDb>().productDao }
+    factory { get<CrypScapeDb>().platformDao }
+    factory { get<CrypScapeDb>().currencyDao }
+    factory { get<CrypScapeDb>().productDao }
+    factory { get<CrypScapeDb>().candleDao }
 }

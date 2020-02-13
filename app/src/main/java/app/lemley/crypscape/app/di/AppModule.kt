@@ -1,7 +1,9 @@
 package app.lemley.crypscape.app.di
 
+import app.lemley.crypscape.client.coinbase.coinbaseApiModule
 import app.lemley.crypscape.persistance.persistenceModule
-import app.lemley.crypscape.repository.CoinBaseProductRepository
+import app.lemley.crypscape.repository.repositoryModule
+import app.lemley.crypscape.ui.home.HomeViewModel
 import app.lemley.crypscape.ui.splash.SplashViewModel
 import app.lemley.crypscape.usecase.DelayedCallback
 import app.lemley.crypscape.usecase.SyncProductUseCase
@@ -16,16 +18,20 @@ import org.koin.dsl.module
 @ExperimentalCoroutinesApi
 val appModule = module {
     single(named("SplashLoadingMillis")) { 1_000 }
-    viewModel { SplashViewModel(get()) }
 
     factory { DelayedCallback() }
     factory { SyncProductUseCase(get()) }
-    factory { CoinBaseProductRepository(get(), get(), get(), get(), get()) }
+
+    viewModel { SplashViewModel(get()) }
+    viewModel { HomeViewModel() }
 }
 
 @FlowPreview
 @ExperimentalCoroutinesApi
 val appModules = listOf(
-    appModule, persistenceModule
+    appModule,
+    persistenceModule,
+    repositoryModule,
+    coinbaseApiModule
 )
 
