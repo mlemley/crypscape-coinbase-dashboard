@@ -5,8 +5,6 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import app.lemley.crypscape.MainActivity
 import app.lemley.crypscape.R
 import app.lemley.crypscape.extensions.exhaustive
@@ -37,7 +35,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         viewModel.state.observe(this@SplashActivity, stateObserver)
-        viewModel.dispatchEvent(SplashViewModel.Events.Loaded)
+        viewModel.dispatchEvent(SplashViewModel.Events.Init)
     }
 
     private fun navigateHome() {

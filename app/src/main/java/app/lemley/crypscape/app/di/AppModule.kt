@@ -22,7 +22,7 @@ val appModule = module {
     factory { DelayedCallback() }
     factory { SyncProductUseCase(get()) }
 
-    viewModel { SplashViewModel(get()) }
+    viewModel { SplashViewModel(get(), get(), get(named("SplashLoadingMillis"))) }
     viewModel { HomeViewModel() }
 }
 

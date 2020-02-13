@@ -20,7 +20,8 @@ interface Result
 @ExperimentalCoroutinesApi
 abstract class BaseViewModel<E:Event, S: State> : ViewModel() {
 
-    private var events: Channel<E> = Channel(Channel.UNLIMITED)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var events: Channel<E> = Channel(Channel.UNLIMITED)
         get() {
             if (field.isClosedForSend || field.isClosedForReceive)
                 field = Channel(Channel.UNLIMITED)
@@ -45,9 +46,7 @@ abstract class BaseViewModel<E:Event, S: State> : ViewModel() {
                 Log.e("BaseModelView", it.localizedMessage)
                 it.printStackTrace()
             }
-            .onEach {
-                emit(it)
-            }
+            .onEach { emit(it) }
             .collect()
     }
 
