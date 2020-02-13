@@ -29,7 +29,7 @@ abstract class ProductDao : BaseDao<Product>() {
 
     @WorkerThread
     fun insertOrUpdate(product: Product) {
-        var updated = by(product.platformId, product.baseCurrency, product.quoteCurrency)?.let {
+        val updated = by(product.platformId, product.baseCurrency, product.quoteCurrency)?.let {
             update(
                 it.copy(
                     baseMaxSize = product.baseMaxSize,
