@@ -5,9 +5,9 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import app.lemley.crypscape.MainActivity
 import app.lemley.crypscape.R
 import app.lemley.crypscape.extensions.exhaustive
+import app.lemley.crypscape.ui.MainActivity
 import app.lemley.crypscape.ui.splash.SplashViewModel.RequiredActions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
