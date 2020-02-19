@@ -8,6 +8,7 @@ import app.lemley.crypscape.ui.market.MarketViewModel
 import app.lemley.crypscape.ui.splash.SplashViewModel
 import app.lemley.crypscape.usecase.DelayedCallback
 import app.lemley.crypscape.usecase.SyncProductUseCase
+import app.lemley.crypscape.usecasei.MarketDataUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.koin.android.viewmodel.dsl.viewModel
@@ -24,10 +25,13 @@ val appModule = module {
     // Use Cases
     factory { DelayedCallback() }
     factory { SyncProductUseCase(get()) }
+    factory { MarketDataUseCase() }
 
     // View Models
     viewModel { SplashViewModel(get(), get(), get(named("SplashLoadingMillis"))) }
-    viewModel { MarketViewModel() }
+    viewModel { MarketViewModel(get()) }
+
+    // Repositories
 }
 
 @FlowPreview
