@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.lemley.crypscape">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".app.CrypScapeApplication"
         android:allowBackup="false"
@@ -23,8 +25,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="" />
+            android:name=".ui.main.MainActivity"
+            android:label="Home" />
     </application>
 
 </manifest>

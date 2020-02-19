@@ -1,11 +1,10 @@
-package app.lemley.crypscape.ui.home
-
-import org.junit.Test
+package app.lemley.crypscape.ui.market
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Ignore
+import org.junit.Test
 
-class HomeViewModelTest {
+class MarketViewModelTest {
 
     @Ignore
     @Test

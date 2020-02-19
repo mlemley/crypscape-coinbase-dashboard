@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.lemley.crypscape.app.Helpers.loadModules
-import app.lemley.crypscape.ui.MainActivity
+import app.lemley.crypscape.ui.main.MainActivity
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk

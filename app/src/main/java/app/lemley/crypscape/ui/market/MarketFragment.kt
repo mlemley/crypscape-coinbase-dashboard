@@ -1,4 +1,4 @@
-package app.lemley.crypscape.ui.home
+package app.lemley.crypscape.ui.market
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,15 +9,15 @@ import androidx.lifecycle.Observer
 import app.lemley.crypscape.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-class HomeFragment : Fragment() {
+class MarketFragment : Fragment() {
 
-    private val homeViewModel: HomeViewModel by inject()
+    private val homeViewModel: MarketViewModel by viewModel()
 
-    val stateObserver: Observer<HomeViewModel.HomeState> = Observer { state ->
+    val stateObserver: Observer<MarketViewModel.HomeState> = Observer { state ->
 
     }
 

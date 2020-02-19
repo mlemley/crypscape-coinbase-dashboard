@@ -1,7 +1,7 @@
-package app.lemley.crypscape.client.coinbase.model
+package app.lemley.crypscape.client.coinbase
 
 import app.lemley.crypscape.client.BaseClient
-import app.lemley.crypscape.client.coinbase.CoinBaseApi
+import app.lemley.crypscape.client.coinbase.model.*
 
 class CoinBaseApiClient(
     private val api: CoinBaseApi

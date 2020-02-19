@@ -1,4 +1,4 @@
-package app.lemley.crypscape.ui.home
+package app.lemley.crypscape.ui.market
 
 import app.lemley.crypscape.ui.base.*
 import app.lemley.crypscape.usecase.UseCase
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.emptyFlow
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-class HomeViewModel : BaseViewModel<HomeViewModel.Events, HomeViewModel.HomeState>() {
+class MarketViewModel : BaseViewModel<MarketViewModel.Events, MarketViewModel.HomeState>() {
 
     sealed class Events : Event {
 

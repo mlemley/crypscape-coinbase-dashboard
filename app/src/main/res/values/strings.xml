@@ -2,11 +2,14 @@
     <string name="app_name">CrypScape</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_title">CrypScape</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <!-- Splash Screen -->
     <string name="cryp">cryp</string>
     <string name="scape">scape</string>
+
+    <!-- Market Fragment -->
+    <string name="market_title">Market</string>
 </resources>

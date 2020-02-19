@@ -1,4 +1,4 @@
-package app.lemley.crypscape.ui.home
+package app.lemley.crypscape.ui.market
 
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.lifecycle.LiveData
@@ -17,26 +17,26 @@ import org.koin.dsl.module
 @FlowPreview
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class HomeFragmentTest {
+class MarketFragmentTest {
 
     private fun createFragmentScenario(
-        liveDataState: LiveData<HomeViewModel.HomeState> = mockk(relaxUnitFun = true)
-    ): FragmentScenario<HomeFragment> {
+        liveDataState: LiveData<MarketViewModel.HomeState> = mockk(relaxUnitFun = true)
+    ): FragmentScenario<MarketFragment> {
         val module = module {
             viewModel {
-                mockk<HomeViewModel>(relaxUnitFun = true) {
+                mockk<MarketViewModel>(relaxUnitFun = true) {
                     every { state } returns liveDataState
                 }
             }
         }
         loadModules(module)
 
-        return FragmentScenario.launchInContainer(HomeFragment::class.java)
+        return FragmentScenario.launchInContainer(MarketFragment::class.java)
     }
 
     @Test
     fun observes_state() {
-        val liveDataState: LiveData<HomeViewModel.HomeState> = mockk(relaxUnitFun = true)
+        val liveDataState: LiveData<MarketViewModel.HomeState> = mockk(relaxUnitFun = true)
 
         createFragmentScenario(liveDataState).onFragment { fragment ->
             verify {

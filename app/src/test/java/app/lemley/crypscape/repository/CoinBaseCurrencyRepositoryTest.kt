@@ -1,6 +1,6 @@
 package app.lemley.crypscape.repository
 
-import app.lemley.crypscape.client.coinbase.model.CoinBaseApiClient
+import app.lemley.crypscape.client.coinbase.CoinBaseApiClient
 import app.lemley.crypscape.persistance.dao.CurrencyDao
 import app.lemley.crypscape.persistance.dao.PlatformDao
 import app.lemley.crypscape.persistance.entities.Currency

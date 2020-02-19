@@ -1,5 +1,6 @@
 package app.lemley.crypscape.client.coinbase.model
 
+import app.lemley.crypscape.client.coinbase.CoinBaseApiClient
 import app.lemley.crypscape.client.coinbase.CoinBaseApiFactory
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
