@@ -7,7 +7,6 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -40,7 +39,7 @@ class MarketViewModelTest {
         val viewModel = createViewModel()
 
         val events = flowOf(
-            MarketViewModel.Events.Init
+            MarketEvents.Init
         )
 
         val expectedActions = listOf(

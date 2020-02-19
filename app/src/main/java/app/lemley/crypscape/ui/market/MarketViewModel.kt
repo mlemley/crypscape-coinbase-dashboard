@@ -1,7 +1,9 @@
 package app.lemley.crypscape.ui.market
 
 import app.lemley.crypscape.extensions.exhaustive
-import app.lemley.crypscape.ui.base.*
+import app.lemley.crypscape.ui.base.Action
+import app.lemley.crypscape.ui.base.BaseViewModel
+import app.lemley.crypscape.ui.base.Result
 import app.lemley.crypscape.usecase.UseCase
 import app.lemley.crypscape.usecasei.MarketDataUseCase
 import app.lemley.crypscape.usecasei.MarketDataUseCase.MarketActions
@@ -15,30 +17,22 @@ import kotlinx.coroutines.flow.flow
 @ExperimentalCoroutinesApi
 class MarketViewModel(
     marketDataUseCase: MarketDataUseCase
-) : BaseViewModel<MarketViewModel.Events, MarketViewModel.HomeState>() {
-
-    sealed class Events : Event {
-        object Init : Events()
-    }
-
-    data class HomeState(
-        val foo: Boolean = false
-    ) : State
+) : BaseViewModel<MarketEvents, MarketState>() {
 
 
     override val useCases: List<UseCase> = listOf(marketDataUseCase)
 
-    override fun makeInitState(): HomeState = HomeState()
+    override fun makeInitState(): MarketState = MarketState()
 
-    override fun Flow<Events>.eventTransform(): Flow<Action> = flow {
+    override fun Flow<MarketEvents>.eventTransform(): Flow<Action> = flow {
         collect {
             when (it) {
-                Events.Init -> emit(MarketActions.FetchMarketDataForDefaultConfiguration)
+                MarketEvents.Init -> emit(MarketActions.FetchMarketDataForDefaultConfiguration)
             }.exhaustive
         }
     }
 
-    override fun HomeState.plus(result: Result): HomeState {
+    override fun MarketState.plus(result: Result): MarketState {
         return when (result) {
 
             else -> this

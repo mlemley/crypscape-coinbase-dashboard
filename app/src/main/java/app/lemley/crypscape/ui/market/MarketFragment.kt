@@ -15,9 +15,9 @@ import org.koin.android.viewmodel.ext.android.viewModel
 @ExperimentalCoroutinesApi
 class MarketFragment : Fragment() {
 
-    private val homeViewModel: MarketViewModel by viewModel()
+    private val marketViewModel: MarketViewModel by viewModel()
 
-    val stateObserver: Observer<MarketViewModel.HomeState> = Observer { state ->
+    val stateObserver: Observer<MarketState> = Observer { state ->
 
     }
 
@@ -27,7 +27,8 @@ class MarketFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        homeViewModel.state.observe(viewLifecycleOwner, stateObserver)
+        marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
+        marketViewModel.dispatchEvent(MarketEvents.Init)
         return root
     }
 }
