@@ -5,8 +5,8 @@ import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.ui.base.BaseViewModel
 import app.lemley.crypscape.ui.base.Result
 import app.lemley.crypscape.usecase.UseCase
-import app.lemley.crypscape.usecasei.MarketDataUseCase
-import app.lemley.crypscape.usecasei.MarketDataUseCase.MarketActions
+import app.lemley.crypscape.usecase.MarketDataUseCase
+import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow

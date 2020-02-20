@@ -1,8 +1,8 @@
 package app.lemley.crypscape.ui.market
 
 import app.lemley.crypscape.ui.base.Action
-import app.lemley.crypscape.usecasei.MarketDataUseCase
-import app.lemley.crypscape.usecasei.MarketDataUseCase.MarketActions
+import app.lemley.crypscape.usecase.MarketDataUseCase
+import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
