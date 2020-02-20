@@ -1,14 +1,26 @@
 package app.lemley.crypscape.model
 
 import app.lemley.crypscape.persistance.entities.Granularity
-import app.lemley.crypscape.persistance.entities.Platform
 import app.lemley.crypscape.persistance.entities.Product
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.Test
 
 class MarketConfigurationTest {
+
+    @Test
+    fun exposes_remote_product_id() {
+        val product = Product(
+            platformId = 1,
+            id = 2,
+            serverId = "BTC-USD",
+            quoteCurrency = 3,
+            baseCurrency = 4
+        )
+
+        val marketConfiguration = MarketConfiguration(product, Granularity.Hour)
+
+        assertThat(marketConfiguration.remoteProductId).isEqualTo(product.serverId)
+    }
 
     @Test
     fun from_json() {

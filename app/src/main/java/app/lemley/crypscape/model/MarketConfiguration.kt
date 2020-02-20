@@ -5,9 +5,11 @@ import app.lemley.crypscape.persistance.entities.Product
 import com.google.gson.Gson
 
 data class MarketConfiguration(
-    val product: Product? = null,
-    val granularity: Granularity? = null
+    val product: Product,
+    val granularity: Granularity
 ) {
+
+    val remoteProductId:String get() = product.serverId
 
     companion object {
         fun fromJson(json: String): MarketConfiguration {

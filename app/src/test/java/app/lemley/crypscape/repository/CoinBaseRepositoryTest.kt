@@ -1,8 +1,13 @@
 package app.lemley.crypscape.repository
 
+import app.lemley.crypscape.model.MarketConfiguration
+import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.persistance.entities.Granularity
+import app.lemley.crypscape.persistance.entities.Product
+import com.google.common.truth.Truth.assertThat
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import io.mockk.verifyOrder
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -11,11 +16,13 @@ class CoinBaseRepositoryTest {
 
     private fun createRepository(
         coinBaseCurrencyRepository: CoinBaseCurrencyRepository = mockk(relaxUnitFun = true),
-        coinBaseProductRepository: CoinBaseProductRepository = mockk(relaxUnitFun = true)
+        coinBaseProductRepository: CoinBaseProductRepository = mockk(relaxUnitFun = true),
+        coinBaseCandleRepository: CoinBaseCandleRepository = mockk(relaxUnitFun = true)
 
     ): CoinBaseRepository = CoinBaseRepository(
         currencyRepository = coinBaseCurrencyRepository,
-        productRepository = coinBaseProductRepository
+        productRepository = coinBaseProductRepository,
+        candleRepository = coinBaseCandleRepository
     )
 
     @Test
@@ -38,5 +45,25 @@ class CoinBaseRepositoryTest {
         confirmVerified(currencyRepository, productRepository)
     }
 
+    @Test
+    fun fetch_candles_for_market_configuration() {
+        val product = Product(
+            platformId = 1,
+            id = 2,
+            serverId = "BTC-USD",
+            quoteCurrency = 3,
+            baseCurrency = 4
+        )
+        val granularity = Granularity.Hour
+        val configuration = MarketConfiguration(product, granularity)
+        val candles = listOf<Candle>(mockk(), mockk())
+        val candleRepository: CoinBaseCandleRepository = mockk {
+            every { runBlocking { candlesFor(product.serverId, granularity) } } returns candles
+        }
+        val repository = createRepository(coinBaseCandleRepository = candleRepository)
 
+        runBlocking {
+            assertThat(repository.candlesForConfiguration(configuration)).isEqualTo(candles)
+        }
+    }
 }

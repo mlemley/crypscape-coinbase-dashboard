@@ -6,7 +6,8 @@ import app.lemley.crypscape.persistance.entities.Candle
 
 class CoinBaseRepository(
     val currencyRepository: CoinBaseCurrencyRepository,
-    val productRepository: CoinBaseProductRepository
+    val productRepository: CoinBaseProductRepository,
+    val candleRepository: CoinBaseCandleRepository
 ) {
 
     suspend fun syncProducts() {
@@ -15,6 +16,6 @@ class CoinBaseRepository(
     }
 
     suspend fun candlesForConfiguration(marketConfiguration: MarketConfiguration): List<Candle> {
-        return emptyList()
+        return candleRepository.candlesFor(marketConfiguration.remoteProductId, marketConfiguration.granularity)
     }
 }
