@@ -12,6 +12,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -40,7 +41,7 @@ class MarketDataUseCaseTest {
             every { runBlocking { loadDefault() } } returns marketConfiguration
         }
 
-        val candles = listOf<Candle>(mockk(), mockk())
+        val candles = flowOf<List<Candle>>(mockk(), mockk())
         val coinBaseRepository: CoinBaseRepository = mockk {
             every { runBlocking { candlesForConfiguration(marketConfiguration) } } returns candles
         }

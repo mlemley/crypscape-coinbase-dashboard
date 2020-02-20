@@ -12,7 +12,7 @@ class CandleRequestTest {
         val granularity = Granularity.FiveMinutes
         assertThat(
             CandleRequest(
-                product = Product(id = "BTC-USD"),
+                productId = "BTC-USD",
                 granularity = Granularity.FiveMinutes,
                 start = start,
                 end = end
@@ -32,7 +32,7 @@ class CandleRequestTest {
         val granularity = Granularity.FiveMinutes
         assertThat(
             CandleRequest(
-                product = Product(id = "BTC-USD"),
+                productId = "BTC-USD",
                 granularity = Granularity.FiveMinutes,
                 start = start
             ).asMap()
@@ -49,7 +49,7 @@ class CandleRequestTest {
         val granularity = Granularity.FiveMinutes
         assertThat(
             CandleRequest(
-                product = Product(id = "BTC-USD"),
+                productId = "BTC-USD",
                 granularity = Granularity.FiveMinutes,
                 end = end
             ).asMap()
@@ -65,7 +65,7 @@ class CandleRequestTest {
         val granularity = Granularity.FiveMinutes
         assertThat(
             CandleRequest(
-                product = Product(id = "BTC-USD"),
+                productId = "BTC-USD",
                 granularity = Granularity.FiveMinutes
             ).asMap()
         ).isEqualTo(

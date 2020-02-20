@@ -28,7 +28,7 @@ class CoinBaseApiClient(
     )
 
     suspend fun candlesFor(candleRequest: CandleRequest): Array<Array<Double>>? = safeApiCall(
-        call = { api.candlesForAsync(candleRequest.product.id, candleRequest.asMap()).await() },
+        call = { api.candlesForAsync(candleRequest.productId, candleRequest.asMap()).await() },
         errorMessage = "Error fetching products from coinBase"
     )
 }

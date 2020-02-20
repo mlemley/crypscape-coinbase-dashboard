@@ -9,9 +9,12 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifyOrder
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class CoinBaseRepositoryTest {
 
     private fun createRepository(
@@ -56,9 +59,9 @@ class CoinBaseRepositoryTest {
         )
         val granularity = Granularity.Hour
         val configuration = MarketConfiguration(product, granularity)
-        val candles = listOf<Candle>(mockk(), mockk())
+        val candles = flowOf<List<Candle>>(mockk(), mockk())
         val candleRepository: CoinBaseCandleRepository = mockk {
-            every { runBlocking { candlesFor(product.serverId, granularity) } } returns candles
+            every { runBlocking { candlesFor(configuration) } } returns candles
         }
         val repository = createRepository(coinBaseCandleRepository = candleRepository)
 
