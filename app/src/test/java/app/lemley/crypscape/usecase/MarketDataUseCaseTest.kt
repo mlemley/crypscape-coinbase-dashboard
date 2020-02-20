@@ -1,6 +1,8 @@
 package app.lemley.crypscape.usecase
 
 import app.lemley.crypscape.model.MarketConfiguration
+import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.repository.CoinBaseRepository
 import app.lemley.crypscape.repository.DefaultMarketDataRepository
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.ui.base.Result
@@ -18,9 +20,10 @@ import org.junit.Test
 class MarketDataUseCaseTest {
 
     private fun createUseCase(
-        defaultMarketDataRepository: DefaultMarketDataRepository = mockk(relaxUnitFun = true)
+        defaultMarketDataRepository: DefaultMarketDataRepository = mockk(relaxUnitFun = true),
+        coinBaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true)
 
-    ): MarketDataUseCase = MarketDataUseCase(defaultMarketDataRepository)
+    ): MarketDataUseCase = MarketDataUseCase(defaultMarketDataRepository, coinBaseRepository)
 
     @Test
     fun can_process_its_actions() {
@@ -30,14 +33,18 @@ class MarketDataUseCaseTest {
         assertThat(useCase.canProcess(object : Action {})).isFalse()
     }
 
-
     @Test
     fun handles_fetching_default_market_data() {
         val marketConfiguration = MarketConfiguration(mockk(), mockk())
-        val defaultMarketDataRepository:DefaultMarketDataRepository = mockk {
-            every { runBlocking { loadDefault() }} returns marketConfiguration
+        val defaultMarketDataRepository: DefaultMarketDataRepository = mockk {
+            every { runBlocking { loadDefault() } } returns marketConfiguration
         }
-        val useCase = createUseCase(defaultMarketDataRepository)
+
+        val candles = listOf<Candle>(mockk(), mockk())
+        val coinBaseRepository: CoinBaseRepository = mockk {
+            every { runBlocking { candlesForConfiguration(marketConfiguration) } } returns candles
+        }
+        val useCase = createUseCase(defaultMarketDataRepository, coinBaseRepository)
 
         val results = mutableListOf<Result>()
         runBlocking {
@@ -46,7 +53,11 @@ class MarketDataUseCaseTest {
         }
 
         assertThat(results).isEqualTo(
-            listOf(MarketResults.MarketConfigurationResult(marketConfiguration))
+            listOf(
+                MarketResults.MarketConfigurationResult(marketConfiguration),
+                MarketResults.CandlesForConfigurationResult(candles)
+            )
         )
     }
+
 }

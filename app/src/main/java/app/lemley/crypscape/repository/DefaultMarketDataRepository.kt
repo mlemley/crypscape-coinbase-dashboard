@@ -21,7 +21,7 @@ class DefaultMarketDataRepository constructor(
         const val defaultProductId = "BTC-USD"
     }
 
-    suspend fun loadDefault(): MarketConfiguration {
+    fun loadDefault(): MarketConfiguration {
         return if (sharedPreferences.contains(preferenceKey)) {
             return MarketConfiguration.fromJson(
                 sharedPreferences.getString(preferenceKey, null)

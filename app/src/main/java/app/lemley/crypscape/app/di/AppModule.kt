@@ -31,7 +31,7 @@ val appModule = module {
     // Use Cases
     factory { DelayedCallback() }
     factory { SyncProductUseCase(get()) }
-    factory { MarketDataUseCase(get()) }
+    factory { MarketDataUseCase(get(), get()) }
 
     // View Models
     viewModel { SplashViewModel(get(), get(), get(named("SplashLoadingMillis"))) }
