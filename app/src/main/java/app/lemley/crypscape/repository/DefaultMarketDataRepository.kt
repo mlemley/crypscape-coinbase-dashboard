@@ -36,7 +36,7 @@ class DefaultMarketDataRepository constructor(
 
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    suspend fun createDefault(): MarketConfiguration {
+    fun createDefault(): MarketConfiguration {
         val platform =
             platformDao.coinbasePro ?: throw IllegalStateException("Platform can not be null")
         val product = productDao.byServerId(platform.id, defaultProductId)
