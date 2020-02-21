@@ -82,7 +82,6 @@ class MarketViewModelTest {
             with(viewModel) {
                 actual.add(initState + it)
             }
-
         }
 
         assertThat(actual).isEqualTo(expectedStates)

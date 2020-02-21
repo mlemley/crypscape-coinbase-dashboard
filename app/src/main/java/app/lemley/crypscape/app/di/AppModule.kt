@@ -1,5 +1,6 @@
 package app.lemley.crypscape.app.di
 
+import app.lemley.crypscape.charting.chartingModule
 import app.lemley.crypscape.client.coinbase.coinbaseApiModule
 import app.lemley.crypscape.extensions.app.sharedPreferences
 import app.lemley.crypscape.persistance.persistenceModule
@@ -9,8 +10,8 @@ import app.lemley.crypscape.ui.main.mainScreenModule
 import app.lemley.crypscape.ui.market.MarketViewModel
 import app.lemley.crypscape.ui.splash.SplashViewModel
 import app.lemley.crypscape.usecase.DelayedCallback
-import app.lemley.crypscape.usecase.SyncProductUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase
+import app.lemley.crypscape.usecase.SyncProductUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.koin.android.ext.koin.androidContext
@@ -27,6 +28,7 @@ val appModule = module {
 
     // Android Services
     single { androidContext().sharedPreferences }
+
 
     // Use Cases
     factory { DelayedCallback() }
@@ -49,6 +51,7 @@ val appModules = listOf(
     persistenceModule,
     repositoryModule,
     coinbaseApiModule,
-    mainScreenModule
+    mainScreenModule,
+    chartingModule
 )
 
