@@ -34,7 +34,12 @@ class MarketViewModel(
 
     override fun MarketState.plus(result: Result): MarketState {
         return when (result) {
-
+            is MarketDataUseCase.MarketResults.MarketConfigurationResult -> copy(
+                marketConfiguration = result.marketConfiguration
+            )
+            is MarketDataUseCase.MarketResults.CandlesForConfigurationResult -> copy(
+                candles = result.candles
+            )
             else -> this
         }
     }
