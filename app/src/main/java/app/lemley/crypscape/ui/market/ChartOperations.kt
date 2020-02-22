@@ -3,6 +3,7 @@ package app.lemley.crypscape.ui.market
 import app.lemley.crypscape.charting.ChartRenderer
 import app.lemley.crypscape.charting.DataSetType
 import app.lemley.crypscape.extensions.app.persistance.toChartEntry
+import app.lemley.crypscape.extensions.app.persistance.visibleXRange
 import app.lemley.crypscape.extensions.configureForCrypScape
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
@@ -38,6 +39,9 @@ sealed class ChartOperations : IChartOperation {
             val combinedData = chartRenderer.buildData()
             chart.data = combinedData
             updateDataSetVisibility(chart)
+            chart.setVisibleXRangeMaximum(chartRenderer.granularity.visibleXRange)
+            chart.isAutoScaleMinMaxEnabled = true
+            chart.xAxis.setAvoidFirstLastClipping(false)
             chart.moveViewToX(combinedData.candleData.dataSets[0].xMax)
             chart.notifyDataSetChanged()
             chart.invalidate()

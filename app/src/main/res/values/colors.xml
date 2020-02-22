@@ -42,8 +42,10 @@
     <color name="dashboard_background">#060e20</color>
     <color name="dashboard_section_background">#172038</color>
 
-    <!-- Chart -->
+    <!-- Chart
     <color name="chart_background">#172038</color>
+    -->
+    <color name="chart_background">#060e20</color>
 
     <!-- CandleStick Chart Config -->
     <color name="candlestick_set_color">#505050</color>
