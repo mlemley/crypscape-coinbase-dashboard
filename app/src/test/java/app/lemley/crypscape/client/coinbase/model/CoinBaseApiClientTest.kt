@@ -30,9 +30,9 @@ class CoinBaseApiClientTest {
     @Test
     fun fetches_ticker_price() = runBlocking {
         enqueueSuccessfulResponse(mockWebServer, 200, TestData.ticker)
-        val product = Product(id = "BTC-USD")
+        val productId = "BTC-USD"
 
-        val ticker = createClient().tickerFor(product)
+        val ticker = createClient().tickerFor(productId)
         val recordedRequest = mockWebServer.takeRequest()
 
         assertThat(recordedRequest.path).isEqualTo("/products/BTC-USD/")

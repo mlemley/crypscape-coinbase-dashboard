@@ -7,7 +7,7 @@ class CoinBaseTickerRepository constructor(
    val coinBaseApiClient: CoinBaseApiClient
 ) {
 
-    suspend fun tickerFor(serverId:String):Ticker? {
-        return null
+    suspend fun tickerFor(productId:String):Ticker? {
+        return coinBaseApiClient.tickerFor(productId)
     }
 }

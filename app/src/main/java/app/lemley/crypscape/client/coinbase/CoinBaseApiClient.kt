@@ -12,9 +12,9 @@ class CoinBaseApiClient(
         errorMessage = "Error fetching time from coinBase"
     )
 
-    suspend fun tickerFor(product: Product): Ticker? = safeApiCall(
-        call = { api.tickerForAsync(product.id).await() },
-        errorMessage = "Error fetching ticker for ${product.id}"
+    suspend fun tickerFor(productId: String): Ticker? = safeApiCall(
+        call = { api.tickerForAsync(productId).await() },
+        errorMessage = "Error fetching ticker for $productId"
     )
 
     suspend fun currencies(): List<Currency>? = safeApiCall(
