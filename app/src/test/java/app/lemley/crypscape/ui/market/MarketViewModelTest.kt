@@ -1,5 +1,6 @@
 package app.lemley.crypscape.ui.market
 
+import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.ui.base.Action
@@ -66,15 +67,18 @@ class MarketViewModelTest {
 
         val marketConfiguration = MarketConfiguration(mockk(), mockk())
         val candles: Flow<List<Candle>> = mockk()
+        val ticker: Ticker = mockk()
 
         val results = listOf(
             MarketDataUseCase.MarketResults.MarketConfigurationResult(marketConfiguration),
-            MarketDataUseCase.MarketResults.CandlesForConfigurationResult(candles)
+            MarketDataUseCase.MarketResults.CandlesForConfigurationResult(candles),
+            MarketDataUseCase.MarketResults.TickerResult(ticker)
         )
 
         val expectedStates: List<MarketState> = listOf(
             initState.copy(marketConfiguration = marketConfiguration),
-            initState.copy(candles = candles)
+            initState.copy(candles = candles),
+            initState.copy(ticker = ticker)
         )
 
         val actual = mutableListOf<MarketState>()

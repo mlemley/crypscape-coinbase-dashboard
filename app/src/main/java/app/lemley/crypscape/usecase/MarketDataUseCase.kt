@@ -38,7 +38,7 @@ class MarketDataUseCase constructor(
     override fun handleAction(action: Action): Flow<Result> {
         return when (action) {
             is MarketActions.FetchMarketDataForDefaultConfiguration -> handleFetchDefaultMarketData()
-            else -> emptyFlow<Result>()
+            else -> emptyFlow()
         }.exhaustive
     }
 
