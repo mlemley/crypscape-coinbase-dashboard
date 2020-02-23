@@ -8,9 +8,13 @@ import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
 import app.lemley.crypscape.persistance.entities.Platform
 import app.lemley.crypscape.persistance.entities.Product
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.newSingleThreadContext
 
 @Dao
+@ExperimentalCoroutinesApi
 abstract class CandleDao : BaseDao<Candle>() {
 
     @Query(
@@ -24,6 +28,20 @@ abstract class CandleDao : BaseDao<Candle>() {
     """
     )
     abstract fun candleBy(platformId: Long, productId: Long, granularity: Long, time: Long): Candle?
+
+    @Query("""
+        SELECT * from candle 
+        where platformId = :platformId 
+            and product_id = :productId 
+            and granularity = :granularity 
+        ORDER BY id ASC 
+        Limit :limit
+    """)
+    abstract fun newestProductGranularity(platformId: Long, productId: Long, granularity: Long, limit:Int): Flow<List<Candle>>
+
+    fun newestProductGranularityDistinctUntilChanged(platformId: Long, productId: Long, granularity: Long, limit:Int = 200): Flow<List<Candle>> {
+        return newestProductGranularity(platformId, productId, granularity, limit).distinctUntilChanged()
+    }
 
     @Query("SELECT * from candle ORDER BY id ASC")
     abstract fun all(): Flow<List<Candle>>

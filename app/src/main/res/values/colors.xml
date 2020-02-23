@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1f2d3d</color>
-    <color name="colorPrimaryDark">#000a12</color>
+    <color name="colorPrimary">#060e20</color>
+    <color name="colorPrimaryDark">#060e20</color>
     <color name="colorAccent">#43a047</color>
+    <color name="colorSurface">#060e20</color>
     <color name="textColorPrimary">#ffffff</color>
 
     <!-- Lights -->
@@ -41,8 +42,10 @@
     <color name="dashboard_background">#060e20</color>
     <color name="dashboard_section_background">#172038</color>
 
-    <!-- Chart -->
+    <!-- Chart
     <color name="chart_background">#172038</color>
+    -->
+    <color name="chart_background">#060e20</color>
 
     <!-- CandleStick Chart Config -->
     <color name="candlestick_set_color">#505050</color>

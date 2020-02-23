@@ -1,7 +1,7 @@
 package app.lemley.crypscape.client.coinbase.model
 
 data class CandleRequest(
-    val product: Product,
+    val productId:String,
     val granularity: Granularity,
     val start: String? = null,
     val end: String? = null

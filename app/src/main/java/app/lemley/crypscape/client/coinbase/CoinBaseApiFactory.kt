@@ -1,6 +1,5 @@
 package app.lemley.crypscape.client.coinbase
 
-import app.lemley.crypscape.client.coinbase.model.CoinBaseApiClient
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

@@ -5,21 +5,20 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import app.lemley.crypscape.MainActivity
 import app.lemley.crypscape.R
 import app.lemley.crypscape.extensions.exhaustive
+import app.lemley.crypscape.ui.main.MainActivity
 import app.lemley.crypscape.ui.splash.SplashViewModel.RequiredActions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import org.koin.android.ext.android.inject
-
+import org.koin.android.viewmodel.ext.android.viewModel
 
 @FlowPreview
 @ExperimentalCoroutinesApi
 class SplashActivity : AppCompatActivity() {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val viewModel: SplashViewModel by inject()
+    val viewModel: SplashViewModel by viewModel()
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val stateObserver = Observer<SplashViewModel.SplashState> { state ->

@@ -16,6 +16,8 @@ fun ZonedDateTime.toIso8601TimeStamp(pattern: String = Iso8601Pattern): String {
     return formatter.format(this)
 }
 
+fun Instant.toEpochMinute(): Long = this.atZone(UTC).toEpochSecond() / 60
+
 fun Instant.utc(): ZonedDateTime = this.atZone(UTC)
 
 fun Instant.local(): ZonedDateTime = this.atZone(ZoneOffset.systemDefault())

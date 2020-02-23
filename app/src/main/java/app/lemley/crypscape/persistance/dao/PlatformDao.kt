@@ -24,6 +24,9 @@ abstract class PlatformDao : BaseDao<Platform>() {
     @Query("SELECT * from platform where name = :name")
     abstract fun byName(name: String): List<Platform>
 
+    @Query("SELECT * from platform where id = :id")
+    abstract fun byPlatformId(id: Long): Platform?
+
     @Query("SELECT * from platform ORDER BY id ASC")
     abstract fun all(): Flow<List<Platform>>
 

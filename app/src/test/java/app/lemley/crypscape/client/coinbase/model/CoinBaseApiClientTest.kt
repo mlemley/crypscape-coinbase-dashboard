@@ -1,5 +1,6 @@
 package app.lemley.crypscape.client.coinbase.model
 
+import app.lemley.crypscape.client.coinbase.CoinBaseApiClient
 import app.lemley.crypscape.client.coinbase.CoinBaseApiFactory
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
@@ -98,9 +99,8 @@ class CoinBaseApiClientTest {
 
     @Test
     fun fetches_candles_for_products() = runBlocking {
-        val product = Product(id = "BTC-USD")
         val candleRequest = CandleRequest(
-            product,
+            productId = "BTC-USD",
             granularity = Granularity.FiveMinutes,
             start = "2018-12-26T12:20:00.000Z",
             end = "2018-12-26T17:20:00.000Z"

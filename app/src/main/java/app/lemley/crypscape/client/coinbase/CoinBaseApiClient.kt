@@ -1,7 +1,7 @@
-package app.lemley.crypscape.client.coinbase.model
+package app.lemley.crypscape.client.coinbase
 
 import app.lemley.crypscape.client.BaseClient
-import app.lemley.crypscape.client.coinbase.CoinBaseApi
+import app.lemley.crypscape.client.coinbase.model.*
 
 class CoinBaseApiClient(
     private val api: CoinBaseApi
@@ -28,7 +28,7 @@ class CoinBaseApiClient(
     )
 
     suspend fun candlesFor(candleRequest: CandleRequest): Array<Array<Double>>? = safeApiCall(
-        call = { api.candlesForAsync(candleRequest.product.id, candleRequest.asMap()).await() },
+        call = { api.candlesForAsync(candleRequest.productId, candleRequest.asMap()).await() },
         errorMessage = "Error fetching products from coinBase"
     )
 }
