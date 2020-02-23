@@ -1,5 +1,6 @@
 package app.lemley.crypscape.usecase
 
+import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
@@ -28,8 +29,8 @@ class MarketDataUseCase constructor(
     sealed class MarketResults : Result {
         data class MarketConfigurationResult(val marketConfiguration: MarketConfiguration) :
             MarketResults()
-
         data class CandlesForConfigurationResult(val candles: Flow<List<Candle>>) : MarketResults()
+        data class TickerResult(val ticker: Ticker) : MarketResults()
     }
 
     override fun canProcess(action: Action): Boolean = action is MarketActions
@@ -44,6 +45,9 @@ class MarketDataUseCase constructor(
     private fun handleFetchDefaultMarketData(): Flow<Result> = channelFlow<Result> {
         val marketConfiguration = defaultMarketDataRepository.loadDefault()
         send(MarketResults.MarketConfigurationResult(marketConfiguration))
+        coinBaseRepository.tickerForConfiguration(marketConfiguration)?.let {
+            send(MarketResults.TickerResult(it))
+        }
         send(MarketResults.CandlesForConfigurationResult(coinBaseRepository.candlesForConfiguration(marketConfiguration)))
     }.flowOn(Dispatchers.IO)
 }

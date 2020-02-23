@@ -1,5 +1,6 @@
 package app.lemley.crypscape.repository
 
+import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,5 +21,9 @@ class CoinBaseRepository(
 
     suspend fun candlesForConfiguration(marketConfiguration: MarketConfiguration): Flow<List<Candle>> {
         return candleRepository.candlesFor(marketConfiguration)
+    }
+
+    suspend fun tickerForConfiguration(marketConfiguration: MarketConfiguration):Ticker? {
+        return null
     }
 }
