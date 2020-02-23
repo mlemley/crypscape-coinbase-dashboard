@@ -1,5 +1,6 @@
 package app.lemley.crypscape.repository
 
+import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
@@ -20,12 +21,14 @@ class CoinBaseRepositoryTest {
     private fun createRepository(
         coinBaseCurrencyRepository: CoinBaseCurrencyRepository = mockk(relaxUnitFun = true),
         coinBaseProductRepository: CoinBaseProductRepository = mockk(relaxUnitFun = true),
-        coinBaseCandleRepository: CoinBaseCandleRepository = mockk(relaxUnitFun = true)
+        coinBaseCandleRepository: CoinBaseCandleRepository = mockk(relaxUnitFun = true),
+        coinBaseTickerRepository: CoinBaseTickerRepository = mockk(relaxUnitFun = true)
 
     ): CoinBaseRepository = CoinBaseRepository(
         currencyRepository = coinBaseCurrencyRepository,
         productRepository = coinBaseProductRepository,
-        candleRepository = coinBaseCandleRepository
+        candleRepository = coinBaseCandleRepository,
+        tickerRepository = coinBaseTickerRepository
     )
 
     @Test
@@ -68,5 +71,34 @@ class CoinBaseRepositoryTest {
         runBlocking {
             assertThat(repository.candlesForConfiguration(configuration)).isEqualTo(candles)
         }
+    }
+
+    @Test
+    fun proxies_ticker_fetch() {
+        val remoteId = "BTC-USD"
+        val product: Product = mockk {
+            every { serverId } returns remoteId
+        }
+
+        val ticker: Ticker = mockk(relaxUnitFun = true)
+
+        val coinBaseTickerRepository: CoinBaseTickerRepository = mockk {
+            every { runBlocking { tickerFor(remoteId) } } returns ticker
+        }
+
+        val repository = createRepository(coinBaseTickerRepository = coinBaseTickerRepository)
+
+
+        var actual: Ticker? = null
+        runBlocking {
+            actual = repository.tickerForConfiguration(
+                MarketConfiguration(
+                    product,
+                    Granularity.FifteenMinutes
+                )
+            )
+        }
+
+        assertThat(actual).isEqualTo(ticker)
     }
 }

@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.Flow
 class CoinBaseRepository(
     val currencyRepository: CoinBaseCurrencyRepository,
     val productRepository: CoinBaseProductRepository,
-    val candleRepository: CoinBaseCandleRepository
+    val candleRepository: CoinBaseCandleRepository,
+    val tickerRepository: CoinBaseTickerRepository
 ) {
 
     suspend fun syncProducts() {
@@ -24,6 +25,6 @@ class CoinBaseRepository(
     }
 
     suspend fun tickerForConfiguration(marketConfiguration: MarketConfiguration):Ticker? {
-        return null
+        return tickerRepository.tickerFor(marketConfiguration.product.serverId)
     }
 }
