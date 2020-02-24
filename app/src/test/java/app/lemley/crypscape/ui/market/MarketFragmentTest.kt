@@ -4,6 +4,7 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.lifecycle.LiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.lemley.crypscape.app.Helpers.loadModules
+import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
@@ -122,5 +123,15 @@ class MarketFragmentTest {
         }
 
         confirmVerified(marketChartingManager)
+    }
+
+    @Test
+    fun on_state_change__renders_ticker() {
+        val  ticker = Ticker(price = 10000.00)
+        createFragmentScenario().onFragment { fragment ->
+            fragment.stateObserver.onChanged(MarketState(ticker = ticker))
+
+            assertThat(fragment.currency_value.text).isEqualTo("$10,000.00")
+        }
     }
 }

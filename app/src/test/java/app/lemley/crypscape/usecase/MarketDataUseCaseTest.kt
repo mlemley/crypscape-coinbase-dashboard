@@ -1,5 +1,6 @@
 package app.lemley.crypscape.usecase
 
+import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.repository.CoinBaseRepository
@@ -42,8 +43,10 @@ class MarketDataUseCaseTest {
         }
 
         val candles = flowOf<List<Candle>>(mockk(), mockk())
+        val ticker:Ticker = Ticker()
         val coinBaseRepository: CoinBaseRepository = mockk {
             every { runBlocking { candlesForConfiguration(marketConfiguration) } } returns candles
+            every { runBlocking { tickerForConfiguration(marketConfiguration) } } returns ticker
         }
         val useCase = createUseCase(defaultMarketDataRepository, coinBaseRepository)
 
@@ -56,6 +59,7 @@ class MarketDataUseCaseTest {
         assertThat(results).isEqualTo(
             listOf(
                 MarketResults.MarketConfigurationResult(marketConfiguration),
+                MarketResults.TickerResult(ticker),
                 MarketResults.CandlesForConfigurationResult(candles)
             )
         )

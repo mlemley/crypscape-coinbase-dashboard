@@ -40,6 +40,9 @@ class MarketViewModel(
             is MarketDataUseCase.MarketResults.CandlesForConfigurationResult -> copy(
                 candles = result.candles
             )
+            is MarketDataUseCase.MarketResults.TickerResult -> copy(
+                ticker = result.ticker
+            )
             else -> this
         }
     }
