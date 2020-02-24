@@ -1,7 +1,6 @@
 package app.lemley.crypscape.repository
 
 import android.content.SharedPreferences
-import android.provider.SyncStateContract.Helpers.update
 import androidx.annotation.VisibleForTesting
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.dao.PlatformDao
@@ -35,7 +34,7 @@ class DefaultMarketDataRepository constructor(
         }
     }
 
-    fun changeGranularity(granularity: Granularity):MarketConfiguration {
+    fun changeGranularity(granularity: Granularity): MarketConfiguration {
         return loadDefault().copy(granularity = granularity).also {
             update(it)
         }

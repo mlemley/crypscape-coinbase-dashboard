@@ -43,10 +43,8 @@ class MarketDataUseCaseTest {
             every { runBlocking { loadDefault() } } returns marketConfiguration
         }
 
-        val candles = flowOf<List<Candle>>(mockk(), mockk())
         val ticker:Ticker = Ticker()
         val coinBaseRepository: CoinBaseRepository = mockk {
-            every { runBlocking { candlesForConfiguration(marketConfiguration) } } returns candles
             every { runBlocking { tickerForConfiguration(marketConfiguration) } } returns ticker
         }
         val useCase = createUseCase(defaultMarketDataRepository, coinBaseRepository)
@@ -60,8 +58,7 @@ class MarketDataUseCaseTest {
         assertThat(results).isEqualTo(
             listOf(
                 MarketResults.MarketConfigurationResult(marketConfiguration),
-                MarketResults.TickerResult(ticker),
-                MarketResults.CandlesForConfigurationResult(candles)
+                MarketResults.TickerResult(ticker)
             )
         )
     }
@@ -74,10 +71,8 @@ class MarketDataUseCaseTest {
             every { runBlocking { changeGranularity(granularity) } } returns marketConfiguration
         }
 
-        val candles = flowOf<List<Candle>>(mockk(), mockk())
         val ticker:Ticker = Ticker()
         val coinBaseRepository: CoinBaseRepository = mockk {
-            every { runBlocking { candlesForConfiguration(marketConfiguration) } } returns candles
             every { runBlocking { tickerForConfiguration(marketConfiguration) } } returns ticker
         }
         val useCase = createUseCase(defaultMarketDataRepository, coinBaseRepository)
@@ -91,8 +86,7 @@ class MarketDataUseCaseTest {
         assertThat(results).isEqualTo(
             listOf(
                 MarketResults.MarketConfigurationResult(marketConfiguration),
-                MarketResults.TickerResult(ticker),
-                MarketResults.CandlesForConfigurationResult(candles)
+                MarketResults.TickerResult(ticker)
             )
         )
     }

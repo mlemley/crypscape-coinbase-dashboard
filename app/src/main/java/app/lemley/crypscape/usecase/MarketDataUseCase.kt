@@ -52,13 +52,6 @@ class MarketDataUseCase constructor(
         coinBaseRepository.tickerForConfiguration(marketConfiguration)?.let {
             send(MarketResults.TickerResult(it))
         }
-        send(
-            MarketResults.CandlesForConfigurationResult(
-                coinBaseRepository.candlesForConfiguration(
-                    marketConfiguration
-                )
-            )
-        )
     }.flowOn(Dispatchers.IO)
 
     private fun handleFetchDefaultMarketData(): Flow<Result> = channelFlow<Result> {
@@ -67,12 +60,5 @@ class MarketDataUseCase constructor(
         coinBaseRepository.tickerForConfiguration(marketConfiguration)?.let {
             send(MarketResults.TickerResult(it))
         }
-        send(
-            MarketResults.CandlesForConfigurationResult(
-                coinBaseRepository.candlesForConfiguration(
-                    marketConfiguration
-                )
-            )
-        )
     }.flowOn(Dispatchers.IO)
 }

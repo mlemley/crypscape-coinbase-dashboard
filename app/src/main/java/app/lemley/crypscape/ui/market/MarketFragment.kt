@@ -6,11 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.whenResumed
+import androidx.lifecycle.whenStarted
 import app.lemley.crypscape.R
 import app.lemley.crypscape.client.coinbase.model.Ticker
-import app.lemley.crypscape.extensions.app.withView
 import app.lemley.crypscape.extensions.app.persistance.baseCurrencyLabel
+import app.lemley.crypscape.extensions.app.withView
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.model.currency.toUsd
 import app.lemley.crypscape.persistance.entities.Candle
@@ -63,6 +66,7 @@ class MarketFragment : Fragment() {
                 chart = withView(R.id.chart)
                 currencyValue = withView(R.id.currency_value)
                 granularity = withView(R.id.granularity)
+                marketViewModel.candles.observe(viewLifecycleOwner, candleObserver)
                 marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
                 marketViewModel.dispatchEvent(MarketEvents.Init)
             }
@@ -73,14 +77,22 @@ class MarketFragment : Fragment() {
     }
 
     val candleObserver: Observer<List<Candle>> = Observer { candles ->
-        chartingManager.performChartingOperation(chart, ChartOperations.RenderCandles(candles))
+        with(chart) {
+            chartingManager.performChartingOperation(this, ChartOperations.Clear)
+            if (candles.isNotEmpty()) {
+                chartingManager.performChartingOperation(
+                    this,
+                    ChartOperations.ConfigureFor(candles.first().granularity)
+                )
+            }
+            chartingManager.performChartingOperation(this, ChartOperations.RenderCandles(candles))
+        }
     }
 
     val stateObserver: Observer<MarketState> = Observer { state ->
         lifecycleScope.launchWhenResumed {
             with(state) {
                 marketConfiguration?.let { updateMarketConfiguration(it) }
-                candles?.asLiveData()?.observe(viewLifecycleOwner, candleObserver)
                 ticker?.let { updateWithTicker(it) }
             }
         }
@@ -95,10 +107,6 @@ class MarketFragment : Fragment() {
 
     private fun updateMarketConfiguration(marketConfiguration: MarketConfiguration) {
         withView<TextView>(R.id.currency_name)?.text = marketConfiguration.product.baseCurrencyLabel
-        chartingManager.performChartingOperation(
-            chart,
-            ChartOperations.ConfigureFor(marketConfiguration.granularity)
-        )
     }
 
     private fun updateWithTicker(ticker: Ticker) {

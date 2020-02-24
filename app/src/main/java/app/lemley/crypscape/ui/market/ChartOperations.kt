@@ -17,6 +17,15 @@ interface IChartOperation {
 private const val candleSetLabel = "candles"
 
 sealed class ChartOperations : IChartOperation {
+    object Clear: ChartOperations() {
+        override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
+            chart.data = null
+            chartRenderer.combinedData.clearValues()
+            chart.notifyDataSetChanged()
+            chart.invalidate()
+        }
+
+    }
     data class ConfigureFor(val granularity: Granularity) : ChartOperations() {
         override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
             chartRenderer.granularity = granularity
