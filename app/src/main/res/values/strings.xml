@@ -12,4 +12,12 @@
 
     <!-- Market Fragment -->
     <string name="market_title">Market</string>
+
+    <!-- Market Fragment - Granularities-->
+    <string name="_5m">5m</string>
+    <string name="_15m">15m</string>
+    <string name="_1h">1h</string>
+    <string name="_6h">6h</string>
+    <string name="_1m">1m</string>
+    <string name="_1d">1d</string>
 </resources>

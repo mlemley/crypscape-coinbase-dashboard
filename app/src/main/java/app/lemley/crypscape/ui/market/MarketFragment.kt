@@ -14,7 +14,9 @@ import app.lemley.crypscape.extensions.app.persistance.baseCurrencyLabel
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.model.currency.toUsd
 import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.persistance.entities.Granularity
 import com.github.mikephil.charting.charts.CombinedChart
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
@@ -26,19 +28,46 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class MarketFragment : Fragment() {
 
     private var chart: CombinedChart? = null
+    private var granularity: TabLayout? = null
     private var currencyValue: TextView? = null
     private val marketViewModel: MarketViewModel by viewModel()
     private val chartingManager: MarketChartingManager by inject()
+
+    private val granularitySelectedListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabReselected(tab: TabLayout.Tab?) {}
+
+        override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+        override fun onTabSelected(tab: TabLayout.Tab?) {
+            tab?.let {
+                val granularity = when (it.position) {
+                    0 -> Granularity.Minute
+                    1 -> Granularity.FiveMinutes
+                    2 -> Granularity.FifteenMinutes
+                    3 -> Granularity.Hour
+                    4 -> Granularity.SixHours
+                    5 -> Granularity.Day
+                    else -> null
+                }
+
+                granularity?.let {
+                    marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(it))
+                }
+            }
+        }
+    }
 
     init {
         lifecycleScope.launch {
             whenStarted {
                 chart = withView(R.id.chart)
                 currencyValue = withView(R.id.currency_value)
+                granularity = withView(R.id.granularity)
                 marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
                 marketViewModel.dispatchEvent(MarketEvents.Init)
             }
             whenResumed {
+                granularity?.addOnTabSelectedListener(granularitySelectedListener)
             }
         }
     }

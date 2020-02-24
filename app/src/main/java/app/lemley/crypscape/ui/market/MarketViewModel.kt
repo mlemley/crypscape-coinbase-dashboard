@@ -28,6 +28,7 @@ class MarketViewModel(
         collect {
             when (it) {
                 MarketEvents.Init -> emit(MarketActions.FetchMarketDataForDefaultConfiguration)
+                is MarketEvents.GranularitySelected -> TODO()
             }.exhaustive
         }
     }

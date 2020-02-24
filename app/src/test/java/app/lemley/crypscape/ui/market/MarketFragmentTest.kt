@@ -134,4 +134,35 @@ class MarketFragmentTest {
             assertThat(fragment.currency_value.text).isEqualTo("$10,000.00")
         }
     }
+
+    @Test
+    fun changes_granularity_when_selection_changes() {
+        val liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true)
+        val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
+            every { state } returns liveDataState
+        }
+
+        excludeRecords {
+            marketViewModel.state
+            marketViewModel.dispatchEvent(MarketEvents.Init)
+        }
+        createFragmentScenario(marketViewModel = marketViewModel).onFragment { fragment ->
+            fragment.granularity.getTabAt(1)?.select()
+            fragment.granularity.getTabAt(2)?.select()
+            fragment.granularity.getTabAt(3)?.select()
+            fragment.granularity.getTabAt(4)?.select()
+            fragment.granularity.getTabAt(5)?.select()
+            fragment.granularity.getTabAt(0)?.select()
+
+        }
+
+        verifyOrder {
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.FiveMinutes))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.FifteenMinutes))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.Hour))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.SixHours))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.Day))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.Minute))
+        }
+    }
 }

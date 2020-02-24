@@ -104,4 +104,13 @@
         <item name="android:paddingEnd">0dp</item>
     </style>
 
+    <style name="CrypScape.Market.Granularity" parent="Widget.MaterialComponents.TabLayout">
+        <item name="enforceMaterialTheme">true</item>
+        <item name="enforceTextAppearance">true</item>
+        <item name="tabIconTint">@color/mtrl_tabs_icon_color_selector</item>
+        <item name="tabIndicatorColor">@color/white</item>
+        <item name="tabTextColor">@color/tabs_icon_color_selector</item>
+        <item name="tabRippleColor">@color/bluishGray</item>
+        <item name="tabUnboundedRipple">true</item>
+    </style>
 </resources>
