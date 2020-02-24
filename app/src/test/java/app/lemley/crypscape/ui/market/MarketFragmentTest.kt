@@ -42,16 +42,20 @@ class MarketFragmentTest {
     @Test
     fun observes_state__broadcasts_init_event() {
         val liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true)
+        val candleLiveData: LiveData<List<Candle>> = mockk(relaxUnitFun = true)
         val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
+            every { candles } returns candleLiveData
         }
 
         excludeRecords {
             marketViewModel.state
+            marketViewModel.candles
         }
 
         createFragmentScenario(marketViewModel = marketViewModel).onFragment { fragment ->
             verifyOrder {
+                candleLiveData.observe(fragment.viewLifecycleOwner, fragment.candleObserver)
                 liveDataState.observe(fragment.viewLifecycleOwner, fragment.stateObserver)
                 marketViewModel.dispatchEvent(MarketEvents.Init)
             }
@@ -81,40 +85,23 @@ class MarketFragmentTest {
     }
 
     @Test
-    fun on_state_change__configures_charts_granularity() {
-        val product: Product = mockk(relaxed = true) {
-            every { serverId } returns "BTC-USD"
-        }
-        val marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
-        createFragmentScenario(marketChartingManager = marketChartingManager).onFragment { fragment ->
-            fragment.stateObserver.onChanged(
-                MarketState(
-                    MarketConfiguration(
-                        product = product,
-                        granularity = Granularity.Hour
-                    )
-                )
-            )
-
-            verify {
-                marketChartingManager.performChartingOperation(
-                    fragment.chart,
-                    ChartOperations.ConfigureFor(Granularity.Hour)
-                )
-            }
-        }
-
-        confirmVerified(marketChartingManager)
-    }
-
-    @Test
     fun on_state_change__renders_candles() {
-        val candles = emptyList<Candle>()
+        val candles = listOf<Candle>(mockk {
+            every {  granularity } returns Granularity.Hour
+        })
         val marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
         createFragmentScenario(marketChartingManager = marketChartingManager).onFragment { fragment ->
             fragment.candleObserver.onChanged(candles)
 
-            verify {
+            verifyOrder {
+                marketChartingManager.performChartingOperation(
+                    fragment.chart,
+                    ChartOperations.Clear
+                )
+                marketChartingManager.performChartingOperation(
+                    fragment.chart,
+                    ChartOperations.ConfigureFor(Granularity.Hour)
+                )
                 marketChartingManager.performChartingOperation(
                     fragment.chart,
                     ChartOperations.RenderCandles(candles)
@@ -140,6 +127,7 @@ class MarketFragmentTest {
         val liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true)
         val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
+            every { candles } returns mockk(relaxUnitFun = true)
         }
 
         excludeRecords {
