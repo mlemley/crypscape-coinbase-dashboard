@@ -3,6 +3,7 @@ package app.lemley.crypscape.ui.market
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.persistance.entities.Granularity
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
@@ -43,11 +44,13 @@ class MarketViewModelTest {
         val viewModel = createViewModel()
 
         val events = flowOf(
-            MarketEvents.Init
+            MarketEvents.Init,
+            MarketEvents.GranularitySelected(Granularity.Minute)
         )
 
         val expectedActions = listOf(
-            MarketActions.FetchMarketDataForDefaultConfiguration
+            MarketActions.FetchMarketDataForDefaultConfiguration,
+            MarketActions.OnGranularityChanged(Granularity.Minute)
         )
 
         val actual = mutableListOf<Action>()

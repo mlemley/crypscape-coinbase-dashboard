@@ -1,6 +1,7 @@
 package app.lemley.crypscape.repository
 
 import android.content.SharedPreferences
+import android.provider.SyncStateContract.Helpers.update
 import androidx.annotation.VisibleForTesting
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.dao.PlatformDao
@@ -29,11 +30,21 @@ class DefaultMarketDataRepository constructor(
             )
         } else {
             createDefault().also {
-                sharedPreferences.edit().putString(it.toJson(), null).apply()
+                update(it)
             }
         }
     }
 
+    fun changeGranularity(granularity: Granularity):MarketConfiguration {
+        return loadDefault().copy(granularity = granularity).also {
+            update(it)
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun update(marketConfiguration: MarketConfiguration) {
+        sharedPreferences.edit().putString(marketConfiguration.toJson(), null).apply()
+    }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun createDefault(): MarketConfiguration {
