@@ -8,9 +8,11 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import app.lemley.crypscape.R
+import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.extensions.app.withView
 import app.lemley.crypscape.extensions.app.persistance.baseCurrencyLabel
 import app.lemley.crypscape.model.MarketConfiguration
+import app.lemley.crypscape.model.currency.toUsd
 import app.lemley.crypscape.persistance.entities.Candle
 import com.github.mikephil.charting.charts.CombinedChart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +26,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class MarketFragment : Fragment() {
 
     private var chart: CombinedChart? = null
+    private var currencyValue: TextView? = null
     private val marketViewModel: MarketViewModel by viewModel()
     private val chartingManager: MarketChartingManager by inject()
 
@@ -31,6 +34,7 @@ class MarketFragment : Fragment() {
         lifecycleScope.launch {
             whenStarted {
                 chart = withView(R.id.chart)
+                currencyValue = withView(R.id.currency_value)
                 marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
                 marketViewModel.dispatchEvent(MarketEvents.Init)
             }
@@ -48,6 +52,7 @@ class MarketFragment : Fragment() {
             with(state) {
                 marketConfiguration?.let { updateMarketConfiguration(it) }
                 candles?.asLiveData()?.observe(viewLifecycleOwner, candleObserver)
+                ticker?.let { updateWithTicker(it) }
             }
         }
     }
@@ -65,5 +70,9 @@ class MarketFragment : Fragment() {
             chart,
             ChartOperations.ConfigureFor(marketConfiguration.granularity)
         )
+    }
+
+    private fun updateWithTicker(ticker: Ticker) {
+        currencyValue?.text = ticker.price.toUsd().toFormattedCurrency()
     }
 }

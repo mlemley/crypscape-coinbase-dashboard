@@ -35,7 +35,7 @@ class CoinBaseApiClientTest {
         val ticker = createClient().tickerFor(productId)
         val recordedRequest = mockWebServer.takeRequest()
 
-        assertThat(recordedRequest.path).isEqualTo("/products/BTC-USD/")
+        assertThat(recordedRequest.path).isEqualTo("/products/BTC-USD/ticker")
         assertThat(ticker).isEqualTo(
             Ticker(
                 tradeId = 4729088,

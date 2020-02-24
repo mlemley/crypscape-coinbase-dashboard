@@ -20,7 +20,7 @@ interface CoinBaseApi {
     @GET("/currencies/")
     fun currenciesAsync(): Deferred<Response<List<Currency>>>
 
-    @GET("/products/{remote_id}/")
+    @GET("/products/{remote_id}/ticker")
     fun tickerForAsync(
         @Path("remote_id") remoteId: String
     ): Deferred<Response<Ticker>>
