@@ -28,6 +28,7 @@ class MarketFragmentTest {
         liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true),
         marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
+            every { candles } returns mockk(relaxUnitFun = true)
         },
         marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
     ): FragmentScenario<MarketFragment> {
@@ -119,6 +120,20 @@ class MarketFragmentTest {
             fragment.stateObserver.onChanged(MarketState(ticker = ticker))
 
             assertThat(fragment.currency_value.text).isEqualTo("$10,000.00")
+        }
+    }
+
+    @Test
+    fun selects_tab_when_initially_loaded() {
+        createFragmentScenario().onFragment { fragment ->
+            fragment.stateObserver.onChanged(MarketState(marketConfiguration = mockk{
+                every { granularity } returns Granularity.Hour
+                every { product } returns mockk {
+                    every { serverId } returns "BTC-USD"
+                }
+            }))
+
+            assertThat(fragment.granularity?.selectedTabPosition).isEqualTo(3)
         }
     }
 

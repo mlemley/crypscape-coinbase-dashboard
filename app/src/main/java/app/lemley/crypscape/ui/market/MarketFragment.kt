@@ -14,6 +14,7 @@ import app.lemley.crypscape.R
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.extensions.app.persistance.baseCurrencyLabel
 import app.lemley.crypscape.extensions.app.withView
+import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.model.currency.toUsd
 import app.lemley.crypscape.persistance.entities.Candle
@@ -107,7 +108,17 @@ class MarketFragment : Fragment() {
 
     private fun updateMarketConfiguration(marketConfiguration: MarketConfiguration) {
         withView<TextView>(R.id.currency_name)?.text = marketConfiguration.product.baseCurrencyLabel
+        when (marketConfiguration.granularity) {
+            Granularity.Minute -> selectTabAt(0)
+            Granularity.FiveMinutes -> selectTabAt(1)
+            Granularity.FifteenMinutes -> selectTabAt(2)
+            Granularity.Hour -> selectTabAt(3)
+            Granularity.SixHours -> selectTabAt(4)
+            Granularity.Day -> selectTabAt(5)
+        }.exhaustive
     }
+
+    private fun selectTabAt(position: Int) = granularity?.getTabAt(position)?.select()
 
     private fun updateWithTicker(ticker: Ticker) {
         currencyValue?.text = ticker.price.toUsd().toFormattedCurrency()
