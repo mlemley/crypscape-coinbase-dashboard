@@ -74,4 +74,20 @@ class CandleRequestTest {
             )
         )
     }
+
+    @Test
+    fun populates__end__start__with_current_time_minus__300_candles_minute() {
+
+        val granularity = Granularity.FiveMinutes
+        assertThat(
+            CandleRequest(
+                productId = "BTC-USD",
+                granularity = Granularity.FiveMinutes
+            ).asMap()
+        ).isEqualTo(
+            mapOf(
+                Pair("granularity", granularity.seconds.toString())
+            )
+        )
+    }
 }

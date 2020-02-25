@@ -32,7 +32,6 @@ class MarketDataUseCase constructor(
         data class MarketConfigurationResult(val marketConfiguration: MarketConfiguration) :
             MarketResults()
 
-        data class CandlesForConfigurationResult(val candles: Flow<List<Candle>>) : MarketResults()
         data class TickerResult(val ticker: Ticker) : MarketResults()
     }
 
