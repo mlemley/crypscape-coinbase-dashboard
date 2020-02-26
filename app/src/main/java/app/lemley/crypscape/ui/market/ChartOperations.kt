@@ -14,18 +14,19 @@ interface IChartOperation {
     fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer)
 }
 
-private const val candleSetLabel = "candles"
+const val candleSetLabel = "candles"
 
 sealed class ChartOperations : IChartOperation {
-    object Clear: ChartOperations() {
+    object Clear : ChartOperations() {
         override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
             chart.data = null
-            chartRenderer.combinedData.clearValues()
+            chartRenderer.clearAllData()
             chart.notifyDataSetChanged()
             chart.invalidate()
         }
 
     }
+
     data class ConfigureFor(val granularity: Granularity) : ChartOperations() {
         override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
             chartRenderer.granularity = granularity
@@ -38,11 +39,10 @@ sealed class ChartOperations : IChartOperation {
 
     data class RenderCandles(val candles: List<Candle>) : IChartOperation {
         override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
-            candles.reversed()
             candles.forEach { candle ->
                 chartRenderer.plotEntry(
                     candleSetLabel,
-                    candle.toChartEntry(chartRenderer.granularity)
+                    candle.toChartEntry()
                 )
             }
             val combinedData = chartRenderer.buildData()
@@ -50,22 +50,22 @@ sealed class ChartOperations : IChartOperation {
             updateDataSetVisibility(chart)
             chart.setVisibleXRangeMaximum(chartRenderer.granularity.visibleXRange)
             chart.isAutoScaleMinMaxEnabled = true
-            chart.xAxis.setAvoidFirstLastClipping(false)
+            chart.xAxis.setAvoidFirstLastClipping(true)
             chart.moveViewToX(combinedData.candleData.dataSets[0].xMax)
             chart.notifyDataSetChanged()
             chart.invalidate()
         }
 
         private fun updateDataSetVisibility(chart: CombinedChart) {
-            chart.data.candleData?.dataSets?.forEach { dataSet ->
+            chart.data?.candleData?.dataSets?.forEach { dataSet ->
                 dataSet.isVisible = dataSet.entryCount != 0
             }
 
-            chart.data.lineData?.dataSets?.forEach { dataSet ->
+            chart.data?.lineData?.dataSets?.forEach { dataSet ->
                 dataSet.isVisible = dataSet.entryCount != 0
             }
 
-            chart.data.scatterData?.dataSets?.forEach { dataSet ->
+            chart.data?.scatterData?.dataSets?.forEach { dataSet ->
                 dataSet.isVisible = dataSet.entryCount != 0
             }
         }

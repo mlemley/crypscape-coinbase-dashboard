@@ -1,5 +1,6 @@
 package app.lemley.crypscape.charting
 
+import androidx.annotation.VisibleForTesting
 import app.lemley.crypscape.persistance.entities.Granularity
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.interfaces.datasets.IDataSet
@@ -7,12 +8,15 @@ import com.github.mikephil.charting.interfaces.datasets.IDataSet
 class ChartRenderer {
 
     var granularity: Granularity = Granularity.Hour
-    val combinedData = CombinedData()
+    private val combinedData = CombinedData()
 
     private val setMap: MutableMap<String, DataSetType> = mutableMapOf()
-    private val candleData = CandleData()
-    private val lineData = LineData()
-    private val scatterData = ScatterData()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val candleData = CandleData()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val lineData = LineData()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val scatterData = ScatterData()
 
 
     //ChartRendering
@@ -49,10 +53,12 @@ class ChartRenderer {
             }
             set.addEntry(entry)
 
-            if (set is LineDataSet) {
-                set.values.sortBy { it.x }
-            } else if (set is CandleDataSet) {
-                set.values.sortBy { it.x }
+            when (set) {
+                is CandleDataSet -> set.values.sortBy { it.x }
+                is LineDataSet -> set.values.sortBy { it.x }
+                is BarDataSet -> set.values.sortBy { it.x }
+                else -> {
+                }
             }
         }
     }
@@ -68,6 +74,10 @@ class ChartRenderer {
                 scatterData.getDataSetByLabel(label, false)
             else -> null
         }
+    }
+
+    fun clearAllData() {
+
     }
 
     fun buildData(): CombinedData {
