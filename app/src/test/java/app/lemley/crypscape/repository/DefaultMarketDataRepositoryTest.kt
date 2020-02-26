@@ -50,7 +50,8 @@ class DefaultMarketDataRepositoryTest {
         runBlocking {
             assertThat(repository.createDefault()).isEqualTo(
                 MarketConfiguration(
-                    defaultProduct,
+                    1L,
+                    "BTC-USD",
                     Granularity.Hour
                 )
             )
@@ -67,7 +68,7 @@ class DefaultMarketDataRepositoryTest {
             quoteCurrency = 3,
             baseCurrency = 4
         )
-        val marketConfiguration = MarketConfiguration(product, Granularity.Hour)
+        val marketConfiguration = MarketConfiguration(1L, "BTC-USD", Granularity.Hour)
 
         val platformDao: PlatformDao = mockk {
             every { coinbasePro } returns platform
@@ -106,18 +107,10 @@ class DefaultMarketDataRepositoryTest {
 
     @Test
     fun loads_default___returns_default_from_shared_preferences() {
-        val product = Product(
-            platformId = 1,
-            id = 2,
-            serverId = "BTC-USD",
-            quoteCurrency = 3,
-            baseCurrency = 4
-        )
-
         val serializedData = """
-           {"product":{"id":2,"platformId":1,"baseCurrency":4,"quoteCurrency":3,"serverId":"BTC-USD","baseMinSize":0.0,"baseMaxSize":0.0,"quoteIncrement":0.0},"granularity":"Hour"}
+           {"platformId":1, "productRemoteId":"BTC-USD", "granularity":"Hour"}
         """.trimIndent()
-        val marketConfiguration = MarketConfiguration(product, Granularity.Hour)
+        val marketConfiguration = MarketConfiguration(1L, "BTC-USD", Granularity.Hour)
         val sharedPreferences: SharedPreferences = mockk {
             every {
                 runBlocking {
@@ -140,22 +133,19 @@ class DefaultMarketDataRepositoryTest {
     @Test
     fun changes_default_with_new_granularity() {
         val granularity = Granularity.Minute
-        val product = Product(
-            platformId = 1,
-            id = 2,
-            serverId = "BTC-USD",
-            quoteCurrency = 3,
-            baseCurrency = 4
-        )
-
         val serializedData = """
-           {"product":{"id":2,"platformId":1,"baseCurrency":4,"quoteCurrency":3,"serverId":"BTC-USD","baseMinSize":0.0,"baseMaxSize":0.0,"quoteIncrement":0.0},"granularity":"Hour"}
+           {"platformId":1, "productRemoteId":"BTC-USD", "granularity":"Hour"}
         """.trimIndent()
-        val marketConfiguration = MarketConfiguration(product, Granularity.Hour)
+        val marketConfiguration = MarketConfiguration(1L, "BTC-USD", Granularity.Hour)
 
         val editor: SharedPreferences.Editor = mockk(relaxUnitFun = true) {
             every { putString(marketConfiguration.toJson(), null) } returns this
-            every { putString(marketConfiguration.copy(granularity = granularity).toJson(), null) } returns this
+            every {
+                putString(
+                    marketConfiguration.copy(granularity = granularity).toJson(),
+                    null
+                )
+            } returns this
         }
 
         val sharedPreferences: SharedPreferences = mockk {
@@ -173,7 +163,11 @@ class DefaultMarketDataRepositoryTest {
 
         val repository = createRepository(sharedPreferences = sharedPreferences)
 
-        assertThat(repository.changeGranularity(granularity)).isEqualTo(marketConfiguration.copy(granularity = granularity))
+        assertThat(repository.changeGranularity(granularity)).isEqualTo(
+            marketConfiguration.copy(
+                granularity = granularity
+            )
+        )
 
         verifyOrder {
             editor.putString(marketConfiguration.copy(granularity = granularity).toJson(), null)

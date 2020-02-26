@@ -51,7 +51,7 @@ class DefaultMarketDataRepository constructor(
             platformDao.coinbasePro ?: throw IllegalStateException("Platform can not be null")
         val product = productDao.byServerId(platform.id, defaultProductId)
             ?: throw IllegalStateException("Product with server id $defaultProductId must be stored")
-        return MarketConfiguration(product, Granularity.Hour)
+        return MarketConfiguration(platformId = platform.id, productRemoteId = product.serverId, granularity = Granularity.Hour)
     }
 
 }

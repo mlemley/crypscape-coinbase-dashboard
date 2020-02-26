@@ -12,7 +12,6 @@ import androidx.lifecycle.whenResumed
 import androidx.lifecycle.whenStarted
 import app.lemley.crypscape.R
 import app.lemley.crypscape.client.coinbase.model.Ticker
-import app.lemley.crypscape.extensions.app.persistance.baseCurrencyLabel
 import app.lemley.crypscape.extensions.app.withView
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
@@ -107,7 +106,8 @@ class MarketFragment : Fragment() {
 
 
     private fun updateMarketConfiguration(marketConfiguration: MarketConfiguration) {
-        withView<TextView>(R.id.currency_name)?.text = marketConfiguration.product.baseCurrencyLabel
+        withView<TextView>(R.id.currency_name)?.text =
+            marketConfiguration.productRemoteId.split("-")[0]
         when (marketConfiguration.granularity) {
             Granularity.Minute -> selectTabAt(0)
             Granularity.FiveMinutes -> selectTabAt(1)

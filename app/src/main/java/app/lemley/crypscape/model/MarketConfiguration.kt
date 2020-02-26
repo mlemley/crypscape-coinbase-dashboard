@@ -1,15 +1,13 @@
 package app.lemley.crypscape.model
 
 import app.lemley.crypscape.persistance.entities.Granularity
-import app.lemley.crypscape.persistance.entities.Product
 import com.google.gson.Gson
 
 data class MarketConfiguration(
-    val product: Product,
+    val platformId: Long,
+    val productRemoteId: String,
     val granularity: Granularity
 ) {
-
-    val remoteProductId:String get() = product.serverId
 
     companion object {
         fun fromJson(json: String): MarketConfiguration {

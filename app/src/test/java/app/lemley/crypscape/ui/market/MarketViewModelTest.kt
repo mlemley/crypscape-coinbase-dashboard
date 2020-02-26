@@ -73,7 +73,10 @@ class MarketViewModelTest {
         val viewModel = createViewModel()
         val initState = viewModel.makeInitState()
 
-        val marketConfiguration = MarketConfiguration(mockk(), mockk())
+        val marketConfiguration = MarketConfiguration(1L,
+            "BTC-USD",
+            Granularity.Hour
+        )
         val ticker: Ticker = mockk()
 
         val results = listOf(

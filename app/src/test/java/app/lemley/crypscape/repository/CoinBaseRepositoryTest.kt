@@ -53,15 +53,8 @@ class CoinBaseRepositoryTest {
 
     @Test
     fun fetch_candles_for_market_configuration() {
-        val product = Product(
-            platformId = 1,
-            id = 2,
-            serverId = "BTC-USD",
-            quoteCurrency = 3,
-            baseCurrency = 4
-        )
         val granularity = Granularity.Hour
-        val configuration = MarketConfiguration(product, granularity)
+        val configuration = MarketConfiguration(platformId = 1, productRemoteId = "BTC-USD", granularity = granularity)
         val candles = flowOf<List<Candle>>(mockk(), mockk())
         val candleRepository: CoinBaseCandleRepository = mockk {
             every { runBlocking { candlesFor(configuration) } } returns candles
@@ -76,9 +69,7 @@ class CoinBaseRepositoryTest {
     @Test
     fun proxies_ticker_fetch() {
         val remoteId = "BTC-USD"
-        val product: Product = mockk {
-            every { serverId } returns remoteId
-        }
+        val platformId:Long = 1
 
         val ticker: Ticker = mockk(relaxUnitFun = true)
 
@@ -93,7 +84,8 @@ class CoinBaseRepositoryTest {
         runBlocking {
             actual = repository.tickerForConfiguration(
                 MarketConfiguration(
-                    product,
+                    platformId,
+                    remoteId,
                     Granularity.FifteenMinutes
                 )
             )

@@ -68,14 +68,12 @@ class MarketFragmentTest {
 
     @Test
     fun on_state_change__sets_currency_name() {
-        val product: Product = mockk(relaxed = true) {
-            every { serverId } returns "BTC-USD"
-        }
         createFragmentScenario().onFragment { fragment ->
             fragment.stateObserver.onChanged(
                 MarketState(
                     MarketConfiguration(
-                        product = product,
+                        platformId = 1L,
+                        productRemoteId = "BTC-USD",
                         granularity = Granularity.Hour
                     )
                 )
@@ -128,9 +126,7 @@ class MarketFragmentTest {
         createFragmentScenario().onFragment { fragment ->
             fragment.stateObserver.onChanged(MarketState(marketConfiguration = mockk{
                 every { granularity } returns Granularity.Hour
-                every { product } returns mockk {
-                    every { serverId } returns "BTC-USD"
-                }
+                every { productRemoteId } returns "BTC-USD"
             }))
 
             assertThat(fragment.granularity?.selectedTabPosition).isEqualTo(3)

@@ -38,7 +38,7 @@ class MarketDataUseCaseTest {
 
     @Test
     fun handles_fetching_default_market_data() {
-        val marketConfiguration = MarketConfiguration(mockk(), mockk())
+        val marketConfiguration = mockk<MarketConfiguration>(relaxUnitFun = true)
         val defaultMarketDataRepository: DefaultMarketDataRepository = mockk {
             every { runBlocking { loadDefault() } } returns marketConfiguration
         }
@@ -66,7 +66,7 @@ class MarketDataUseCaseTest {
     @Test
     fun handles_change_of_granularity() {
         val granularity = Granularity.FiveMinutes
-        val marketConfiguration = MarketConfiguration(mockk(), mockk())
+        val marketConfiguration = mockk<MarketConfiguration>(relaxUnitFun = true)
         val defaultMarketDataRepository: DefaultMarketDataRepository = mockk {
             every { runBlocking { changeGranularity(granularity) } } returns marketConfiguration
         }
