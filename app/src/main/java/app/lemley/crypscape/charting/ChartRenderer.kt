@@ -86,7 +86,11 @@ class ChartRenderer {
     }
 
     fun clearAllData() {
-
+        while (candleData.dataSetCount > 0  || lineData.dataSetCount > 0 || scatterData.dataSetCount > 0) {
+            candleData.removeDataSet(0)
+            lineData.removeDataSet(0)
+            scatterData.removeDataSet(0)
+        }
     }
 
     fun buildData(): CombinedData {

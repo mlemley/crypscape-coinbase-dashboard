@@ -2,6 +2,7 @@ package app.lemley.crypscape.charting
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import kotlin.jvm.internal.Ref
 
 class ChartRendererTest {
 
@@ -47,6 +48,23 @@ class ChartRendererTest {
 
     @Test
     fun clear_all_values__removes_all_data_sets() {
+        val chartRenderer = ChartRenderer()
+        chartRenderer.plot(DataSetType.CandleDataSet, "candle set 1")
+        chartRenderer.plot(DataSetType.CandleDataSet, "candle set 2")
+        chartRenderer.plot(DataSetType.LineDataSet, "line set 1")
+        chartRenderer.plot(DataSetType.LineDataSet, "line set 2")
+        chartRenderer.plot(DataSetType.LineDataSet, "line set 3")
+        chartRenderer.plot(DataSetType.ScatterDataSet, "scatter set 1")
+        chartRenderer.plot(DataSetType.ScatterDataSet, "scatter set 2")
+        chartRenderer.plot(DataSetType.ScatterDataSet, "scatter set 3")
+        chartRenderer.plot(DataSetType.ScatterDataSet, "scatter set 4")
+
+        chartRenderer.clearAllData()
+
+        assertThat(chartRenderer.candleData.dataSetCount).isEqualTo(0)
+        assertThat(chartRenderer.lineData.dataSetCount).isEqualTo(0)
+        assertThat(chartRenderer.scatterData.dataSetCount).isEqualTo(0)
+
     }
 
     @Test
