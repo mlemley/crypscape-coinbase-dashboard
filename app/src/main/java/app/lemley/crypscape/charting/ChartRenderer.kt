@@ -65,7 +65,7 @@ class ChartRenderer {
             when (set) {
                 is CandleDataSet -> set.values.sortBy { it.x }
                 is LineDataSet -> set.values.sortBy { it.x }
-                is BarDataSet -> set.values.sortBy { it.x }
+                is ScatterDataSet -> set.values.sortBy { it.x }
                 else -> {
                 }
             }
