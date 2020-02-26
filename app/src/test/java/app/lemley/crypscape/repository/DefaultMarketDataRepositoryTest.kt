@@ -80,7 +80,7 @@ class DefaultMarketDataRepositoryTest {
 
 
         val editor: SharedPreferences.Editor = mockk(relaxUnitFun = true) {
-            every { putString(marketConfiguration.toJson(), null) } returns this
+            every { putString(DefaultMarketDataRepository.preferenceKey, marketConfiguration.toJson()) } returns this
         }
 
         val sharedPreferences: SharedPreferences = mockk(relaxUnitFun = true) {
@@ -100,7 +100,10 @@ class DefaultMarketDataRepositoryTest {
         }
 
         verify {
-            editor.putString(marketConfiguration.toJson(), null)
+            editor.putString(
+                DefaultMarketDataRepository.preferenceKey,
+                marketConfiguration.toJson()
+            )
             editor.apply()
         }
     }
@@ -139,7 +142,7 @@ class DefaultMarketDataRepositoryTest {
         val marketConfiguration = MarketConfiguration(1L, "BTC-USD", Granularity.Hour)
 
         val editor: SharedPreferences.Editor = mockk(relaxUnitFun = true) {
-            every { putString(marketConfiguration.toJson(), null) } returns this
+            every { putString(DefaultMarketDataRepository.preferenceKey, marketConfiguration.copy(granularity=granularity).toJson()) } returns this
             every {
                 putString(
                     marketConfiguration.copy(granularity = granularity).toJson(),
@@ -170,7 +173,10 @@ class DefaultMarketDataRepositoryTest {
         )
 
         verifyOrder {
-            editor.putString(marketConfiguration.copy(granularity = granularity).toJson(), null)
+            editor.putString(
+                DefaultMarketDataRepository.preferenceKey,
+                marketConfiguration.copy(granularity = granularity).toJson()
+            )
             editor.apply()
         }
     }

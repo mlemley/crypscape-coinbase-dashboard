@@ -42,7 +42,7 @@ class DefaultMarketDataRepository constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun update(marketConfiguration: MarketConfiguration) {
-        sharedPreferences.edit().putString(marketConfiguration.toJson(), null).apply()
+        sharedPreferences.edit().putString(preferenceKey, marketConfiguration.toJson()).apply()
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
