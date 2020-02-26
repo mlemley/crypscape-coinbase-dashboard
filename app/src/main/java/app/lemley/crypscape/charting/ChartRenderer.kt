@@ -25,16 +25,25 @@ class ChartRenderer {
     fun plot(dataSetType: DataSetType, label: String): IDataSet<Entry>? {
         return when (dataSetType) {
             DataSetType.CandleDataSet -> {
+                setForLabel(label)?.let {
+                    candleData.removeDataSet(it as CandleDataSet)
+                }
                 candleData.addDataSet(CandleDataSet(mutableListOf(), label))
                 setMap.putIfAbsent(label, dataSetType)
                 setForLabel(label)
             }
             DataSetType.LineDataSet -> {
+                setForLabel(label)?.let {
+                    lineData.removeDataSet(it as LineDataSet)
+                }
                 lineData.addDataSet(LineDataSet(mutableListOf(), label))
                 setMap.putIfAbsent(label, dataSetType)
                 setForLabel(label)
             }
             DataSetType.ScatterDataSet -> {
+                setForLabel(label)?.let {
+                    scatterData.removeDataSet(it as ScatterDataSet)
+                }
                 scatterData.addDataSet(ScatterDataSet(mutableListOf(), label))
                 setMap.putIfAbsent(label, dataSetType)
                 setForLabel(label)

@@ -1,14 +1,33 @@
 package app.lemley.crypscape.charting
 
-import org.junit.Test
-
 import com.google.common.truth.Truth.assertThat
+import org.junit.Test
 
 class ChartRendererTest {
 
     @Test
-    fun plot__defines_type_adding_to_data_set_with_given_label() {
+    fun plot__defines_type_adding_to_data_set_with_given_label__replace_when_present() {
 
+        val types =
+            listOf(DataSetType.CandleDataSet, DataSetType.LineDataSet, DataSetType.ScatterDataSet)
+
+        types.forEach { type ->
+            val renderer = ChartRenderer()
+            val set = renderer.plot(type, "label")
+            val set2 = renderer.plot(type, "label")
+
+            val data = when (type) {
+                is DataSetType.CandleDataSet -> renderer.candleData
+                is DataSetType.LineDataSet -> renderer.lineData
+                is DataSetType.ScatterDataSet -> renderer.scatterData
+                else -> throw IllegalArgumentException("implement more types")
+            }
+
+            assertThat(data.dataSetCount).isEqualTo(1)
+            assertThat(data.dataSets[0]).isNotEqualTo(set)
+            assertThat(data.dataSets[0]).isEqualTo(set2)
+
+        }
     }
 
     @Test
