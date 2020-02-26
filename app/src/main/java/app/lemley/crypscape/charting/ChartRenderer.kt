@@ -55,11 +55,7 @@ class ChartRenderer {
 
     fun plotEntry(label: String, entry: Entry) {
         setForLabel(label)?.let { set ->
-            set.getIndexInEntries(entry.x.toInt()).let { position ->
-                if (position > 0) {
-                    set.removeEntry(position)
-                }
-            }
+            removeEntryAtXCoordinateIfPresent(set, entry)
             set.addEntry(entry)
 
             when (set) {
@@ -70,6 +66,47 @@ class ChartRenderer {
                 }
             }
         }
+    }
+
+    private fun removeEntryAtXCoordinateIfPresent(set: IDataSet<Entry>, entry: Entry) {
+        when(set) {
+            is LineDataSet -> removeLineEntryAtXCoordinateIfPresent(set, entry)
+            is ScatterDataSet -> removeScatterEntryAtXCoordinateIfPresent(set, entry)
+            is CandleDataSet -> removeCandleEntryAtXCoordinateIfPresent(set, entry)
+        }
+    }
+
+
+    private fun removeScatterEntryAtXCoordinateIfPresent(set: ScatterDataSet, entry: Entry) {
+        var indexToRemove:Int? = null
+        set.values.forEachIndexed { i , it ->
+            if (it.x == entry.x) {
+                indexToRemove = i
+                return@forEachIndexed
+            }
+        }
+        indexToRemove?.let {set.removeEntry(it)}
+    }
+    private fun removeLineEntryAtXCoordinateIfPresent(set: LineDataSet, entry: Entry) {
+        var indexToRemove:Int? = null
+        set.values.forEachIndexed { i , it ->
+            if (it.x == entry.x) {
+                indexToRemove = i
+                return@forEachIndexed
+            }
+        }
+        indexToRemove?.let {set.removeEntry(it)}
+    }
+
+    private fun removeCandleEntryAtXCoordinateIfPresent(set: CandleDataSet, entry: Entry) {
+        var indexToRemove:Int? = null
+        set.values.forEachIndexed { i , it ->
+            if (it.x == entry.x) {
+                indexToRemove = i
+                return@forEachIndexed
+            }
+        }
+        indexToRemove?.let {set.removeEntry(it)}
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -86,7 +123,7 @@ class ChartRenderer {
     }
 
     fun clearAllData() {
-        while (candleData.dataSetCount > 0  || lineData.dataSetCount > 0 || scatterData.dataSetCount > 0) {
+        while (candleData.dataSetCount > 0 || lineData.dataSetCount > 0 || scatterData.dataSetCount > 0) {
             candleData.removeDataSet(0)
             lineData.removeDataSet(0)
             scatterData.removeDataSet(0)

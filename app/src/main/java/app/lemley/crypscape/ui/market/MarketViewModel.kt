@@ -34,6 +34,7 @@ class MarketViewModel(
         .flatMapLatest { filter ->
             coinBaseRepository.candlesForConfiguration(filter.marketConfiguration)
         }
+        .flowOn(Dispatchers.IO)
         .asLiveData()
 
     override val useCases: List<UseCase> = listOf(marketDataUseCase)

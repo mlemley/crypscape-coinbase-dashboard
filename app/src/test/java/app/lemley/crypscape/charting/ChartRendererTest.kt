@@ -116,12 +116,101 @@ class ChartRendererTest {
 
     @Test
     fun plot_entry__updates_existing_entry__orders_by_x_coordinate() {
+        val chartRenderer = ChartRenderer()
+
+        data class Case(
+            val type: DataSetType,
+            val label: String,
+            val entries: List<Entry>,
+            val expectedEntries: List<Entry>
+        )
+
+        val cases = listOf<Case>(
+            Case(
+                DataSetType.CandleDataSet, candleSetLabel,
+                listOf(
+                    CandleEntry(1F, 100F, 90F, 91F, 98F),
+                    CandleEntry(1F, 90F, 80F, 81F, 88F)
+                ),
+                listOf(
+                    CandleEntry(1F, 90F, 80F, 81F, 88F)
+                )
+            )
+            ,
+            Case(
+                DataSetType.LineDataSet, "line data",
+                listOf(
+                    Entry(1F, 100F),
+                    Entry(1F, 90F)
+                ),
+                listOf(
+                    Entry(1F, 90F)
+                )
+            ),
+            Case(
+                DataSetType.ScatterDataSet, "scatter data",
+                listOf(
+                    Entry(1F, 100F),
+                    Entry(1F, 90F)
+                ),
+                listOf(
+                    Entry(1F, 90F)
+                )
+            )
+        )
+
+        cases.forEach { testCase ->
+            chartRenderer.plot(testCase.type, testCase.label)
+
+            testCase.entries.forEach { entry ->
+                chartRenderer.plotEntry(testCase.label, entry)
+            }
+
+            when (testCase.type) {
+                is DataSetType.CandleDataSet -> {
+                    val values = (chartRenderer.candleData.dataSets[0] as CandleDataSet).values
+                    assertThat(values.size).isEqualTo(testCase.expectedEntries.size)
+                    values.forEachIndexed { i, it ->
+                        assertThat(values[i].x).isEqualTo(testCase.expectedEntries[i].x)
+                        assertThat(values[i].y).isEqualTo(testCase.expectedEntries[i].y)
+                    }
+                }
+                is DataSetType.LineDataSet -> {
+                    val values = (chartRenderer.lineData.dataSets[0] as LineDataSet).values
+                    assertThat(values.size).isEqualTo(testCase.expectedEntries.size)
+                    values.forEachIndexed { i, it ->
+                        assertThat(values[i].x).isEqualTo(testCase.expectedEntries[i].x)
+                        assertThat(values[i].y).isEqualTo(testCase.expectedEntries[i].y)
+                    }
+                }
+                is DataSetType.ScatterDataSet -> {
+                    val values = (chartRenderer.scatterData.dataSets[0] as ScatterDataSet).values
+                    assertThat(values.size).isEqualTo(testCase.expectedEntries.size)
+                    values.forEachIndexed { i, it ->
+                        assertThat(values[i].x).isEqualTo(testCase.expectedEntries[i].x)
+                        assertThat(values[i].y).isEqualTo(testCase.expectedEntries[i].y)
+                    }
+                }
+                else -> throw java.lang.IllegalArgumentException("implement more types")
+            }
+        }
 
     }
 
     @Test
     fun set_for_label__returns_given_data_set_with_label_value() {
+        val chartRenderer = ChartRenderer()
+        val candleLabel = "candle set"
+        val lineLabel = "line set"
+        val scatterLabel = "scatter set"
 
+        chartRenderer.plot(DataSetType.CandleDataSet, candleLabel)
+        chartRenderer.plot(DataSetType.LineDataSet, lineLabel)
+        chartRenderer.plot(DataSetType.ScatterDataSet, scatterLabel)
+
+        assertThat(chartRenderer.setForLabel(candleLabel) as CandleDataSet).isEqualTo(chartRenderer.candleData.dataSets[0])
+        assertThat(chartRenderer.setForLabel(lineLabel) as LineDataSet).isEqualTo(chartRenderer.lineData.dataSets[0])
+        assertThat(chartRenderer.setForLabel(scatterLabel) as ScatterDataSet).isEqualTo(chartRenderer.scatterData.dataSets[0])
     }
 
     @Test
@@ -147,5 +236,7 @@ class ChartRendererTest {
 
     @Test
     fun build_data__packages_data_sets() {
+        val chartRenderer = ChartRenderer()
+
     }
 }
