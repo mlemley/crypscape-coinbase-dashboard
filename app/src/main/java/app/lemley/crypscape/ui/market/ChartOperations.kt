@@ -51,6 +51,7 @@ sealed class ChartOperations : IChartOperation {
             chart.setVisibleXRangeMaximum(chartRenderer.granularity.visibleXRange)
             chart.isAutoScaleMinMaxEnabled = true
             chart.xAxis.setAvoidFirstLastClipping(true)
+            chart.xAxis.granularity = .1f
             chart.moveViewToX(combinedData.candleData.dataSets[0].xMax)
             chart.notifyDataSetChanged()
             chart.invalidate()
