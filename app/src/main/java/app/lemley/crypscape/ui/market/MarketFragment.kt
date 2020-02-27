@@ -102,7 +102,7 @@ class MarketFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_home, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_market, container, false)
 
 
     private fun updateMarketConfiguration(marketConfiguration: MarketConfiguration) {

@@ -13,6 +13,6 @@
         android:id="@+id/nav_market"
         android:name="app.lemley.crypscape.ui.market.MarketFragment"
         android:label="@string/market_title"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_market" />
 
 </navigation>

@@ -11,7 +11,7 @@ import app.lemley.crypscape.persistance.entities.Granularity
 import app.lemley.crypscape.persistance.entities.Product
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_market.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.junit.Test
