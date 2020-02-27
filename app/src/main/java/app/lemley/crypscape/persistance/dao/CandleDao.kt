@@ -34,7 +34,7 @@ abstract class CandleDao : BaseDao<Candle>() {
         where platformId = :platformId 
             and product_id = :productId 
             and granularity = :granularity 
-        ORDER BY id ASC 
+        ORDER BY `time` desc
         Limit :limit
     """)
     abstract fun newestProductGranularity(platformId: Long, productId: Long, granularity: Long, limit:Int): Flow<List<Candle>>

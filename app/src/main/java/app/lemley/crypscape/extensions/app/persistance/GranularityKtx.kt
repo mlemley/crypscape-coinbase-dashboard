@@ -46,19 +46,23 @@ fun scaleMinuteDown(instant: Instant): Long {
 fun Granularity.toXCoordinate(instant: Instant): Float {
     return when (this) {
         Granularity.Minute -> scaleMinuteDown(instant).toFloat()
-        Granularity.FifteenMinutes,
-        Granularity.FiveMinutes -> (instant.utc().toEpochSecond() / seconds).toFloat()
-        else -> (instant.utc().toEpochSecond() / Granularity.Hour.seconds).toFloat()
-    }
+        Granularity.FiveMinutes -> (instant.utc().toEpochSecond() / Granularity.FiveMinutes.seconds).toFloat()
+        Granularity.FifteenMinutes -> (instant.utc().toEpochSecond() / Granularity.FifteenMinutes.seconds).toFloat()
+        Granularity.Hour -> (instant.utc().toEpochSecond() / Granularity.Hour.seconds).toFloat()
+        Granularity.Day -> (instant.utc().toEpochSecond() / Granularity.Day.seconds).toFloat()
+        Granularity.SixHours -> (instant.utc().toEpochSecond() / Granularity.SixHours.seconds).toFloat()
+    }.exhaustive
 }
 
 fun Granularity.fromXCoordinate(value: Float): Instant {
     return when (this) {
         Granularity.Minute -> minuteFromScaledValue(value.toLong())
-        Granularity.FifteenMinutes,
-        Granularity.FiveMinutes -> Instant.ofEpochSecond(value.toLong() * seconds)
-        else -> Instant.ofEpochSecond(value.toLong() * Granularity.Hour.seconds)
-    }
+        Granularity.FiveMinutes -> Instant.ofEpochSecond(value.toLong() * Granularity.FiveMinutes.seconds)
+        Granularity.FifteenMinutes -> Instant.ofEpochSecond(value.toLong() * Granularity.FifteenMinutes.seconds)
+        Granularity.Hour -> Instant.ofEpochSecond(value.toLong() * Granularity.Hour.seconds)
+        Granularity.Day -> Instant.ofEpochSecond(value.toLong() * Granularity.Day.seconds)
+        Granularity.SixHours -> Instant.ofEpochSecond(value.toLong() * Granularity.SixHours.seconds)
+    }.exhaustive
 }
 
 private fun minuteFromScaledValue(value: Long): Instant {

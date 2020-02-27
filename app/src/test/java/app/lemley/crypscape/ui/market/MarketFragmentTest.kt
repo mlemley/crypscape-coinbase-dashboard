@@ -11,7 +11,7 @@ import app.lemley.crypscape.persistance.entities.Granularity
 import app.lemley.crypscape.persistance.entities.Product
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_market.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.junit.Test
@@ -28,6 +28,7 @@ class MarketFragmentTest {
         liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true),
         marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
+            every { candles } returns mockk(relaxUnitFun = true)
         },
         marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
     ): FragmentScenario<MarketFragment> {
@@ -42,16 +43,20 @@ class MarketFragmentTest {
     @Test
     fun observes_state__broadcasts_init_event() {
         val liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true)
+        val candleLiveData: LiveData<List<Candle>> = mockk(relaxUnitFun = true)
         val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
+            every { candles } returns candleLiveData
         }
 
         excludeRecords {
             marketViewModel.state
+            marketViewModel.candles
         }
 
         createFragmentScenario(marketViewModel = marketViewModel).onFragment { fragment ->
             verifyOrder {
+                candleLiveData.observe(fragment.viewLifecycleOwner, fragment.candleObserver)
                 liveDataState.observe(fragment.viewLifecycleOwner, fragment.stateObserver)
                 marketViewModel.dispatchEvent(MarketEvents.Init)
             }
@@ -63,14 +68,12 @@ class MarketFragmentTest {
 
     @Test
     fun on_state_change__sets_currency_name() {
-        val product: Product = mockk(relaxed = true) {
-            every { serverId } returns "BTC-USD"
-        }
         createFragmentScenario().onFragment { fragment ->
             fragment.stateObserver.onChanged(
                 MarketState(
                     MarketConfiguration(
-                        product = product,
+                        platformId = 1L,
+                        productRemoteId = "BTC-USD",
                         granularity = Granularity.Hour
                     )
                 )
@@ -81,40 +84,23 @@ class MarketFragmentTest {
     }
 
     @Test
-    fun on_state_change__configures_charts_granularity() {
-        val product: Product = mockk(relaxed = true) {
-            every { serverId } returns "BTC-USD"
-        }
-        val marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
-        createFragmentScenario(marketChartingManager = marketChartingManager).onFragment { fragment ->
-            fragment.stateObserver.onChanged(
-                MarketState(
-                    MarketConfiguration(
-                        product = product,
-                        granularity = Granularity.Hour
-                    )
-                )
-            )
-
-            verify {
-                marketChartingManager.performChartingOperation(
-                    fragment.chart,
-                    ChartOperations.ConfigureFor(Granularity.Hour)
-                )
-            }
-        }
-
-        confirmVerified(marketChartingManager)
-    }
-
-    @Test
     fun on_state_change__renders_candles() {
-        val candles = emptyList<Candle>()
+        val candles = listOf<Candle>(mockk {
+            every {  granularity } returns Granularity.Hour
+        })
         val marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
         createFragmentScenario(marketChartingManager = marketChartingManager).onFragment { fragment ->
             fragment.candleObserver.onChanged(candles)
 
-            verify {
+            verifyOrder {
+                marketChartingManager.performChartingOperation(
+                    fragment.chart,
+                    ChartOperations.Clear
+                )
+                marketChartingManager.performChartingOperation(
+                    fragment.chart,
+                    ChartOperations.ConfigureFor(Granularity.Hour)
+                )
                 marketChartingManager.performChartingOperation(
                     fragment.chart,
                     ChartOperations.RenderCandles(candles)
@@ -132,6 +118,50 @@ class MarketFragmentTest {
             fragment.stateObserver.onChanged(MarketState(ticker = ticker))
 
             assertThat(fragment.currency_value.text).isEqualTo("$10,000.00")
+        }
+    }
+
+    @Test
+    fun selects_tab_when_initially_loaded() {
+        createFragmentScenario().onFragment { fragment ->
+            fragment.stateObserver.onChanged(MarketState(marketConfiguration = mockk{
+                every { granularity } returns Granularity.Hour
+                every { productRemoteId } returns "BTC-USD"
+            }))
+
+            assertThat(fragment.granularity?.selectedTabPosition).isEqualTo(3)
+        }
+    }
+
+    @Test
+    fun changes_granularity_when_selection_changes() {
+        val liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true)
+        val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
+            every { state } returns liveDataState
+            every { candles } returns mockk(relaxUnitFun = true)
+        }
+
+        excludeRecords {
+            marketViewModel.state
+            marketViewModel.dispatchEvent(MarketEvents.Init)
+        }
+        createFragmentScenario(marketViewModel = marketViewModel).onFragment { fragment ->
+            fragment.granularity.getTabAt(1)?.select()
+            fragment.granularity.getTabAt(2)?.select()
+            fragment.granularity.getTabAt(3)?.select()
+            fragment.granularity.getTabAt(4)?.select()
+            fragment.granularity.getTabAt(5)?.select()
+            fragment.granularity.getTabAt(0)?.select()
+
+        }
+
+        verifyOrder {
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.FiveMinutes))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.FifteenMinutes))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.Hour))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.SixHours))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.Day))
+            marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(Granularity.Minute))
         }
     }
 }

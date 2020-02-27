@@ -29,11 +29,21 @@ class DefaultMarketDataRepository constructor(
             )
         } else {
             createDefault().also {
-                sharedPreferences.edit().putString(it.toJson(), null).apply()
+                update(it)
             }
         }
     }
 
+    fun changeGranularity(granularity: Granularity): MarketConfiguration {
+        return loadDefault().copy(granularity = granularity).also {
+            update(it)
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun update(marketConfiguration: MarketConfiguration) {
+        sharedPreferences.edit().putString(preferenceKey, marketConfiguration.toJson()).apply()
+    }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun createDefault(): MarketConfiguration {
@@ -41,7 +51,7 @@ class DefaultMarketDataRepository constructor(
             platformDao.coinbasePro ?: throw IllegalStateException("Platform can not be null")
         val product = productDao.byServerId(platform.id, defaultProductId)
             ?: throw IllegalStateException("Product with server id $defaultProductId must be stored")
-        return MarketConfiguration(product, Granularity.Hour)
+        return MarketConfiguration(platformId = platform.id, productRemoteId = product.serverId, granularity = Granularity.Hour)
     }
 
 }

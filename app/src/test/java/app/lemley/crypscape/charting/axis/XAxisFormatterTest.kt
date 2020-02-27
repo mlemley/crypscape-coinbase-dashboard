@@ -30,7 +30,7 @@ class XAxisFormatterTest {
                 XAxisFormatter(granularity).getFormattedValue(
                     granularity.toXCoordinate(
                         epochMilliseconds.toInstant()
-                    ), mockk()
+                    ), mockk(relaxed = true)
                 )
             )
         }
@@ -76,8 +76,8 @@ class XAxisFormatterTest {
             "15:15",
             "15:15",
             "15:00",
-            "15:00",
-            "15:00"
+            "12:00",
+            "2/22"
         )
 
         val actual = mutableListOf<String>()

@@ -3,6 +3,7 @@ package app.lemley.crypscape.usecase
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.persistance.entities.Granularity
 import app.lemley.crypscape.repository.CoinBaseRepository
 import app.lemley.crypscape.repository.DefaultMarketDataRepository
 import app.lemley.crypscape.ui.base.Action
@@ -37,15 +38,13 @@ class MarketDataUseCaseTest {
 
     @Test
     fun handles_fetching_default_market_data() {
-        val marketConfiguration = MarketConfiguration(mockk(), mockk())
+        val marketConfiguration = mockk<MarketConfiguration>(relaxUnitFun = true)
         val defaultMarketDataRepository: DefaultMarketDataRepository = mockk {
             every { runBlocking { loadDefault() } } returns marketConfiguration
         }
 
-        val candles = flowOf<List<Candle>>(mockk(), mockk())
         val ticker:Ticker = Ticker()
         val coinBaseRepository: CoinBaseRepository = mockk {
-            every { runBlocking { candlesForConfiguration(marketConfiguration) } } returns candles
             every { runBlocking { tickerForConfiguration(marketConfiguration) } } returns ticker
         }
         val useCase = createUseCase(defaultMarketDataRepository, coinBaseRepository)
@@ -59,10 +58,36 @@ class MarketDataUseCaseTest {
         assertThat(results).isEqualTo(
             listOf(
                 MarketResults.MarketConfigurationResult(marketConfiguration),
-                MarketResults.TickerResult(ticker),
-                MarketResults.CandlesForConfigurationResult(candles)
+                MarketResults.TickerResult(ticker)
             )
         )
     }
 
+    @Test
+    fun handles_change_of_granularity() {
+        val granularity = Granularity.FiveMinutes
+        val marketConfiguration = mockk<MarketConfiguration>(relaxUnitFun = true)
+        val defaultMarketDataRepository: DefaultMarketDataRepository = mockk {
+            every { runBlocking { changeGranularity(granularity) } } returns marketConfiguration
+        }
+
+        val ticker:Ticker = Ticker()
+        val coinBaseRepository: CoinBaseRepository = mockk {
+            every { runBlocking { tickerForConfiguration(marketConfiguration) } } returns ticker
+        }
+        val useCase = createUseCase(defaultMarketDataRepository, coinBaseRepository)
+
+        val results = mutableListOf<Result>()
+        runBlocking {
+            val result = useCase.handleAction(MarketActions.OnGranularityChanged(granularity))
+            result.toList(results)
+        }
+
+        assertThat(results).isEqualTo(
+            listOf(
+                MarketResults.MarketConfigurationResult(marketConfiguration),
+                MarketResults.TickerResult(ticker)
+            )
+        )
+    }
 }

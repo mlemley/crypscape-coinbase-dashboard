@@ -3,6 +3,9 @@ package app.lemley.crypscape.ui.market
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.persistance.entities.Granularity
+import app.lemley.crypscape.repository.CoinBaseRepository
+import app.lemley.crypscape.repository.CoinBaseTickerRepository
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
@@ -21,9 +24,12 @@ import org.junit.Test
 class MarketViewModelTest {
 
     private fun createViewModel(
-        marketDataUseCase: MarketDataUseCase = mockk(relaxUnitFun = true)
+        marketDataUseCase: MarketDataUseCase = mockk(relaxUnitFun = true),
+        coinbaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true)
+
     ): MarketViewModel = MarketViewModel(
-        marketDataUseCase
+        marketDataUseCase,
+        coinBaseRepository = coinbaseRepository
     )
 
     @Test
@@ -43,11 +49,13 @@ class MarketViewModelTest {
         val viewModel = createViewModel()
 
         val events = flowOf(
-            MarketEvents.Init
+            MarketEvents.Init,
+            MarketEvents.GranularitySelected(Granularity.Minute)
         )
 
         val expectedActions = listOf(
-            MarketActions.FetchMarketDataForDefaultConfiguration
+            MarketActions.FetchMarketDataForDefaultConfiguration,
+            MarketActions.OnGranularityChanged(Granularity.Minute)
         )
 
         val actual = mutableListOf<Action>()
@@ -65,19 +73,19 @@ class MarketViewModelTest {
         val viewModel = createViewModel()
         val initState = viewModel.makeInitState()
 
-        val marketConfiguration = MarketConfiguration(mockk(), mockk())
-        val candles: Flow<List<Candle>> = mockk()
+        val marketConfiguration = MarketConfiguration(1L,
+            "BTC-USD",
+            Granularity.Hour
+        )
         val ticker: Ticker = mockk()
 
         val results = listOf(
             MarketDataUseCase.MarketResults.MarketConfigurationResult(marketConfiguration),
-            MarketDataUseCase.MarketResults.CandlesForConfigurationResult(candles),
             MarketDataUseCase.MarketResults.TickerResult(ticker)
         )
 
         val expectedStates: List<MarketState> = listOf(
             initState.copy(marketConfiguration = marketConfiguration),
-            initState.copy(candles = candles),
             initState.copy(ticker = ticker)
         )
 

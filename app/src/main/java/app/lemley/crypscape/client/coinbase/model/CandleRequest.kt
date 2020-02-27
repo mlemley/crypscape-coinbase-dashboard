@@ -10,8 +10,8 @@ data class CandleRequest(
         Pair("granularity", granularity.seconds.toString())
     ).also {
         if (!start.isNullOrEmpty() && !end.isNullOrEmpty()) {
-            it.put("start", start)
-            it.put("end", end)
+            it["start"] = start
+            it["end"] = end
         }
     }
 }

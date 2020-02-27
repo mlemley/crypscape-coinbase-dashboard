@@ -59,4 +59,3 @@ data class Candle(
     val volume: Double
 )
 
-
