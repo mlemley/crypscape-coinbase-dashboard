@@ -37,10 +37,12 @@ class MarketViewModel(
         viewModelScope.launch {
             coinBaseWSService.observeTicker().consumeEach {
                 tickerChannel.offer(it)
+                //dispatchEvent()
             }
         }
     }
 
+    // Consider pushing data onto state rather than it's own live data
     private var productId: String? = null
         set(value) {
             value?.let {
@@ -76,7 +78,10 @@ class MarketViewModel(
         .asLiveData()
 
     private val tickerChannel = ConflatedBroadcastChannel<Ticker>()
-    val ticker: LiveData<Ticker> = tickerChannel.asFlow().conflate().asLiveData()
+    val ticker: LiveData<Ticker> = tickerChannel.asFlow()
+        .conflate()
+        .distinctUntilChanged()
+        .asLiveData()
 
     override val useCases: List<UseCase> = listOf(marketDataUseCase)
 
