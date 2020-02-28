@@ -67,17 +67,12 @@ class MarketFragment : Fragment() {
                 currencyValue = withView(R.id.currency_value)
                 granularity = withView(R.id.granularity)
                 marketViewModel.candles.observe(viewLifecycleOwner, candleObserver)
-                marketViewModel.ticker.observe(viewLifecycleOwner, tickerObserver)
                 marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
             }
             whenResumed {
                 granularity?.addOnTabSelectedListener(granularitySelectedListener)
             }
         }
-    }
-
-    val tickerObserver: Observer<Ticker> = Observer {  ticker ->
-        updateWithTicker(ticker)
     }
 
     val candleObserver: Observer<List<Candle>> = Observer { candles ->

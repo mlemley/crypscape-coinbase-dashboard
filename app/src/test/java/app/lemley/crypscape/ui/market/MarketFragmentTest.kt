@@ -8,7 +8,6 @@ import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
-import app.lemley.crypscape.persistance.entities.Product
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import kotlinx.android.synthetic.main.fragment_market.*
@@ -29,7 +28,6 @@ class MarketFragmentTest {
         marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
             every { candles } returns mockk(relaxUnitFun = true)
-            every { ticker } returns mockk(relaxUnitFun = true)
         },
         marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
     ): FragmentScenario<MarketFragment> {
@@ -45,23 +43,19 @@ class MarketFragmentTest {
     fun observes_state__broadcasts_init_event() {
         val liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true)
         val candleLiveData: LiveData<List<Candle>> = mockk(relaxUnitFun = true)
-        val tickerLiveData: LiveData<Ticker> = mockk(relaxUnitFun = true)
         val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
             every { candles } returns candleLiveData
-            every { ticker } returns tickerLiveData
         }
 
         excludeRecords {
             marketViewModel.state
             marketViewModel.candles
-            marketViewModel.ticker
         }
 
         createFragmentScenario(marketViewModel = marketViewModel).onFragment { fragment ->
             verifyOrder {
                 candleLiveData.observe(fragment.viewLifecycleOwner, fragment.candleObserver)
-                tickerLiveData.observe(fragment.viewLifecycleOwner, fragment.tickerObserver)
                 liveDataState.observe(fragment.viewLifecycleOwner, fragment.stateObserver)
                 marketViewModel.dispatchEvent(MarketEvents.Init)
             }
@@ -91,7 +85,7 @@ class MarketFragmentTest {
     @Test
     fun on_state_change__renders_candles() {
         val candles = listOf<Candle>(mockk {
-            every {  granularity } returns Granularity.Hour
+            every { granularity } returns Granularity.Hour
         })
         val marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
         createFragmentScenario(marketChartingManager = marketChartingManager).onFragment { fragment ->
@@ -118,7 +112,7 @@ class MarketFragmentTest {
 
     @Test
     fun on_state_change__renders_ticker() {
-        val  ticker = Ticker(price = 10000.00)
+        val ticker = Ticker(price = 10000.00)
         createFragmentScenario().onFragment { fragment ->
             fragment.stateObserver.onChanged(MarketState(ticker = ticker))
 
@@ -129,7 +123,7 @@ class MarketFragmentTest {
     @Test
     fun selects_tab_when_initially_loaded() {
         createFragmentScenario().onFragment { fragment ->
-            fragment.stateObserver.onChanged(MarketState(marketConfiguration = mockk{
+            fragment.stateObserver.onChanged(MarketState(marketConfiguration = mockk {
                 every { granularity } returns Granularity.Hour
                 every { productRemoteId } returns "BTC-USD"
             }))
@@ -144,7 +138,6 @@ class MarketFragmentTest {
         val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
             every { candles } returns mockk(relaxUnitFun = true)
-            every { ticker } returns mockk(relaxUnitFun = true)
         }
 
         excludeRecords {

@@ -5,7 +5,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.Subscribe
-import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.client.coinbase.model.subscriptionFor
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
@@ -21,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -35,9 +33,14 @@ class MarketViewModel(
 
     init {
         viewModelScope.launch {
-            coinBaseWSService.observeTicker().consumeEach {
-                dispatchEvent(MarketEvents.TickerChangedEvent(it))
-            }
+            coinBaseWSService.observeTicker().consumeAsFlow()
+                .filter {
+                    it.productId == productId
+                }
+                .onEach {
+                    dispatchEvent(MarketEvents.TickerChangedEvent(it))
+                }
+                .collect()
         }
     }
 
@@ -45,25 +48,33 @@ class MarketViewModel(
     private var productId: String? = null
         set(value) {
             value?.let {
-                coinBaseWSService.sendSubscribe(
-                    subscriptionFor(
-                        Subscribe.Type.Unsubscribe,
-                        listOf(it),
-                        listOf(Subscribe.Channel.Ticker)
-                    )
-                )
+                unsubscribeFromProduct(it)
             }
             field = value
             value?.let {
-                coinBaseWSService.sendSubscribe(
-                    subscriptionFor(
-                        Subscribe.Type.Subscribe,
-                        listOf(it),
-                        listOf(Subscribe.Channel.Ticker)
-                    )
-                )
+                subscribeToProduct(it)
             }
         }
+
+    private fun unsubscribeFromProduct(it: String) {
+        coinBaseWSService.sendSubscribe(
+            subscriptionFor(
+                Subscribe.Type.Unsubscribe,
+                listOf(it),
+                listOf(Subscribe.Channel.Ticker)
+            )
+        )
+    }
+
+    private fun subscribeToProduct(it: String) {
+        coinBaseWSService.sendSubscribe(
+            subscriptionFor(
+                Subscribe.Type.Subscribe,
+                listOf(it),
+                listOf(Subscribe.Channel.Ticker)
+            )
+        )
+    }
 
     class CandleFilter(val marketConfiguration: MarketConfiguration)
 
@@ -74,12 +85,6 @@ class MarketViewModel(
 
         }
         .flowOn(Dispatchers.IO)
-        .asLiveData()
-
-    private val tickerChannel = ConflatedBroadcastChannel<Ticker>()
-    val ticker: LiveData<Ticker> = tickerChannel.asFlow()
-        .conflate()
-        .distinctUntilChanged()
         .asLiveData()
 
     override val useCases: List<UseCase> = listOf(marketDataUseCase)
@@ -107,9 +112,7 @@ class MarketViewModel(
 
             is MarketDataUseCase.MarketResults.TickerResult -> copy(
                 ticker = result.ticker
-            ).also {
-                tickerChannel.offer(result.ticker)
-            }
+            )
             else -> this
         }
     }
