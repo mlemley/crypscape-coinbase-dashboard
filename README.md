@@ -14,7 +14,7 @@ Using [Travis Ci](https://travis-ci.org/mlemley/crypscape-coinbase-dashboard/) f
 * [Android Jetpack](https://developer.android.com/jetpack) for Current Architecture
 * [Koin](https://insert-koin.io/) for Dependency Injection
 * [Retrofit](https://square.github.io/retrofit/) for web communication
-* [Scarlett](https://github.com/Tinder/Scarlet) for web socket communication
+* [Scarlet](https://github.com/Tinder/Scarlet) for web socket communication
 * [Room](https://developer.android.com/topic/libraries/architecture/room) for long-term persistence
 * [Android Navigation](https://developer.android.com/guide/navigation/) for managing SingleActivity destinations
 

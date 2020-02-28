@@ -58,12 +58,12 @@ class MarketDataUseCase constructor(
             coinBaseRepository.tickerForConfiguration(marketConfiguration)?.let {
                 send(MarketResults.TickerResult(it))
             }
+/*
             val subscribeMessage = subscriptionFor(
                 type = Subscribe.Type.Subscribe,
                 products = listOf("BTC-USD"),
                 channels = listOf(Subscribe.Channel.Ticker)
             )
-
             coinBaseWSService.observeWebSocketEvent()
                 .consumeEach {
                     when (it) {
@@ -82,7 +82,7 @@ class MarketDataUseCase constructor(
                             }
                         }
                     }
-                }
+                }*/
         }.flowOn(Dispatchers.IO)
 
     private fun handleFetchDefaultMarketData(): Flow<Result> = channelFlow<Result> {
