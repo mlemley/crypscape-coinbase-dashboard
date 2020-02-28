@@ -29,6 +29,7 @@ class MarketFragmentTest {
         marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
             every { candles } returns mockk(relaxUnitFun = true)
+            every { ticker } returns mockk(relaxUnitFun = true)
         },
         marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
     ): FragmentScenario<MarketFragment> {
@@ -44,19 +45,23 @@ class MarketFragmentTest {
     fun observes_state__broadcasts_init_event() {
         val liveDataState: LiveData<MarketState> = mockk(relaxUnitFun = true)
         val candleLiveData: LiveData<List<Candle>> = mockk(relaxUnitFun = true)
+        val tickerLiveData: LiveData<Ticker> = mockk(relaxUnitFun = true)
         val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
             every { candles } returns candleLiveData
+            every { ticker } returns tickerLiveData
         }
 
         excludeRecords {
             marketViewModel.state
             marketViewModel.candles
+            marketViewModel.ticker
         }
 
         createFragmentScenario(marketViewModel = marketViewModel).onFragment { fragment ->
             verifyOrder {
                 candleLiveData.observe(fragment.viewLifecycleOwner, fragment.candleObserver)
+                tickerLiveData.observe(fragment.viewLifecycleOwner, fragment.tickerObserver)
                 liveDataState.observe(fragment.viewLifecycleOwner, fragment.stateObserver)
                 marketViewModel.dispatchEvent(MarketEvents.Init)
             }
@@ -139,6 +144,7 @@ class MarketFragmentTest {
         val marketViewModel: MarketViewModel = mockk(relaxUnitFun = true) {
             every { state } returns liveDataState
             every { candles } returns mockk(relaxUnitFun = true)
+            every { ticker } returns mockk(relaxUnitFun = true)
         }
 
         excludeRecords {
