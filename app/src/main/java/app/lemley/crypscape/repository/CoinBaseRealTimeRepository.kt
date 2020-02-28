@@ -13,4 +13,8 @@ class CoinBaseRealTimeRepository constructor(
         coinBaseWSService.sendSubscribe(subscriptionFor(Subscribe.Type.Subscribe, products, channels))
     }
 
+    fun unsubscribe(products: List<String>, channels: List<Subscribe.Channel.Ticker>) {
+        coinBaseWSService.sendSubscribe(subscriptionFor(Subscribe.Type.Unsubscribe, products, channels))
+    }
+
 }

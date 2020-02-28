@@ -32,5 +32,24 @@ class CoinBaseRealTimeRepositoryTest {
         }
     }
 
+    @Test
+    fun un_subscribes_from_topics() {
+        val wsService: CoinBaseWSService = mockk(relaxed = true)
+        val repository = createRepository(wsService)
+        val expectedSubscribe = Subscribe(
+            Subscribe.Type.Unsubscribe.toString(),
+            listOf("BTC-USD"),
+            listOf(Subscribe.Channel.Ticker.toString())
+        )
+        val products = listOf("BTC-USD")
+        val channels = listOf(Subscribe.Channel.Ticker)
+
+        repository.unsubscribe(products, channels)
+
+        verify {
+            wsService.sendSubscribe(expectedSubscribe)
+        }
+    }
+
 
 }
