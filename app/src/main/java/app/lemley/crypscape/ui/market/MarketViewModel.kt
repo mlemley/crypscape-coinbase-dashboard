@@ -46,9 +46,14 @@ class MarketViewModel(
                 .collect()
 
             coinBaseWSService.observeWebSocketEvent().consume {
-                when(this) {
-                    is WebSocket.Event.OnConnectionOpened<*> -> productId?.let {subscribeToProduct(it) }
-                    else -> {}
+                when (this) {
+                    is WebSocket.Event.OnConnectionOpened<*> -> productId?.let {
+                        subscribeToProduct(
+                            it
+                        )
+                    }
+                    else -> {
+                    }
                 }
             }
         }
@@ -104,7 +109,11 @@ class MarketViewModel(
         collect {
             when (it) {
                 is MarketEvents.Init -> emit(MarketActions.FetchMarketDataForDefaultConfiguration)
-                is MarketEvents.GranularitySelected -> emit(MarketActions.OnGranularityChanged(it.granularity))
+                is MarketEvents.GranularitySelected -> emit(
+                    MarketActions.OnGranularityChanged(
+                        it.granularity
+                    )
+                )
                 is MarketEvents.TickerChangedEvent -> emit(MarketActions.OnTickerTick(it.ticker))
             }.exhaustive
         }
