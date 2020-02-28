@@ -1,6 +1,5 @@
 package app.lemley.crypscape.ui.market
 
-import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Granularity
@@ -25,13 +24,11 @@ class MarketViewModelTest {
     private fun createViewModel(
         marketDataUseCase: MarketDataUseCase = mockk(relaxUnitFun = true),
         coinbaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true),
-        coinBaseWSService: CoinBaseWSService = mockk(relaxUnitFun = true),
         coinBaseRealTimeRepository: CoinBaseRealTimeRepository = mockk(relaxUnitFun = true)
 
     ): MarketViewModel = MarketViewModel(
         marketDataUseCase,
         coinBaseRepository = coinbaseRepository,
-        coinBaseWSService = coinBaseWSService,
         coinBaseRealTimeRepository = coinBaseRealTimeRepository
     )
 

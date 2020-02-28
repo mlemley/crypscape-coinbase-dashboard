@@ -3,7 +3,6 @@ package app.lemley.crypscape.ui.market
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.Subscribe
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
@@ -16,12 +15,10 @@ import app.lemley.crypscape.ui.base.Result
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import app.lemley.crypscape.usecase.UseCase
-import com.tinder.scarlet.WebSocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -30,7 +27,6 @@ import kotlinx.coroutines.launch
 class MarketViewModel(
     marketDataUseCase: MarketDataUseCase,
     coinBaseRepository: CoinBaseRepository,
-    val coinBaseWSService: CoinBaseWSService,
     val coinBaseRealTimeRepository: CoinBaseRealTimeRepository
 ) : BaseViewModel<MarketEvents, MarketState>() {
 
@@ -46,30 +42,19 @@ class MarketViewModel(
                 .conflate()
                 .collect()
 
-            coinBaseWSService.observeWebSocketEvent().consume {
-                when (this) {
-                    is WebSocket.Event.OnConnectionOpened<*> -> productId?.let {
-                        coinBaseRealTimeRepository.subscribe(
-                            listOf(it),
-                            listOf(Subscribe.Channel.Ticker)
-                        )
-                    }
-                    else -> {
-                    }
-                }
-            }
         }
     }
 
-    // Consider pushing data onto state rather than it's own live data
     private var productId: String? = null
         set(value) {
-            value?.let {
-                coinBaseRealTimeRepository.unsubscribe(listOf(it), listOf(Subscribe.Channel.Ticker))
-            }
             field = value
-            value?.let {
-                coinBaseRealTimeRepository.subscribe(listOf(it), listOf(Subscribe.Channel.Ticker))
+            viewModelScope.launch {
+                value?.let {
+                    coinBaseRealTimeRepository.subscribe(
+                        listOf(it),
+                        listOf(Subscribe.Channel.Ticker)
+                    )
+                }
             }
         }
 
