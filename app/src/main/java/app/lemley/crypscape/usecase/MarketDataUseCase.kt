@@ -58,31 +58,6 @@ class MarketDataUseCase constructor(
             coinBaseRepository.tickerForConfiguration(marketConfiguration)?.let {
                 send(MarketResults.TickerResult(it))
             }
-/*
-            val subscribeMessage = subscriptionFor(
-                type = Subscribe.Type.Subscribe,
-                products = listOf("BTC-USD"),
-                channels = listOf(Subscribe.Channel.Ticker)
-            )
-            coinBaseWSService.observeWebSocketEvent()
-                .consumeEach {
-                    when (it) {
-                        is WebSocket.Event.OnConnectionOpened<*> -> {
-                            Log.w("--websocket--", "connection opened")
-                            coinBaseWSService.sendSubscribe(subscribeMessage)
-                            Log.w("--websocket--", "subscribe")
-                            Log.w("--websocket--", "observe ticker changes")
-                            coinBaseWSService.observeTicker().consumeEach { ticker ->
-                                Log.e(
-                                    "-- websocket --",
-                                    "Bitcoin price is ${ticker.price} at ${ticker.time}"
-                                )
-
-                                send(MarketResults.TickerResult(ticker))
-                            }
-                        }
-                    }
-                }*/
         }.flowOn(Dispatchers.IO)
 
     private fun handleFetchDefaultMarketData(): Flow<Result> = channelFlow<Result> {
