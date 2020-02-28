@@ -37,7 +37,7 @@ val appModule = module {
 
     // View Models
     viewModel { SplashViewModel(get(), get(), get(named("SplashLoadingMillis"))) }
-    viewModel { MarketViewModel(get(), get(), get()) }
+    viewModel { MarketViewModel(get(), get(), get(), get()) }
 
     // Repositories
 

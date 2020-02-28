@@ -4,6 +4,7 @@ import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Granularity
+import app.lemley.crypscape.repository.CoinBaseRealTimeRepository
 import app.lemley.crypscape.repository.CoinBaseRepository
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.usecase.MarketDataUseCase
@@ -24,12 +25,14 @@ class MarketViewModelTest {
     private fun createViewModel(
         marketDataUseCase: MarketDataUseCase = mockk(relaxUnitFun = true),
         coinbaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true),
-        coinBaseWSService: CoinBaseWSService = mockk(relaxUnitFun = true)
+        coinBaseWSService: CoinBaseWSService = mockk(relaxUnitFun = true),
+        coinBaseRealTimeRepository: CoinBaseRealTimeRepository = mockk(relaxUnitFun = true)
 
     ): MarketViewModel = MarketViewModel(
         marketDataUseCase,
         coinBaseRepository = coinbaseRepository,
-        coinBaseWSService = coinBaseWSService
+        coinBaseWSService = coinBaseWSService,
+        coinBaseRealTimeRepository = coinBaseRealTimeRepository
     )
 
     @Test

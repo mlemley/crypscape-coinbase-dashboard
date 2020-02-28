@@ -5,10 +5,10 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.Subscribe
-import app.lemley.crypscape.client.coinbase.model.subscriptionFor
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.repository.CoinBaseRealTimeRepository
 import app.lemley.crypscape.repository.CoinBaseRepository
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.ui.base.BaseViewModel
@@ -30,12 +30,13 @@ import kotlinx.coroutines.launch
 class MarketViewModel(
     marketDataUseCase: MarketDataUseCase,
     coinBaseRepository: CoinBaseRepository,
-    val coinBaseWSService: CoinBaseWSService
+    val coinBaseWSService: CoinBaseWSService,
+    val coinBaseRealTimeRepository: CoinBaseRealTimeRepository
 ) : BaseViewModel<MarketEvents, MarketState>() {
 
     init {
         viewModelScope.launch {
-            coinBaseWSService.observeTicker().consumeAsFlow()
+            coinBaseRealTimeRepository.tickerFlow
                 .filter {
                     it.productId == productId
                 }
@@ -48,8 +49,9 @@ class MarketViewModel(
             coinBaseWSService.observeWebSocketEvent().consume {
                 when (this) {
                     is WebSocket.Event.OnConnectionOpened<*> -> productId?.let {
-                        subscribeToProduct(
-                            it
+                        coinBaseRealTimeRepository.subscribe(
+                            listOf(it),
+                            listOf(Subscribe.Channel.Ticker)
                         )
                     }
                     else -> {
@@ -63,33 +65,13 @@ class MarketViewModel(
     private var productId: String? = null
         set(value) {
             value?.let {
-                unsubscribeFromProduct(it)
+                coinBaseRealTimeRepository.unsubscribe(listOf(it), listOf(Subscribe.Channel.Ticker))
             }
             field = value
             value?.let {
-                subscribeToProduct(it)
+                coinBaseRealTimeRepository.subscribe(listOf(it), listOf(Subscribe.Channel.Ticker))
             }
         }
-
-    private fun unsubscribeFromProduct(productId: String) {
-        coinBaseWSService.sendSubscribe(
-            subscriptionFor(
-                Subscribe.Type.Unsubscribe,
-                listOf(productId),
-                listOf(Subscribe.Channel.Ticker)
-            )
-        )
-    }
-
-    private fun subscribeToProduct(productId: String) {
-        coinBaseWSService.sendSubscribe(
-            subscriptionFor(
-                Subscribe.Type.Subscribe,
-                listOf(productId),
-                listOf(Subscribe.Channel.Ticker)
-            )
-        )
-    }
 
     class CandleFilter(val marketConfiguration: MarketConfiguration)
 
