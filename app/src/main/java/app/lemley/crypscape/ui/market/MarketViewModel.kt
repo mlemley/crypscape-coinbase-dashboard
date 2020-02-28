@@ -36,8 +36,7 @@ class MarketViewModel(
     init {
         viewModelScope.launch {
             coinBaseWSService.observeTicker().consumeEach {
-                tickerChannel.offer(it)
-                //dispatchEvent()
+                dispatchEvent(MarketEvents.TickerChangedEvent(it))
             }
         }
     }
@@ -90,8 +89,9 @@ class MarketViewModel(
     override fun Flow<MarketEvents>.eventTransform(): Flow<Action> = flow {
         collect {
             when (it) {
-                MarketEvents.Init -> emit(MarketActions.FetchMarketDataForDefaultConfiguration)
+                is MarketEvents.Init -> emit(MarketActions.FetchMarketDataForDefaultConfiguration)
                 is MarketEvents.GranularitySelected -> emit(MarketActions.OnGranularityChanged(it.granularity))
+                is MarketEvents.TickerChangedEvent -> emit(MarketActions.OnTickerTick(it.ticker))
             }.exhaustive
         }
     }

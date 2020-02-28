@@ -47,15 +47,18 @@ class MarketViewModelTest {
     @Test
     fun maps_events_to_actions() {
         val viewModel = createViewModel()
+        val ticker = Ticker(price = 9_898.00)
 
         val events = flowOf(
             MarketEvents.Init,
-            MarketEvents.GranularitySelected(Granularity.Minute)
+            MarketEvents.GranularitySelected(Granularity.Minute),
+            MarketEvents.TickerChangedEvent(ticker)
         )
 
         val expectedActions = listOf(
             MarketActions.FetchMarketDataForDefaultConfiguration,
-            MarketActions.OnGranularityChanged(Granularity.Minute)
+            MarketActions.OnGranularityChanged(Granularity.Minute),
+            MarketActions.OnTickerTick(ticker)
         )
 
         val actual = mutableListOf<Action>()
