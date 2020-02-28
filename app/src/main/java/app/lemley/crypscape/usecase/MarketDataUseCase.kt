@@ -24,8 +24,7 @@ import kotlinx.coroutines.flow.flowOn
 @ExperimentalCoroutinesApi
 class MarketDataUseCase constructor(
     val defaultMarketDataRepository: DefaultMarketDataRepository,
-    val coinBaseRepository: CoinBaseRepository,
-    val coinBaseWSService: CoinBaseWSService
+    val coinBaseRepository: CoinBaseRepository
 ) : UseCase {
 
     sealed class MarketActions : Action {
