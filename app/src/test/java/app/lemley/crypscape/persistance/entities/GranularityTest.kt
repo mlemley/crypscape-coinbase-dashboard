@@ -21,7 +21,7 @@ class GranularityTest {
         val toXCoordinate2 = Granularity.Minute.toXCoordinate(utc2)
         println(toXCoordinate1)
         println(toXCoordinate2)
-        //assertThat(toXCoordinate2 - toXCoordinate1).isEqualTo(1F)
+        assertThat(toXCoordinate2 - toXCoordinate1).isEqualTo(1F)
         assertThat(Granularity.Minute.fromXCoordinate(toXCoordinate1).toEpochMilli()).isEqualTo(utc1.toEpochMilli())
     }
 
