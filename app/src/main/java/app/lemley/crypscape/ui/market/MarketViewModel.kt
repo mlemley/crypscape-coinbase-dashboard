@@ -16,10 +16,12 @@ import app.lemley.crypscape.ui.base.Result
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import app.lemley.crypscape.usecase.UseCase
+import com.tinder.scarlet.WebSocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -40,7 +42,15 @@ class MarketViewModel(
                 .onEach {
                     dispatchEvent(MarketEvents.TickerChangedEvent(it))
                 }
+                .conflate()
                 .collect()
+
+            coinBaseWSService.observeWebSocketEvent().consume {
+                when(this) {
+                    is WebSocket.Event.OnConnectionOpened<*> -> productId?.let {subscribeToProduct(it) }
+                    else -> {}
+                }
+            }
         }
     }
 
@@ -56,21 +66,21 @@ class MarketViewModel(
             }
         }
 
-    private fun unsubscribeFromProduct(it: String) {
+    private fun unsubscribeFromProduct(productId: String) {
         coinBaseWSService.sendSubscribe(
             subscriptionFor(
                 Subscribe.Type.Unsubscribe,
-                listOf(it),
+                listOf(productId),
                 listOf(Subscribe.Channel.Ticker)
             )
         )
     }
 
-    private fun subscribeToProduct(it: String) {
+    private fun subscribeToProduct(productId: String) {
         coinBaseWSService.sendSubscribe(
             subscriptionFor(
                 Subscribe.Type.Subscribe,
-                listOf(it),
+                listOf(productId),
                 listOf(Subscribe.Channel.Ticker)
             )
         )
@@ -82,7 +92,6 @@ class MarketViewModel(
     val candles: LiveData<List<Candle>> = candleChannel.asFlow()
         .flatMapLatest { filter ->
             coinBaseRepository.candlesForConfiguration(filter.marketConfiguration)
-
         }
         .flowOn(Dispatchers.IO)
         .asLiveData()
