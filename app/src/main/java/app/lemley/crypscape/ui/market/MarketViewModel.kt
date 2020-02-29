@@ -2,9 +2,12 @@ package app.lemley.crypscape.ui.market
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import app.lemley.crypscape.client.coinbase.model.Subscribe
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.repository.CoinBaseRealTimeRepository
 import app.lemley.crypscape.repository.CoinBaseRepository
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.ui.base.BaseViewModel
@@ -17,19 +20,47 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @FlowPreview
 @ExperimentalCoroutinesApi
 class MarketViewModel(
     marketDataUseCase: MarketDataUseCase,
-    coinBaseRepository: CoinBaseRepository
+    coinBaseRepository: CoinBaseRepository,
+    val coinBaseRealTimeRepository: CoinBaseRealTimeRepository
 ) : BaseViewModel<MarketEvents, MarketState>() {
 
+    init {
+        viewModelScope.launch {
+            coinBaseRealTimeRepository.tickerFlow
+                .filter {
+                    it.productId == productId
+                }
+                .onEach {
+                    dispatchEvent(MarketEvents.TickerChangedEvent(it))
+                }
+                .conflate()
+                .collect()
+
+        }
+    }
+
+    private var productId: String? = null
+        set(value) {
+            field = value
+            viewModelScope.launch {
+                value?.let {
+                    coinBaseRealTimeRepository.subscribe(
+                        listOf(it),
+                        listOf(Subscribe.Channel.Ticker)
+                    )
+                }
+            }
+        }
 
     class CandleFilter(val marketConfiguration: MarketConfiguration)
 
     private val candleChannel = ConflatedBroadcastChannel<CandleFilter>()
-
     val candles: LiveData<List<Candle>> = candleChannel.asFlow()
         .flatMapLatest { filter ->
             coinBaseRepository.candlesForConfiguration(filter.marketConfiguration)
@@ -44,8 +75,13 @@ class MarketViewModel(
     override fun Flow<MarketEvents>.eventTransform(): Flow<Action> = flow {
         collect {
             when (it) {
-                MarketEvents.Init -> emit(MarketActions.FetchMarketDataForDefaultConfiguration)
-                is MarketEvents.GranularitySelected -> emit(MarketActions.OnGranularityChanged(it.granularity))
+                is MarketEvents.Init -> emit(MarketActions.FetchMarketDataForDefaultConfiguration)
+                is MarketEvents.GranularitySelected -> emit(
+                    MarketActions.OnGranularityChanged(
+                        it.granularity
+                    )
+                )
+                is MarketEvents.TickerChangedEvent -> emit(MarketActions.OnTickerTick(it.ticker))
             }.exhaustive
         }
     }
@@ -56,6 +92,7 @@ class MarketViewModel(
                 marketConfiguration = result.marketConfiguration
             ).also {
                 candleChannel.offer(CandleFilter(result.marketConfiguration))
+                productId = result.marketConfiguration.productRemoteId
             }
 
             is MarketDataUseCase.MarketResults.TickerResult -> copy(

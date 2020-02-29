@@ -2,10 +2,9 @@ package app.lemley.crypscape.ui.market
 
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
-import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
+import app.lemley.crypscape.repository.CoinBaseRealTimeRepository
 import app.lemley.crypscape.repository.CoinBaseRepository
-import app.lemley.crypscape.repository.CoinBaseTickerRepository
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
@@ -13,7 +12,6 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -25,11 +23,13 @@ class MarketViewModelTest {
 
     private fun createViewModel(
         marketDataUseCase: MarketDataUseCase = mockk(relaxUnitFun = true),
-        coinbaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true)
+        coinbaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true),
+        coinBaseRealTimeRepository: CoinBaseRealTimeRepository = mockk(relaxUnitFun = true)
 
     ): MarketViewModel = MarketViewModel(
         marketDataUseCase,
-        coinBaseRepository = coinbaseRepository
+        coinBaseRepository = coinbaseRepository,
+        coinBaseRealTimeRepository = coinBaseRealTimeRepository
     )
 
     @Test
@@ -47,15 +47,18 @@ class MarketViewModelTest {
     @Test
     fun maps_events_to_actions() {
         val viewModel = createViewModel()
+        val ticker = Ticker(price = 9_898.00)
 
         val events = flowOf(
             MarketEvents.Init,
-            MarketEvents.GranularitySelected(Granularity.Minute)
+            MarketEvents.GranularitySelected(Granularity.Minute),
+            MarketEvents.TickerChangedEvent(ticker)
         )
 
         val expectedActions = listOf(
             MarketActions.FetchMarketDataForDefaultConfiguration,
-            MarketActions.OnGranularityChanged(Granularity.Minute)
+            MarketActions.OnGranularityChanged(Granularity.Minute),
+            MarketActions.OnTickerTick(ticker)
         )
 
         val actual = mutableListOf<Action>()
@@ -73,7 +76,8 @@ class MarketViewModelTest {
         val viewModel = createViewModel()
         val initState = viewModel.makeInitState()
 
-        val marketConfiguration = MarketConfiguration(1L,
+        val marketConfiguration = MarketConfiguration(
+            1L,
             "BTC-USD",
             Granularity.Hour
         )

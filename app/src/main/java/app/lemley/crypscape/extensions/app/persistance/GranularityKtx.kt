@@ -1,9 +1,6 @@
 package app.lemley.crypscape.extensions.app.persistance
 
-import androidx.core.content.ContextCompat
 import app.lemley.crypscape.extensions.exhaustive
-import app.lemley.crypscape.extensions.toEpochMinute
-import app.lemley.crypscape.extensions.utc
 import app.lemley.crypscape.persistance.entities.Granularity
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
@@ -11,8 +8,13 @@ import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset.UTC
 
-private val MINUTE_SCALE: Instant = LocalDateTime.of(
-    LocalDate.of(2009, 1, 1),
+// Small granularities begin to over lap when creating coordinates using
+// candle.time.toEpochSecond / granularity.seconds
+// need to base the date off of a more current date or
+// find a different way to represent the coordinate that can
+// be mapped back to a valid xLabel
+private val TimeScale: Instant = LocalDateTime.of(
+    LocalDate.of(2017, 1, 1),
     LocalTime.of(0, 0)
 ).toInstant(UTC)
 
@@ -39,32 +41,15 @@ val Granularity.visibleXRange: Float
         else -> 65F
     }
 
-fun scaleMinuteDown(instant: Instant): Long {
-    return (instant.toEpochMinute() - MINUTE_SCALE.toEpochMinute())
+
+fun Granularity.toXCoordinate(instant: Instant): Float = scaleDown(instant, this).toFloat()
+
+fun Granularity.fromXCoordinate(value: Float): Instant = scaleUp(value.toLong(), this)
+
+private fun scaleUp(value: Long, granularity: Granularity): Instant {
+    return Instant.ofEpochMilli(((value * granularity.seconds) * 1_000) + TimeScale.toEpochMilli())
 }
 
-fun Granularity.toXCoordinate(instant: Instant): Float {
-    return when (this) {
-        Granularity.Minute -> scaleMinuteDown(instant).toFloat()
-        Granularity.FiveMinutes -> (instant.utc().toEpochSecond() / Granularity.FiveMinutes.seconds).toFloat()
-        Granularity.FifteenMinutes -> (instant.utc().toEpochSecond() / Granularity.FifteenMinutes.seconds).toFloat()
-        Granularity.Hour -> (instant.utc().toEpochSecond() / Granularity.Hour.seconds).toFloat()
-        Granularity.Day -> (instant.utc().toEpochSecond() / Granularity.Day.seconds).toFloat()
-        Granularity.SixHours -> (instant.utc().toEpochSecond() / Granularity.SixHours.seconds).toFloat()
-    }.exhaustive
-}
-
-fun Granularity.fromXCoordinate(value: Float): Instant {
-    return when (this) {
-        Granularity.Minute -> minuteFromScaledValue(value.toLong())
-        Granularity.FiveMinutes -> Instant.ofEpochSecond(value.toLong() * Granularity.FiveMinutes.seconds)
-        Granularity.FifteenMinutes -> Instant.ofEpochSecond(value.toLong() * Granularity.FifteenMinutes.seconds)
-        Granularity.Hour -> Instant.ofEpochSecond(value.toLong() * Granularity.Hour.seconds)
-        Granularity.Day -> Instant.ofEpochSecond(value.toLong() * Granularity.Day.seconds)
-        Granularity.SixHours -> Instant.ofEpochSecond(value.toLong() * Granularity.SixHours.seconds)
-    }.exhaustive
-}
-
-private fun minuteFromScaledValue(value: Long): Instant {
-    return Instant.ofEpochSecond((value + MINUTE_SCALE.toEpochMinute()) * 60)
+private fun scaleDown(instant: Instant, granularity: Granularity): Long {
+    return (instant.toEpochMilli() - TimeScale.toEpochMilli()) / 1_000 / granularity.seconds
 }

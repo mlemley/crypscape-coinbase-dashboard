@@ -8,7 +8,6 @@ import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
-import app.lemley.crypscape.persistance.entities.Product
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
 import kotlinx.android.synthetic.main.fragment_market.*
@@ -86,7 +85,7 @@ class MarketFragmentTest {
     @Test
     fun on_state_change__renders_candles() {
         val candles = listOf<Candle>(mockk {
-            every {  granularity } returns Granularity.Hour
+            every { granularity } returns Granularity.Hour
         })
         val marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
         createFragmentScenario(marketChartingManager = marketChartingManager).onFragment { fragment ->
@@ -113,7 +112,7 @@ class MarketFragmentTest {
 
     @Test
     fun on_state_change__renders_ticker() {
-        val  ticker = Ticker(price = 10000.00)
+        val ticker = Ticker(price = 10000.00)
         createFragmentScenario().onFragment { fragment ->
             fragment.stateObserver.onChanged(MarketState(ticker = ticker))
 
@@ -124,7 +123,7 @@ class MarketFragmentTest {
     @Test
     fun selects_tab_when_initially_loaded() {
         createFragmentScenario().onFragment { fragment ->
-            fragment.stateObserver.onChanged(MarketState(marketConfiguration = mockk{
+            fragment.stateObserver.onChanged(MarketState(marketConfiguration = mockk {
                 every { granularity } returns Granularity.Hour
                 every { productRemoteId } returns "BTC-USD"
             }))

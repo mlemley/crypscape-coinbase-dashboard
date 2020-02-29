@@ -68,7 +68,6 @@ class MarketFragment : Fragment() {
                 granularity = withView(R.id.granularity)
                 marketViewModel.candles.observe(viewLifecycleOwner, candleObserver)
                 marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
-                marketViewModel.dispatchEvent(MarketEvents.Init)
             }
             whenResumed {
                 granularity?.addOnTabSelectedListener(granularitySelectedListener)
@@ -104,6 +103,10 @@ class MarketFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_market, container, false)
 
+    override fun onResume() {
+        super.onResume()
+        marketViewModel.dispatchEvent(MarketEvents.Init)
+    }
 
     private fun updateMarketConfiguration(marketConfiguration: MarketConfiguration) {
         withView<TextView>(R.id.currency_name)?.text =

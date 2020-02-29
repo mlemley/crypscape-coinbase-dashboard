@@ -16,4 +16,5 @@ val repositoryModule = module {
     factory { CoinBaseProductRepository(get(), get(), get(), get(), get()) }
     factory { CoinBaseCandleRepository(get(), get(), get(), get()) }
     factory { CoinBaseTickerRepository(get()) }
+    factory { CoinBaseRealTimeRepository(get()) }
 }

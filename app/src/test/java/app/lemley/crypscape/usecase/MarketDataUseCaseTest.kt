@@ -32,6 +32,8 @@ class MarketDataUseCaseTest {
     fun can_process_its_actions() {
         val useCase = createUseCase()
 
+        assertThat(useCase.canProcess(MarketActions.OnTickerTick(Ticker()))).isTrue()
+        assertThat(useCase.canProcess(MarketActions.OnGranularityChanged(Granularity.Minute))).isTrue()
         assertThat(useCase.canProcess(MarketActions.FetchMarketDataForDefaultConfiguration)).isTrue()
         assertThat(useCase.canProcess(object : Action {})).isFalse()
     }
@@ -86,6 +88,23 @@ class MarketDataUseCaseTest {
         assertThat(results).isEqualTo(
             listOf(
                 MarketResults.MarketConfigurationResult(marketConfiguration),
+                MarketResults.TickerResult(ticker)
+            )
+        )
+    }
+
+    @Test
+    fun handle__ticker_tick() {
+        val ticker = Ticker(price = 8_998.00)
+
+        val results = mutableListOf<Result>()
+        runBlocking {
+            val result = createUseCase().handleAction(MarketActions.OnTickerTick(ticker))
+            result.toList(results)
+        }
+
+        assertThat(results).isEqualTo(
+            listOf(
                 MarketResults.TickerResult(ticker)
             )
         )
