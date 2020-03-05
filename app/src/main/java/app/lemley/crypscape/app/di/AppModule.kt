@@ -1,5 +1,6 @@
 package app.lemley.crypscape.app.di
 
+import app.lemley.crypscape.app.CoroutineContextProvider
 import app.lemley.crypscape.charting.chartingModule
 import app.lemley.crypscape.client.coinbase.coinbaseApiModule
 import app.lemley.crypscape.extensions.app.sharedPreferences
@@ -25,6 +26,7 @@ import org.koin.dsl.module
 val appModule = module {
     // Injectable Constants
     single(named("SplashLoadingMillis")) { 1_000 }
+    single { CoroutineContextProvider() }
 
     // Android Services
     single { androidContext().sharedPreferences }
@@ -37,7 +39,7 @@ val appModule = module {
 
     // View Models
     viewModel { SplashViewModel(get(), get(), get(named("SplashLoadingMillis"))) }
-    viewModel { MarketViewModel(get(), get(), get()) }
+    viewModel { MarketViewModel(get(), get(), get(), get(), get()) }
 
     // Repositories
 

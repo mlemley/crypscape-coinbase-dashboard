@@ -3,6 +3,8 @@ package app.lemley.crypscape.ui.market
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import app.lemley.crypscape.app.CoroutineContextProvider
+import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.Subscribe
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
@@ -15,7 +17,7 @@ import app.lemley.crypscape.ui.base.Result
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import app.lemley.crypscape.usecase.UseCase
-import kotlinx.coroutines.Dispatchers
+import com.tinder.scarlet.WebSocket
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -27,7 +29,9 @@ import kotlinx.coroutines.launch
 class MarketViewModel(
     marketDataUseCase: MarketDataUseCase,
     coinBaseRepository: CoinBaseRepository,
-    val coinBaseRealTimeRepository: CoinBaseRealTimeRepository
+    val coinBaseRealTimeRepository: CoinBaseRealTimeRepository,
+    coinBaseWSService: CoinBaseWSService,
+    val contextProvider: CoroutineContextProvider
 ) : BaseViewModel<MarketEvents, MarketState>() {
 
     init {
@@ -65,7 +69,24 @@ class MarketViewModel(
         .flatMapLatest { filter ->
             coinBaseRepository.candlesForConfiguration(filter.marketConfiguration)
         }
-        .flowOn(Dispatchers.IO)
+        .flowOn(contextProvider.IO)
+        .asLiveData()
+
+    val wsConnection: LiveData<Boolean> = coinBaseWSService.observeWebSocketEvent().consumeAsFlow()
+        .filter {
+            when (it) {
+                is WebSocket.Event.OnConnectionOpened<Any>,
+                is WebSocket.Event.OnConnectionClosed -> true
+                else -> false
+            }
+        }
+        .map {
+            when (it) {
+                is WebSocket.Event.OnConnectionOpened<Any> -> true
+                else -> false
+            }
+        }
+        .conflate()
         .asLiveData()
 
     override val useCases: List<UseCase> = listOf(marketDataUseCase)
