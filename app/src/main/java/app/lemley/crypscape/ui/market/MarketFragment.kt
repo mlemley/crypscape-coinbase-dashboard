@@ -33,6 +33,7 @@ class MarketFragment : Fragment() {
     private var chart: CombinedChart? = null
     private var granularity: TabLayout? = null
     private var currencyValue: TextView? = null
+    private var currencyPercentChange: TextView? = null
     private val marketViewModel: MarketViewModel by viewModel()
     private val chartingManager: MarketChartingManager by inject()
 
@@ -65,6 +66,7 @@ class MarketFragment : Fragment() {
             whenStarted {
                 chart = withView(R.id.chart)
                 currencyValue = withView(R.id.currency_value)
+                currencyPercentChange = withView(R.id.currency_change)
                 granularity = withView(R.id.granularity)
                 marketViewModel.candles.observe(viewLifecycleOwner, candleObserver)
                 marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
@@ -125,5 +127,6 @@ class MarketFragment : Fragment() {
 
     private fun updateWithTicker(ticker: Ticker) {
         currencyValue?.text = ticker.price.toUsd().toFormattedCurrency()
+        currencyPercentChange?.text = ticker.dailyPercentageChange.toString()
     }
 }
