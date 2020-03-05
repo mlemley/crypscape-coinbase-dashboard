@@ -1,5 +1,6 @@
 package app.lemley.crypscape.ui.market
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -125,8 +126,14 @@ class MarketFragment : Fragment() {
 
     private fun selectTabAt(position: Int) = granularity?.getTabAt(position)?.select()
 
+    @SuppressLint("SetTextI18n")
     private fun updateWithTicker(ticker: Ticker) {
         currencyValue?.text = ticker.price.toUsd().toFormattedCurrency()
-        currencyPercentChange?.text = ticker.dailyPercentageChange.toString()
+        ticker.dailyPercentageChange.let { change ->
+            currencyPercentChange?.apply {
+                text = "$change%"
+                setTextAppearance(if (change >= 0) R.style.TextAppearance_RealTime_ChangePercentageUp else R.style.TextAppearance_RealTime_ChangePercentageDown)
+            }
+        }
     }
 }
