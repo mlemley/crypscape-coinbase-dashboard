@@ -1,6 +1,6 @@
 package app.lemley.crypscape.repository
 
-import app.lemley.crypscape.client.coinbase.CoinBaseApiClient
+import app.lemley.crypscape.client.coinbase.CoinBaseApi
 import app.lemley.crypscape.client.coinbase.model.CandleRequest
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.dao.CandleDao
@@ -24,7 +24,7 @@ import app.lemley.crypscape.client.coinbase.model.Granularity as CbGranularity
 class CoinBaseCandleRepositoryTest {
 
     private fun createRepository(
-        apiClient: CoinBaseApiClient = mockk(relaxUnitFun = true),
+        apiClient: CoinBaseApi = mockk(relaxUnitFun = true),
         candleDao: CandleDao = mockk(relaxUnitFun = true),
         candleConverter: CandleConverter = mockk(relaxUnitFun = true),
         productDao: ProductDao = mockk(relaxUnitFun = true)
@@ -52,7 +52,7 @@ class CoinBaseCandleRepositoryTest {
             CandleRequest(productId = productServerId, granularity = CbGranularity.Hour)
 
         val candleFlow = flowOf<List<Candle>>(mockk(), mockk())
-        val productId:Long = 25
+        val productId: Long = 25
         val product: Product = mockk {
             every { id } returns 25
             every { serverId } returns productServerId
@@ -89,11 +89,19 @@ class CoinBaseCandleRepositoryTest {
             } returns candle2
         }
 
-        val coinBaseApiClient: CoinBaseApiClient = mockk {
-            every { runBlocking { candlesFor(candleRequest) } } returns cbCandles
+        val coinBaseApiClient: CoinBaseApi = mockk {
+            every {
+                runBlocking {
+                    candlesFor(
+                        candleRequest.productId,
+                        candleRequest.asMap()
+                    )
+                }
+            } returns cbCandles
         }
 
-        val repository = createRepository(coinBaseApiClient, candleDao, candleConverter, productDao = productDao)
+        val repository =
+            createRepository(coinBaseApiClient, candleDao, candleConverter, productDao = productDao)
 
         runBlocking {
             assertThat(repository.candlesFor(configuration)).isEqualTo(candleFlow)

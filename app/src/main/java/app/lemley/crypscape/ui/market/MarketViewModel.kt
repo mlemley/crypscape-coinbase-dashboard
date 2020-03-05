@@ -58,7 +58,7 @@ class MarketViewModel(
             }
         }
 
-    class CandleFilter(val marketConfiguration: MarketConfiguration)
+    data class CandleFilter(val marketConfiguration: MarketConfiguration)
 
     private val candleChannel = ConflatedBroadcastChannel<CandleFilter>()
     val candles: LiveData<List<Candle>> = candleChannel.asFlow()
