@@ -1,7 +1,6 @@
 package app.lemley.crypscape.client.coinbase
 
 import android.app.Application
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.tinder.scarlet.Scarlet
 import com.tinder.scarlet.lifecycle.android.AndroidLifecycle
 import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter
@@ -21,20 +20,11 @@ object CoinBaseApiFactory {
         // add interceptors here
         .build()
 
-    private fun retrofit(baseUrl: String): Retrofit = Retrofit.Builder()
+    fun coinbaseApi(baseUrl: String= apiBaseUrl): CoinBaseApi = Retrofit.Builder()
         .baseUrl(baseUrl)
         .client(coinBaseClient)
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .build()
-
-    fun coinBaseApiClient(baseUrl: String = apiBaseUrl): CoinBaseApiClient =
-        CoinBaseApiClient(
-            retrofit(
-                baseUrl
-            ).create(CoinBaseApi::class.java)
-        )
-
+        .build().create(CoinBaseApi::class.java)
 
     fun coinBaseWSClient(application: Application): CoinBaseWSService {
         val scarlet = Scarlet.Builder()

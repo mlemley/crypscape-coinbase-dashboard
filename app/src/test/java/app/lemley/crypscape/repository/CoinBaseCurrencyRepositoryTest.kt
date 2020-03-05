@@ -1,6 +1,6 @@
 package app.lemley.crypscape.repository
 
-import app.lemley.crypscape.client.coinbase.CoinBaseApiClient
+import app.lemley.crypscape.client.coinbase.CoinBaseApi
 import app.lemley.crypscape.persistance.dao.CurrencyDao
 import app.lemley.crypscape.persistance.dao.PlatformDao
 import app.lemley.crypscape.persistance.entities.Currency
@@ -20,7 +20,7 @@ import app.lemley.crypscape.client.coinbase.model.Currency as CBCurrency
 class CoinBaseCurrencyRepositoryTest {
 
     private fun createRepository(
-        coinBaseApiClient: CoinBaseApiClient = mockk(relaxed = true),
+        coinBaseApiClient: CoinBaseApi= mockk(relaxed = true),
         currencyDao: CurrencyDao = mockk(relaxed = true),
         platformDao: PlatformDao = mockk(relaxed = true)
 
@@ -33,7 +33,7 @@ class CoinBaseCurrencyRepositoryTest {
 
     @Test
     fun syncing_currency_will_persist_data_in_storage() = runBlockingTest {
-        val coinBaseApiClient: CoinBaseApiClient = mockk(relaxed = true) {
+        val coinBaseApiClient: CoinBaseApi= mockk(relaxed = true) {
             every { runBlocking { currencies() } } returns listOf(
                 CBCurrency(id = "BTC", name = "Bitcoin", minSize = 0.00000001),
                 CBCurrency(id = "USD", name = "United States Dollar", minSize = 0.01)

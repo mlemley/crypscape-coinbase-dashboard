@@ -1,15 +1,14 @@
 package app.lemley.crypscape.ui.base
 
-import com.crashlytics.android.Crashlytics
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import app.lemley.crypscape.usecase.UseCase
+import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 
 interface State
@@ -19,7 +18,7 @@ interface Result
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-abstract class BaseViewModel<E:Event, S: State> : ViewModel() {
+abstract class BaseViewModel<E : Event, S : State> : ViewModel() {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var events: Channel<E> = Channel(Channel.UNLIMITED)
@@ -44,7 +43,7 @@ abstract class BaseViewModel<E:Event, S: State> : ViewModel() {
             .distinctUntilChanged()
             .catch {
                 Crashlytics.logException(it)
-                Log.e("BaseModelView", it.localizedMessage)
+                Log.e("BaseModelView", it.localizedMessage ?: "")
                 it.printStackTrace()
             }
             .onEach { emit(it) }

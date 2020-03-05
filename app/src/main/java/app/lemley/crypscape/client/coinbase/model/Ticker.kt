@@ -1,6 +1,8 @@
 package app.lemley.crypscape.client.coinbase.model
 
 import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 
 data class Ticker(
@@ -16,7 +18,7 @@ data class Ticker(
     var productId: String = "",
 
     @SerializedName("last_size")
-    var lastSize: Double =  0.0,
+    var lastSize: Double = 0.0,
 
     var price: Double = 0.0,
     var bid: Double = 0.0,
@@ -34,4 +36,12 @@ data class Ticker(
 
     var volume: Double = 0.0,
     var size: Double = 0.0
-)
+) {
+
+    val dailyPercentageChange: Double
+        get() = if (open24h == 0.0) 0.0
+        else
+            BigDecimal(
+                ((price - open24h) / open24h) * 100.0
+            ).setScale(2, RoundingMode.HALF_UP).toDouble()
+}

@@ -1,6 +1,6 @@
 package app.lemley.crypscape.repository
 
-import app.lemley.crypscape.client.coinbase.CoinBaseApiClient
+import app.lemley.crypscape.client.coinbase.CoinBaseApi
 import app.lemley.crypscape.client.coinbase.model.CandleRequest
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.dao.CandleDao
@@ -14,7 +14,7 @@ import app.lemley.crypscape.client.coinbase.model.Granularity as CBGranularity
 
 @ExperimentalCoroutinesApi
 class CoinBaseCandleRepository constructor(
-    private val coinBaseApiClient: CoinBaseApiClient,
+    private val coinBaseApi: CoinBaseApi,
     private val candleDao: CandleDao,
     private val candleConverter: CandleConverter,
     private val productDao: ProductDao
@@ -22,26 +22,25 @@ class CoinBaseCandleRepository constructor(
 
     suspend fun candlesFor(marketConfiguration: MarketConfiguration): Flow<List<Candle>> {
         return productDao.byServerId(
-            marketConfiguration.platformId,
-            marketConfiguration.productRemoteId
-        )
+                marketConfiguration.platformId,
+                marketConfiguration.productRemoteId
+            )
             ?.let { product ->
                 with(marketConfiguration) {
-                    val candles = coinBaseApiClient.candlesFor(
-                        CandleRequest(
-                            productId = product.serverId,
-                            granularity = CBGranularity.fromSeconds(granularity.seconds)
-                        )
-                    )
-                    candles?.forEach {
-                        candleDao.insertOrUpdate(
-                            candleConverter.convert(
-                                platformId,
-                                product.id,
-                                granularity,
-                                it
+                    CandleRequest(
+                        productId = product.serverId,
+                        granularity = CBGranularity.fromSeconds(granularity.seconds)
+                    ).also {
+                        coinBaseApi.candlesFor(it.productId, it.asMap()).forEach { data ->
+                            candleDao.insertOrUpdate(
+                                candleConverter.convert(
+                                    platformId,
+                                    product.id,
+                                    granularity,
+                                    data
+                                )
                             )
-                        )
+                        }
                     }
                     candleDao.newestProductGranularityDistinctUntilChanged(
                         platformId = platformId,

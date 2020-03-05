@@ -118,7 +118,6 @@ dependencies {
 
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation "com.squareup.okhttp3:logging-interceptor:4.2.2"
     testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
@@ -143,7 +142,9 @@ dependencies {
     testImplementation "androidx.test:runner:$androidx_test_core_version"
     testImplementation "androidx.test:rules:$androidx_runner_version"
     testImplementation "androidx.test:runner:$androidx_runner_version"
+    //noinspection FragmentGradleConfiguration
     implementation "androidx.fragment:fragment-testing:$androidx_fragment_testing_version"
+    debugImplementation "androidx.fragment:fragment-testing:$androidx_fragment_testing_version"
     testImplementation "androidx.test.espresso:espresso-core:$androidx_espresso"
     testImplementation "org.robolectric:robolectric:$robolectric_version"
     testImplementation "com.google.truth:truth:$truth_version"

@@ -121,6 +121,16 @@ class MarketFragmentTest {
     }
 
     @Test
+    fun renders_percentage_change() {
+        val ticker = Ticker(price = 45.5, open24h = 35.0)
+        createFragmentScenario().onFragment { fragment ->
+            fragment.stateObserver.onChanged(MarketState(ticker = ticker))
+
+            assertThat(fragment.currency_change.text).isEqualTo("30.0%")
+        }
+    }
+
+    @Test
     fun selects_tab_when_initially_loaded() {
         createFragmentScenario().onFragment { fragment ->
             fragment.stateObserver.onChanged(MarketState(marketConfiguration = mockk {

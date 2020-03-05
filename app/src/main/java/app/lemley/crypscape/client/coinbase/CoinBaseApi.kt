@@ -12,22 +12,22 @@ import retrofit2.http.QueryMap
 
 interface CoinBaseApi {
     @GET("/time/")
-    fun timeAsync(): Deferred<Response<TimeResponse>>
+    suspend fun time(): TimeResponse
 
     @GET("/products/")
-    fun productsAsync(): Deferred<Response<List<Product>>>
+    suspend fun products(): List<Product>
 
     @GET("/currencies/")
-    fun currenciesAsync(): Deferred<Response<List<Currency>>>
+    suspend fun currencies(): List<Currency>
 
     @GET("/products/{remote_id}/ticker")
-    fun tickerForAsync(
+    suspend fun tickerFor(
         @Path("remote_id") remoteId: String
-    ): Deferred<Response<Ticker>>
+    ): Ticker
 
     @GET("/products/{remote_id}/candles/")
-    fun candlesForAsync(
+    suspend fun candlesFor(
         @Path("remote_id") remoteId: String,
         @QueryMap options: Map<String, String>
-    ): Deferred<Response<Array<Array<Double>>>>
+    ): Array<Array<Double>>
 }

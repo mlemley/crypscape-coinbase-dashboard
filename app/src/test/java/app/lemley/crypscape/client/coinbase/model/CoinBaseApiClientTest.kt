@@ -1,6 +1,6 @@
 package app.lemley.crypscape.client.coinbase.model
 
-import app.lemley.crypscape.client.coinbase.CoinBaseApiClient
+import app.lemley.crypscape.client.coinbase.CoinBaseApi
 import app.lemley.crypscape.client.coinbase.CoinBaseApiFactory
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
@@ -13,8 +13,8 @@ class CoinBaseApiClientTest {
 
     private val mockWebServer = MockWebServer()
 
-    private fun createClient(): CoinBaseApiClient {
-        return CoinBaseApiFactory.coinBaseApiClient(baseUrl = mockWebServer.url("/").toString())
+    private fun createClient(): CoinBaseApi {
+        return CoinBaseApiFactory.coinbaseApi(baseUrl = mockWebServer.url("/").toString())
     }
 
     @Before
@@ -57,8 +57,8 @@ class CoinBaseApiClientTest {
         val recordedRequest = mockWebServer.takeRequest()
 
         assertThat(recordedRequest.path).isEqualTo("/time/")
-        assertThat(timeResponse?.iso).isEqualTo("2015-01-07T23:47:25.201Z")
-        assertThat(timeResponse?.epochAsMillis).isEqualTo(1420674445201)
+        assertThat(timeResponse.iso).isEqualTo("2015-01-07T23:47:25.201Z")
+        assertThat(timeResponse.epochAsMillis).isEqualTo(1420674445201)
     }
 
     @Test
@@ -112,7 +112,7 @@ class CoinBaseApiClientTest {
         )
         enqueueSuccessfulResponse(mockWebServer, 200, TestData.candles)
 
-        val currencies = createClient().candlesFor(candleRequest)
+        val currencies = createClient().candlesFor(candleRequest.productId, candleRequest.asMap())
         val recordedRequest = mockWebServer.takeRequest()
 
         assertThat(recordedRequest.path).isEqualTo("/products/BTC-USD/candles/?granularity=300&start=2018-12-26T12%3A20%3A00.000Z&end=2018-12-26T17%3A20%3A00.000Z")
