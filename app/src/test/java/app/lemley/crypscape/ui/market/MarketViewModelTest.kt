@@ -1,9 +1,6 @@
 package app.lemley.crypscape.ui.market
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Granularity
@@ -15,21 +12,14 @@ import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import com.google.common.truth.Truth.assertThat
-import com.tinder.scarlet.WebSocket
-import io.mockk.*
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -44,14 +34,11 @@ class MarketViewModelTest {
     private fun createViewModel(
         marketDataUseCase: MarketDataUseCase = mockk(relaxUnitFun = true),
         coinbaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true),
-        coinBaseRealTimeRepository: CoinBaseRealTimeRepository = mockk(relaxed = true),
-        coinBaseWSService: CoinBaseWSService = mockk(relaxed = true)
-
+        coinBaseRealTimeRepository: CoinBaseRealTimeRepository = mockk(relaxed = true)
     ): MarketViewModel = MarketViewModel(
         marketDataUseCase,
         coinBaseRepository = coinbaseRepository,
         coinBaseRealTimeRepository = coinBaseRealTimeRepository,
-        coinBaseWSService = coinBaseWSService,
         contextProvider = TestContextProvider()
     )
 
@@ -75,13 +62,15 @@ class MarketViewModelTest {
         val events = flowOf(
             MarketEvents.Init,
             MarketEvents.GranularitySelected(Granularity.Minute),
-            MarketEvents.TickerChangedEvent(ticker)
+            MarketEvents.TickerChangedEvent(ticker),
+            MarketEvents.RealtimeConnectionChangedEvent(true)
         )
 
         val expectedActions = listOf(
             MarketActions.FetchMarketDataForDefaultConfiguration,
             MarketActions.OnGranularityChanged(Granularity.Minute),
-            MarketActions.OnTickerTick(ticker)
+            MarketActions.OnTickerTick(ticker),
+            MarketActions.OnConnectionChanged(true)
         )
 
         val actual = mutableListOf<Action>()
@@ -95,7 +84,7 @@ class MarketViewModelTest {
     }
 
     @Test
-    fun plus__merges_market_configuration() = testCoroutineRule.runBlockingTest{
+    fun plus__merges_market_configuration() = testCoroutineRule.runBlockingTest {
         val viewModel = createViewModel()
         val initState = viewModel.makeInitState()
 
@@ -108,12 +97,14 @@ class MarketViewModelTest {
 
         val results = listOf(
             MarketDataUseCase.MarketResults.MarketConfigurationResult(marketConfiguration),
-            MarketDataUseCase.MarketResults.TickerResult(ticker)
+            MarketDataUseCase.MarketResults.TickerResult(ticker),
+            MarketDataUseCase.MarketResults.RealTimeConnectionChange(true)
         )
 
         val expectedStates: List<MarketState> = listOf(
             initState.copy(marketConfiguration = marketConfiguration),
-            initState.copy(ticker = ticker)
+            initState.copy(ticker = ticker),
+            initState.copy(hasRealtimeConnection = true)
         )
 
         val actual = mutableListOf<MarketState>()
@@ -124,33 +115,5 @@ class MarketViewModelTest {
         }
 
         assertThat(actual).isEqualTo(expectedStates)
-    }
-
-    @Test
-    fun provides__web_socket_connection_state() = testCoroutineRule.runBlockingTest {
-        val socketChannel = Channel<WebSocket.Event>(Channel.BUFFERED)
-        val coinBaseWSService = mockk<CoinBaseWSService>() {
-            every { observeWebSocketEvent() } returns socketChannel as ReceiveChannel<WebSocket.Event>
-        }
-
-        val viewModel = createViewModel(coinBaseWSService = coinBaseWSService)
-        val observer: Observer<Boolean> = mockk(relaxed = true)
-        viewModel.apply {
-            wsConnection.observeForever(observer)
-        }
-
-        assertThat(viewModel.wsConnection.value).isNull()
-        socketChannel.offer(WebSocket.Event.OnConnectionOpened(mockk<WebSocket>()))
-        socketChannel.offer(WebSocket.Event.OnConnectionClosed(mockk()))
-        socketChannel.offer(WebSocket.Event.OnConnectionFailed(mockk()))
-        socketChannel.offer(WebSocket.Event.OnMessageReceived(mockk()))
-        socketChannel.offer(WebSocket.Event.OnConnectionClosing(mockk()))
-
-        verifyOrder {
-            observer.onChanged(true)
-            observer.onChanged(false)
-        }
-
-        confirmVerified(observer)
     }
 }

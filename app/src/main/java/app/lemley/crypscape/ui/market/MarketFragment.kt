@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -35,6 +36,7 @@ class MarketFragment : Fragment() {
     private var granularity: TabLayout? = null
     private var currencyValue: TextView? = null
     private var currencyPercentChange: TextView? = null
+    private var connectionStateView: View? = null
     private val marketViewModel: MarketViewModel by viewModel()
     private val chartingManager: MarketChartingManager by inject()
 
@@ -68,6 +70,7 @@ class MarketFragment : Fragment() {
                 chart = withView(R.id.chart)
                 currencyValue = withView(R.id.currency_value)
                 currencyPercentChange = withView(R.id.currency_change)
+                connectionStateView = withView(R.id.connection_state)
                 granularity = withView(R.id.granularity)
                 marketViewModel.candles.observe(viewLifecycleOwner, candleObserver)
                 marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
@@ -96,6 +99,12 @@ class MarketFragment : Fragment() {
             with(state) {
                 marketConfiguration?.let { updateMarketConfiguration(it) }
                 ticker?.let { updateWithTicker(it) }
+                connectionStateView?.let {
+                    it.setBackgroundColor(
+                        getColor(it.context, if (state.hasRealtimeConnection) R.color.aqua_marine else R.color.warm_pink)
+                    )
+                }
+
             }
         }
     }

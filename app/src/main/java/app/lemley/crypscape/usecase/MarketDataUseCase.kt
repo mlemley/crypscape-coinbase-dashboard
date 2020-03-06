@@ -22,6 +22,7 @@ class MarketDataUseCase constructor(
         object FetchMarketDataForDefaultConfiguration : MarketActions()
         data class OnGranularityChanged(val granularity: Granularity) : MarketActions()
         data class OnTickerTick(val ticker: Ticker) : MarketActions()
+        data class OnConnectionChanged(val hasConnection:Boolean): MarketActions()
 
     }
 
@@ -30,6 +31,7 @@ class MarketDataUseCase constructor(
             MarketResults()
 
         data class TickerResult(val ticker: Ticker) : MarketResults()
+        data class RealTimeConnectionChange(val hasConnection: Boolean) : MarketResults()
     }
 
     override fun canProcess(action: Action): Boolean = action is MarketActions
@@ -41,6 +43,7 @@ class MarketDataUseCase constructor(
                     is MarketActions.FetchMarketDataForDefaultConfiguration -> handleFetchDefaultMarketData()
                     is MarketActions.OnGranularityChanged -> handleOnGranularityChanged(action.granularity)
                     is MarketActions.OnTickerTick -> flowOf<Result>(MarketResults.TickerResult(action.ticker))
+                    is MarketActions.OnConnectionChanged -> flowOf(MarketResults.RealTimeConnectionChange(action.hasConnection))
                 }.exhaustive
             }
             else -> emptyFlow()

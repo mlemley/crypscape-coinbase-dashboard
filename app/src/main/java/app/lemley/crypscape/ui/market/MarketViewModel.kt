@@ -17,7 +17,6 @@ import app.lemley.crypscape.ui.base.Result
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import app.lemley.crypscape.usecase.UseCase
-import com.tinder.scarlet.WebSocket
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -30,11 +29,20 @@ class MarketViewModel(
     marketDataUseCase: MarketDataUseCase,
     coinBaseRepository: CoinBaseRepository,
     val coinBaseRealTimeRepository: CoinBaseRealTimeRepository,
-    coinBaseWSService: CoinBaseWSService,
     val contextProvider: CoroutineContextProvider
 ) : BaseViewModel<MarketEvents, MarketState>() {
 
     init {
+        viewModelScope.launch {
+            coinBaseRealTimeRepository.connectionStateFlow.collect {
+                dispatchEvent(
+                    MarketEvents.RealtimeConnectionChangedEvent(
+                        it is CoinBaseRealTimeRepository.ConnectionState.Connected
+                    )
+                )
+            }
+        }
+
         viewModelScope.launch {
             coinBaseRealTimeRepository.tickerFlow
                 .filter {
@@ -72,23 +80,6 @@ class MarketViewModel(
         .flowOn(contextProvider.IO)
         .asLiveData()
 
-    val wsConnection: LiveData<Boolean> = coinBaseWSService.observeWebSocketEvent().consumeAsFlow()
-        .filter {
-            when (it) {
-                is WebSocket.Event.OnConnectionOpened<Any>,
-                is WebSocket.Event.OnConnectionClosed -> true
-                else -> false
-            }
-        }
-        .map {
-            when (it) {
-                is WebSocket.Event.OnConnectionOpened<Any> -> true
-                else -> false
-            }
-        }
-        .conflate()
-        .asLiveData()
-
     override val useCases: List<UseCase> = listOf(marketDataUseCase)
 
     override fun makeInitState(): MarketState = MarketState()
@@ -103,6 +94,11 @@ class MarketViewModel(
                     )
                 )
                 is MarketEvents.TickerChangedEvent -> emit(MarketActions.OnTickerTick(it.ticker))
+                is MarketEvents.RealtimeConnectionChangedEvent -> emit(
+                    MarketActions.OnConnectionChanged(
+                        it.hasConnection
+                    )
+                )
             }.exhaustive
         }
     }
@@ -118,6 +114,9 @@ class MarketViewModel(
 
             is MarketDataUseCase.MarketResults.TickerResult -> copy(
                 ticker = result.ticker
+            )
+            is MarketDataUseCase.MarketResults.RealTimeConnectionChange -> copy(
+                hasRealtimeConnection = result.hasConnection
             )
             else -> this
         }
