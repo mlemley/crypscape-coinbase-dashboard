@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 data class MarketState(
     val marketConfiguration: MarketConfiguration? = null,
-    val candles: Flow<List<Candle>>? = null,
-    val ticker:Ticker? = null
+    val candles: List<Candle> = emptyList(),
+    val ticker:Ticker? = null,
+    val hasRealtimeConnection:Boolean = false
 ): State

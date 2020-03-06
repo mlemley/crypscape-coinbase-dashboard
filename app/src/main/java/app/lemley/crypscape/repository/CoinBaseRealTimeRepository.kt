@@ -13,7 +13,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.withContext
 
 
@@ -32,12 +35,9 @@ class CoinBaseRealTimeRepository constructor(
     // TODO inject as dependency
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var connectionStateChannel = ConflatedBroadcastChannel<ConnectionState>()
-    val connectionStateFlow: Flow<ConnectionState>
-        get() = connectionStateChannel
-            .asFlow()
-            .conflate()
-            .distinctUntilChanged()
+    val connectionStateFlow: Flow<ConnectionState> get() = connectionStateChannel.asFlow()
 
+    val webSocketEventFlow get() = coinBaseWSService.observeWebSocketEvent().consumeAsFlow()
     val tickerFlow: Flow<Ticker> get() = coinBaseWSService.observeTicker().consumeAsFlow()
 
     suspend fun subscribe(products: List<String>, channels: List<Subscribe.Channel>) =

@@ -109,4 +109,19 @@ class MarketDataUseCaseTest {
             )
         )
     }
+
+    @Test
+    fun handle__realtime_connection_changes() {
+        val results = mutableListOf<Result>()
+        runBlocking {
+            val result = createUseCase().handleAction(MarketActions.OnConnectionChanged(true))
+            result.toList(results)
+        }
+
+        assertThat(results).isEqualTo(
+            listOf(
+                MarketResults.RealTimeConnectionChange(true)
+            )
+        )
+    }
 }
