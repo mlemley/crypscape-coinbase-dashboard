@@ -22,7 +22,7 @@ class MarketDataUseCase constructor(
         object FetchMarketDataForDefaultConfiguration : MarketActions()
         data class OnGranularityChanged(val granularity: Granularity) : MarketActions()
         data class OnTickerTick(val ticker: Ticker) : MarketActions()
-        data class OnConnectionChanged(val hasConnection:Boolean): MarketActions()
+        data class OnConnectionChanged(val hasConnection: Boolean) : MarketActions()
 
     }
 
@@ -42,8 +42,12 @@ class MarketDataUseCase constructor(
                 when (action) {
                     is MarketActions.FetchMarketDataForDefaultConfiguration -> handleFetchDefaultMarketData()
                     is MarketActions.OnGranularityChanged -> handleOnGranularityChanged(action.granularity)
-                    is MarketActions.OnTickerTick -> flowOf<Result>(MarketResults.TickerResult(action.ticker))
-                    is MarketActions.OnConnectionChanged -> flowOf(MarketResults.RealTimeConnectionChange(action.hasConnection))
+                    is MarketActions.OnTickerTick -> handleTickerChange(action.ticker)
+                    is MarketActions.OnConnectionChanged -> flowOf(
+                        MarketResults.RealTimeConnectionChange(
+                            action.hasConnection
+                        )
+                    )
                 }.exhaustive
             }
             else -> emptyFlow()
@@ -66,5 +70,10 @@ class MarketDataUseCase constructor(
             send(MarketResults.TickerResult(it))
         }
     }.flowOn(Dispatchers.IO)
+
+    private fun handleTickerChange(ticker: Ticker) = channelFlow<Result> {
+        coinBaseRepository.updatePeriodWith(ticker)
+        send(MarketResults.TickerResult(ticker))
+    }
 
 }

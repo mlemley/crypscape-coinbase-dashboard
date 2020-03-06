@@ -13,6 +13,7 @@ import app.lemley.crypscape.usecase.MarketDataUseCase.MarketResults
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -96,10 +97,11 @@ class MarketDataUseCaseTest {
     @Test
     fun handle__ticker_tick() {
         val ticker = Ticker(price = 8_998.00)
-
+        val coinBaseRepository:CoinBaseRepository = mockk(relaxed = true)
         val results = mutableListOf<Result>()
+        val useCase = createUseCase(coinBaseRepository = coinBaseRepository)
         runBlocking {
-            val result = createUseCase().handleAction(MarketActions.OnTickerTick(ticker))
+            val result = useCase.handleAction(MarketActions.OnTickerTick(ticker))
             result.toList(results)
         }
 
@@ -108,6 +110,10 @@ class MarketDataUseCaseTest {
                 MarketResults.TickerResult(ticker)
             )
         )
+
+        verify {
+            coinBaseRepository.updatePeriodWith(ticker)
+        }
     }
 
     @Test

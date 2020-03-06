@@ -15,7 +15,7 @@ abstract class BaseDao<in T> {
     abstract fun delete(type : T)
 
     @WorkerThread
-    @Update
+    @Update(onConflict = OnConflictStrategy.ABORT)
     abstract fun update(type : T)
 
 }

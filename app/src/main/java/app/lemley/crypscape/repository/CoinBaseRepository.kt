@@ -27,4 +27,8 @@ class CoinBaseRepository(
     suspend fun tickerForConfiguration(marketConfiguration: MarketConfiguration):Ticker? {
         return tickerRepository.tickerFor(marketConfiguration.productRemoteId)
     }
+
+    fun updatePeriodWith(ticker: Ticker) {
+
+    }
 }
