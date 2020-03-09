@@ -45,6 +45,7 @@ fun Double.toInstant(): Instant = this.toLong().toInstantFromSeconds()
 fun Float.toInstant(): Instant = this.toDouble().toInstant()
 
 fun Long.toInstantFromSeconds(): Instant = Instant.ofEpochSecond(this)
+fun Long.fromEpochMinute(): Instant = Instant.ofEpochSecond(this * 60)
 
 
 

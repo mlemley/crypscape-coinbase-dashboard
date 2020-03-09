@@ -29,11 +29,14 @@ sealed class ChartOperations : IChartOperation {
 
     data class ConfigureFor(val granularity: Granularity) : ChartOperations() {
         override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
-            chartRenderer.granularity = granularity
-            chartRenderer.plot(DataSetType.CandleDataSet, candleSetLabel)?.let { dataSet ->
-                (dataSet as CandleDataSet).configureForCrypScape(chart)
+            if (chartRenderer.granularity != granularity) {
+                Clear.operateWith(chart, chartRenderer)
+                chartRenderer.granularity = granularity
+                chartRenderer.plot(DataSetType.CandleDataSet, candleSetLabel)?.let { dataSet ->
+                    (dataSet as CandleDataSet).configureForCrypScape(chart)
+                }
+                chart.configureForCrypScape(granularity)
             }
-            chart.configureForCrypScape(granularity)
         }
     }
 
@@ -48,7 +51,7 @@ sealed class ChartOperations : IChartOperation {
             val combinedData = chartRenderer.buildData()
             chart.data = combinedData
             updateDataSetVisibility(chart)
-            chart.setVisibleXRangeMaximum(chartRenderer.granularity.visibleXRange)
+            chart.setVisibleXRangeMaximum(chartRenderer.granularity?.visibleXRange ?: Granularity.Hour.visibleXRange)
             chart.isAutoScaleMinMaxEnabled = true
             chart.xAxis.setAvoidFirstLastClipping(true)
             chart.xAxis.granularity = .1f

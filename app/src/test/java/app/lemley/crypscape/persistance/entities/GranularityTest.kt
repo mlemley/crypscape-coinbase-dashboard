@@ -1,6 +1,7 @@
 package app.lemley.crypscape.persistance.entities
 
 import app.lemley.crypscape.extensions.app.persistance.fromXCoordinate
+import app.lemley.crypscape.extensions.app.persistance.periodForTickerTime
 import app.lemley.crypscape.extensions.app.persistance.toXCoordinate
 import app.lemley.crypscape.extensions.toEpochMinute
 import app.lemley.crypscape.extensions.toInstant
@@ -40,4 +41,15 @@ class GranularityTest {
     }
 
 
+    @Test
+    fun calculates_period_for_given_time() {
+        val time = "2020-03-06T05:59:52.271453Z"
+        assertThat(Granularity.Minute.periodForTickerTime(time).toEpochMilli()).isEqualTo(1583474340000)
+        assertThat(Granularity.FiveMinutes.periodForTickerTime(time).toEpochMilli()).isEqualTo(1583474100000)
+        assertThat(Granularity.FifteenMinutes.periodForTickerTime(time).toEpochMilli()).isEqualTo(1583473500000)
+        assertThat(Granularity.Hour.periodForTickerTime(time).toEpochMilli()).isEqualTo(1583470800000)
+        assertThat(Granularity.SixHours.periodForTickerTime(time).toEpochMilli()).isEqualTo(1583452800000)
+        assertThat(Granularity.Day.periodForTickerTime(time).toEpochMilli()).isEqualTo(1583452800000)
+
+    }
 }

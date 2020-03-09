@@ -4,12 +4,8 @@ import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
-import app.lemley.crypscape.persistance.entities.Product
 import com.google.common.truth.Truth.assertThat
-import io.mockk.confirmVerified
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verifyOrder
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -54,7 +50,11 @@ class CoinBaseRepositoryTest {
     @Test
     fun fetch_candles_for_market_configuration() {
         val granularity = Granularity.Hour
-        val configuration = MarketConfiguration(platformId = 1, productRemoteId = "BTC-USD", granularity = granularity)
+        val configuration = MarketConfiguration(
+            platformId = 1,
+            productRemoteId = "BTC-USD",
+            granularity = granularity
+        )
         val candles = flowOf<List<Candle>>(mockk(), mockk())
         val candleRepository: CoinBaseCandleRepository = mockk {
             every { runBlocking { candlesFor(configuration) } } returns candles
@@ -69,7 +69,7 @@ class CoinBaseRepositoryTest {
     @Test
     fun proxies_ticker_fetch() {
         val remoteId = "BTC-USD"
-        val platformId:Long = 1
+        val platformId: Long = 1
 
         val ticker: Ticker = mockk(relaxUnitFun = true)
 
@@ -92,5 +92,19 @@ class CoinBaseRepositoryTest {
         }
 
         assertThat(actual).isEqualTo(ticker)
+    }
+
+    @Test
+    fun delegates_period_update_to_candle_repository() = runBlocking {
+        val candleRepository: CoinBaseCandleRepository = mockk(relaxUnitFun = true)
+        val repository = createRepository(coinBaseCandleRepository = candleRepository)
+        val marketConfiguration: MarketConfiguration = mockk()
+        val ticker: Ticker = mockk()
+
+        repository.updatePeriodWith(marketConfiguration, ticker)
+
+        verify {
+            candleRepository.updatePeriod(marketConfiguration, ticker)
+        }
     }
 }

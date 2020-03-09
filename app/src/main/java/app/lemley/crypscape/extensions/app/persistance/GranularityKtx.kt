@@ -1,6 +1,6 @@
 package app.lemley.crypscape.extensions.app.persistance
 
-import app.lemley.crypscape.extensions.exhaustive
+import app.lemley.crypscape.extensions.*
 import app.lemley.crypscape.persistance.entities.Granularity
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
@@ -53,3 +53,27 @@ private fun scaleUp(value: Long, granularity: Granularity): Instant {
 private fun scaleDown(instant: Instant, granularity: Granularity): Long {
     return (instant.toEpochMilli() - TimeScale.toEpochMilli()) / 1_000 / granularity.seconds
 }
+
+fun Granularity.periodForTickerTime(time: String): Instant {
+    return (time.toInstant() ?: Instant.now()).let {
+        when (this) {
+            Granularity.Day -> it.toEpochMinute().fromEpochMinute().utc()
+                .minusSeconds(it.utc().minute * 60L)
+                .minusHours(it.utc().hour.toLong())
+                .toInstant()
+
+            Granularity.SixHours -> it.toEpochMinute().fromEpochMinute().utc()
+                .minusSeconds(it.utc().minute * 60L)
+                .minusHours(it.utc().hour % (this.seconds / 60 / 60))
+                .toInstant()
+
+            else -> it.toEpochMinute().fromEpochMinute()
+                .minusSeconds((it.utc().minute % (this.seconds / 60L)) * 60L)
+        }
+    }
+}
+
+fun Granularity.previousPeriod(instant: Instant): Instant {
+    return instant.minusSeconds(this.seconds)
+}
+
