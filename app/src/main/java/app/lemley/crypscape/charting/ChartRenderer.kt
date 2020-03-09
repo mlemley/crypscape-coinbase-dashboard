@@ -7,7 +7,7 @@ import com.github.mikephil.charting.interfaces.datasets.IDataSet
 
 class ChartRenderer {
 
-    var granularity: Granularity = Granularity.Hour
+    var granularity: Granularity? = null
     private val combinedData = CombinedData()
 
     private val setMap: MutableMap<String, DataSetType> = mutableMapOf()

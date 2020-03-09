@@ -24,11 +24,11 @@ class CoinBaseRepository(
         return candleRepository.candlesFor(marketConfiguration)
     }
 
-    suspend fun tickerForConfiguration(marketConfiguration: MarketConfiguration):Ticker? {
+    suspend fun tickerForConfiguration(marketConfiguration: MarketConfiguration): Ticker? {
         return tickerRepository.tickerFor(marketConfiguration.productRemoteId)
     }
 
-    fun updatePeriodWith(ticker: Ticker) {
-
+    suspend fun updatePeriodWith(marketConfiguration: MarketConfiguration, ticker: Ticker) {
+        candleRepository.updatePeriod(marketConfiguration, ticker)
     }
 }

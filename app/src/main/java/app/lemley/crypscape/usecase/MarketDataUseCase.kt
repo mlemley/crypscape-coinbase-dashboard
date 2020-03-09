@@ -72,7 +72,7 @@ class MarketDataUseCase constructor(
     }.flowOn(Dispatchers.IO)
 
     private fun handleTickerChange(ticker: Ticker) = channelFlow<Result> {
-        coinBaseRepository.updatePeriodWith(ticker)
+        coinBaseRepository.updatePeriodWith(defaultMarketDataRepository.loadDefault(), ticker)
         send(MarketResults.TickerResult(ticker))
     }
 

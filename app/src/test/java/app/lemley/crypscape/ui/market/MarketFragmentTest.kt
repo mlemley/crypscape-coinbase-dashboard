@@ -94,10 +94,6 @@ class MarketFragmentTest {
             verifyOrder {
                 marketChartingManager.performChartingOperation(
                     fragment.chart,
-                    ChartOperations.Clear
-                )
-                marketChartingManager.performChartingOperation(
-                    fragment.chart,
                     ChartOperations.ConfigureFor(Granularity.Hour)
                 )
                 marketChartingManager.performChartingOperation(

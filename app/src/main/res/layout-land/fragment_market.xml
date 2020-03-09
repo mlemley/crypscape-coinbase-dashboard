@@ -7,6 +7,15 @@
     android:layout_height="match_parent"
     android:theme="@style/CrypScape.Section">
 
+    <View
+        android:id="@+id/connection_state"
+        android:layout_width="4dp"
+        android:layout_height="0dp"
+        android:background="@color/candlestick_decreasing"
+        app:layout_constraintBottom_toBottomOf="@id/currency_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/currency_name" />
+
     <TextView
         android:id="@+id/currency_name"
         android:layout_width="wrap_content"
@@ -16,7 +25,7 @@
         app:layout_constraintBottom_toBottomOf="@id/granularity"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/granularity"
-        tools:text="BTC -" />
+        tools:text="BTC" />
 
     <TextView
         android:id="@+id/currency_value"

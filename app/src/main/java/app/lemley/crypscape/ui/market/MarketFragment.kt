@@ -83,7 +83,6 @@ class MarketFragment : Fragment() {
 
     val candleObserver: Observer<List<Candle>> = Observer { candles ->
         with(chart) {
-            chartingManager.performChartingOperation(this, ChartOperations.Clear)
             if (candles.isNotEmpty()) {
                 chartingManager.performChartingOperation(
                     this,

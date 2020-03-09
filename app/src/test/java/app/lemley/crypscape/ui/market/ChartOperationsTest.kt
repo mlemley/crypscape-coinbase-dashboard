@@ -35,7 +35,7 @@ class ChartOperationsTest {
     }
 
     @Test
-    fun configures_chart_with_specified_granularity() {
+    fun configures_chart_with_specified_granularity__configures__when_granularity_null() {
         val chart: CombinedChart = mockk(relaxed = true)
         val chartRenderer: ChartRenderer = mockk(relaxUnitFun = true) {
             every {
@@ -44,15 +44,73 @@ class ChartOperationsTest {
                     candleSetLabel
                 )
             } returns null
+            every { granularity } returns null
         }
         val granularity = Granularity.Hour
 
         ChartOperations.ConfigureFor(granularity).operateWith(chart, chartRenderer)
 
-        verify {
+        excludeRecords {
+            chartRenderer.granularity
+        }
+
+        verifyOrder {
+            chartRenderer.clearAllData()
             chartRenderer.granularity = granularity
             chartRenderer.plot(DataSetType.CandleDataSet, candleSetLabel)
         }
+
+        confirmVerified(chartRenderer)
+    }
+
+    @Test
+    fun configures_chart_with_specified_granularity__configures__when_granularity_not_the_same() {
+        val chart: CombinedChart = mockk(relaxed = true)
+        val chartRenderer: ChartRenderer = mockk(relaxUnitFun = true) {
+            every {
+                plot(
+                    DataSetType.CandleDataSet,
+                    candleSetLabel
+                )
+            } returns null
+            every { granularity } returns Granularity.Day
+        }
+        val granularity = Granularity.Hour
+
+        excludeRecords {
+            chartRenderer.granularity
+        }
+
+        ChartOperations.ConfigureFor(granularity).operateWith(chart, chartRenderer)
+
+        verifyOrder {
+            chartRenderer.clearAllData()
+            chartRenderer.granularity = granularity
+            chartRenderer.plot(DataSetType.CandleDataSet, candleSetLabel)
+        }
+
+        confirmVerified(chartRenderer)
+    }
+
+    @Test
+    fun configures_chart_with_specified_granularity__does_nothing__when_granularity_is_the_same() {
+        val chart: CombinedChart = mockk(relaxed = true)
+        val chartRenderer: ChartRenderer = mockk(relaxUnitFun = true) {
+            every {
+                plot(
+                    DataSetType.CandleDataSet,
+                    candleSetLabel
+                )
+            } returns null
+            every { granularity } returns Granularity.Hour
+        }
+        val granularity = Granularity.Hour
+
+        excludeRecords {
+            chartRenderer.granularity
+        }
+
+        ChartOperations.ConfigureFor(granularity).operateWith(chart, chartRenderer)
 
         confirmVerified(chartRenderer)
     }

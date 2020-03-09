@@ -98,8 +98,15 @@ class MarketDataUseCaseTest {
     fun handle__ticker_tick() {
         val ticker = Ticker(price = 8_998.00)
         val coinBaseRepository:CoinBaseRepository = mockk(relaxed = true)
+        val marketConfiguration:MarketConfiguration = mockk()
+        val defaultMarketDataRepository: DefaultMarketDataRepository = mockk {
+            every { loadDefault() } returns marketConfiguration
+        }
         val results = mutableListOf<Result>()
-        val useCase = createUseCase(coinBaseRepository = coinBaseRepository)
+        val useCase = createUseCase(
+            coinBaseRepository = coinBaseRepository,
+            defaultMarketDataRepository = defaultMarketDataRepository
+        )
         runBlocking {
             val result = useCase.handleAction(MarketActions.OnTickerTick(ticker))
             result.toList(results)
@@ -112,7 +119,9 @@ class MarketDataUseCaseTest {
         )
 
         verify {
-            coinBaseRepository.updatePeriodWith(ticker)
+            runBlocking {
+                coinBaseRepository.updatePeriodWith(marketConfiguration, ticker)
+            }
         }
     }
 
