@@ -2,6 +2,9 @@ package app.lemley.crypscape.repository
 
 import app.lemley.crypscape.client.coinbase.CoinBaseApi
 import app.lemley.crypscape.client.coinbase.model.CandleRequest
+import app.lemley.crypscape.client.coinbase.model.Ticker
+import app.lemley.crypscape.extensions.app.persistance.periodForTickerTime
+import app.lemley.crypscape.extensions.app.persistance.previousPeriod
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.persistance.dao.CandleDao
 import app.lemley.crypscape.persistance.dao.ProductDao
@@ -118,5 +121,171 @@ class CoinBaseCandleRepositoryTest {
         }
 
         confirmVerified(candleDao)
+    }
+
+    @Test
+    fun updates_period_with_ticker__updates_current_period__current__period() {
+        val granularity = Granularity.Hour
+        val timeStamp = "2020-03-09T18:06:45.386868Z"
+        val period = granularity.periodForTickerTime(timeStamp)
+        val candleForPeriod = Candle(
+            product_id = 35,
+            platform_id = 1,
+            granularity = granularity,
+            open = 5.0,
+            close = 6.0,
+            high = 6.5,
+            low = 4.5,
+            volume = 0.0,
+            time = period
+        )
+        val tickers = listOf<Ticker>(
+            Ticker(time = timeStamp, price = 6.1),
+            Ticker(time = timeStamp, price = 7.0),
+            Ticker(time = timeStamp, price = 4.0)
+        )
+        val candleDao: CandleDao = mockk(relaxed = true) {
+            every {
+                candleBy(
+                    candleForPeriod.platform_id,
+                    candleForPeriod.product_id,
+                    granularity.seconds,
+                    period.toEpochMilli()
+                )
+            } returns candleForPeriod
+        }
+
+
+        val marketConfiguration = MarketConfiguration(1, "BTC-USD", granularity)
+
+        val productDao: ProductDao = mockk {
+            every {
+                byServerId(
+                    marketConfiguration.platformId,
+                    marketConfiguration.productRemoteId
+                )
+            } returns Product(
+                platformId = marketConfiguration.platformId,
+                id = candleForPeriod.product_id,
+                quoteCurrency = 2,
+                baseCurrency = 3
+            )
+        }
+
+        val repository = createRepository(candleDao = candleDao, productDao = productDao)
+
+        tickers.forEach {
+            repository.updatePeriod(marketConfiguration, it)
+        }
+
+        val candlesToUpdate = mutableListOf<Candle>()
+        verify { candleDao.insertOrUpdate(capture(candlesToUpdate)) }
+
+        val expectedCandles = listOf<Candle>(
+            candleForPeriod.copy(close = 6.1),
+            candleForPeriod.copy(close = 7.0, high = 7.0),
+            candleForPeriod.copy(close = 4.0, low = 4.0)
+
+        )
+        assertThat(candlesToUpdate).isEqualTo(expectedCandles)
+    }
+
+
+    @Test
+    fun updates_period_with_ticker__updates_current_period__new__period() {
+        val granularity = Granularity.Hour
+        val timeStamp = "2020-03-09T18:06:45.386868Z"
+        val period = granularity.periodForTickerTime(timeStamp)
+        val candleForPreviousPeriod = Candle(
+            product_id = 35,
+            platform_id = 1,
+            granularity = granularity,
+            open = 5.0,
+            close = 6.0,
+            high = 6.5,
+            low = 4.5,
+            volume = 0.0,
+            time = granularity.previousPeriod(period)
+        )
+        val tickers = listOf(
+            Ticker(time = timeStamp, price = 6.0, volume = 10.0),
+            Ticker(time = timeStamp, price = 7.0, volume = 10.0),
+            Ticker(time = timeStamp, price = 4.0, volume = 10.0)
+        )
+        val candleDao: CandleDao = mockk(relaxed = true) {
+            every {
+                candleBy(
+                    candleForPreviousPeriod.platform_id,
+                    candleForPreviousPeriod.product_id,
+                    granularity.seconds,
+                    granularity.previousPeriod(period).toEpochMilli()
+                )
+            } returns candleForPreviousPeriod
+
+            every {
+
+                candleBy(
+                    candleForPreviousPeriod.platform_id,
+                    candleForPreviousPeriod.product_id,
+                    granularity.seconds,
+                    period.toEpochMilli()
+                )
+            } returns null
+        }
+
+
+        val marketConfiguration = MarketConfiguration(1, "BTC-USD", granularity)
+
+        val productDao: ProductDao = mockk {
+            every {
+                byServerId(
+                    marketConfiguration.platformId,
+                    marketConfiguration.productRemoteId
+                )
+            } returns Product(
+                platformId = marketConfiguration.platformId,
+                id = candleForPreviousPeriod.product_id,
+                quoteCurrency = 2,
+                baseCurrency = 3
+            )
+        }
+
+        val repository = createRepository(candleDao = candleDao, productDao = productDao)
+
+        tickers.forEach {
+            repository.updatePeriod(marketConfiguration, it)
+        }
+
+        val candlesToUpdate = mutableListOf<Candle>()
+        verify { candleDao.insertOrUpdate(capture(candlesToUpdate)) }
+
+        val expectedCandles = listOf<Candle>(
+            candleForPreviousPeriod.copy(
+                open = 6.0,
+                close = 6.0,
+                high = 6.0,
+                low = 6.0,
+                volume = 10.0,
+                time = period
+            ),
+            candleForPreviousPeriod.copy(
+                open = 6.0,
+                close = 7.0,
+                high = 7.0,
+                low = 6.0,
+                volume = 10.0,
+                time = period
+            ),
+            candleForPreviousPeriod.copy(
+                open = 6.0,
+                close = 4.0,
+                high = 6.0,
+                low = 4.0,
+                volume = 10.0,
+                time = period
+            )
+
+        )
+        assertThat(candlesToUpdate).isEqualTo(expectedCandles)
     }
 }
