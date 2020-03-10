@@ -18,13 +18,15 @@ class CoinBaseRepositoryTest {
         coinBaseCurrencyRepository: CoinBaseCurrencyRepository = mockk(relaxUnitFun = true),
         coinBaseProductRepository: CoinBaseProductRepository = mockk(relaxUnitFun = true),
         coinBaseCandleRepository: CoinBaseCandleRepository = mockk(relaxUnitFun = true),
-        coinBaseTickerRepository: CoinBaseTickerRepository = mockk(relaxUnitFun = true)
+        coinBaseTickerRepository: CoinBaseTickerRepository = mockk(relaxUnitFun = true),
+        defaultMarketDataRepository: DefaultMarketDataRepository = mockk(relaxed = true)
 
     ): CoinBaseRepository = CoinBaseRepository(
         currencyRepository = coinBaseCurrencyRepository,
         productRepository = coinBaseProductRepository,
         candleRepository = coinBaseCandleRepository,
-        tickerRepository = coinBaseTickerRepository
+        tickerRepository = coinBaseTickerRepository,
+        defaultMarketDataRepository = defaultMarketDataRepository
     )
 
     @Test

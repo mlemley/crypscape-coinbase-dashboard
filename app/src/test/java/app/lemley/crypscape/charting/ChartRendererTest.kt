@@ -1,12 +1,12 @@
 package app.lemley.crypscape.charting
 
-import app.lemley.crypscape.extensions.app.persistance.toChartEntry
 import app.lemley.crypscape.extensions.toInstant
 import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
 import app.lemley.crypscape.ui.market.candleSetLabel
 import com.github.mikephil.charting.data.*
 import com.google.common.truth.Truth.assertThat
+import io.mockk.mockk
 import org.junit.Test
 
 class ChartRendererTest {
@@ -41,37 +41,21 @@ class ChartRendererTest {
         val chartRenderer = ChartRenderer()
         chartRenderer.plot(DataSetType.CandleDataSet, "candles")
 
-        val candles = listOf(
-            Candle(
-                platform_id = 1,
-                product_id = 35,
-                time = 1583852400000.toInstant(),
-                granularity = Granularity.Hour,
-                high = 6.0,
-                low = 5.0,
-                open = 5.1,
-                close = 5.9,
-                volume = 10.0
-            ),
-            Candle(
-                platform_id = 1,
-                product_id = 35,
-                time = 1583856000000.toInstant(),
-                granularity = Granularity.Hour,
-                high = 7.0,
-                low = 5.2,
-                open = 5.9,
-                close = 6.7,
-                volume = 10.0
-            )
+        val candle = Candle(
+            platform_id = 1,
+            product_id = 35,
+            time = 1583856000000.toInstant(),
+            granularity = Granularity.Hour,
+            high = 7.0,
+            low = 5.2,
+            open = 5.9,
+            close = 6.7,
+            volume = 10.0
         )
 
-        candles.forEach {
-            chartRenderer.plotEntry("candles", it.toChartEntry())
-        }
+        chartRenderer.limitFor(candle, mockk(relaxed = true))
 
-        assertThat(chartRenderer.limitLine)
-
+        assertThat(chartRenderer.limitLine?.limit).isEqualTo(6.7F)
 
     }
 
