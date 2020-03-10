@@ -17,6 +17,7 @@ import androidx.lifecycle.whenStarted
 import app.lemley.crypscape.R
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.extensions.app.withView
+import app.lemley.crypscape.extensions.configureForCrypScape
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.model.currency.toUsd
@@ -62,23 +63,6 @@ class MarketFragment : Fragment() {
                 granularity?.let {
                     marketViewModel.dispatchEvent(MarketEvents.GranularitySelected(it))
                 }
-            }
-        }
-    }
-
-    init {
-        lifecycleScope.launch {
-            whenStarted {
-                chart = withView(R.id.chart)
-                currencyValue = withView(R.id.currency_value)
-                currencyPercentChange = withView(R.id.currency_change)
-                connectionStateView = withView(R.id.connection_state)
-                granularity = withView(R.id.granularity)
-                marketViewModel.candles.observe(viewLifecycleOwner, candleObserver)
-                marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
-            }
-            whenResumed {
-                granularity?.addOnTabSelectedListener(granularitySelectedListener)
             }
         }
     }
@@ -131,7 +115,16 @@ class MarketFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        chart = withView(R.id.chart)
+        chart?.configureForCrypScape(Granularity.Hour)
+        currencyValue = withView(R.id.currency_value)
+        currencyPercentChange = withView(R.id.currency_change)
+        connectionStateView = withView(R.id.connection_state)
+        granularity = withView(R.id.granularity)
+        marketViewModel.candles.observe(viewLifecycleOwner, candleObserver)
+        marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
         marketViewModel.dispatchEvent(MarketEvents.Init)
+        granularity?.addOnTabSelectedListener(granularitySelectedListener)
     }
 
     private fun updateMarketConfiguration(marketConfiguration: MarketConfiguration) {
