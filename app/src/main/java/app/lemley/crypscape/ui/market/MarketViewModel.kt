@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import app.lemley.crypscape.app.CoroutineContextProvider
-import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.Subscribe
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
@@ -17,6 +16,7 @@ import app.lemley.crypscape.ui.base.Result
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import app.lemley.crypscape.usecase.UseCase
+import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -51,6 +51,10 @@ class MarketViewModel(
                 .onEach {
                     dispatchEvent(MarketEvents.TickerChangedEvent(it))
                 }
+                .catch {
+                    Crashlytics.logException(it)
+                    it.printStackTrace()
+                }
                 .conflate()
                 .collect()
 
@@ -78,7 +82,11 @@ class MarketViewModel(
             coinBaseRepository.candlesForConfiguration(filter.marketConfiguration)
         }
         .flowOn(contextProvider.IO)
-        .asLiveData()
+        .catch {
+            Crashlytics.logException(it)
+            it.printStackTrace()
+        }
+        .asLiveData(viewModelScope.coroutineContext)
 
     override val useCases: List<UseCase> = listOf(marketDataUseCase)
 
