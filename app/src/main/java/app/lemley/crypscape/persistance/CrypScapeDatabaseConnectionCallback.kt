@@ -14,15 +14,10 @@ class CrypScapeDatabaseConnectionCallback : RoomDatabase.Callback() {
 
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
-        GlobalScope.launch(Dispatchers.Main) {
-            withContext(Dispatchers.IO) {
-                populateInitialPlatforms(db)
-            }
-        }
+        populateInitialPlatforms(db)
     }
 
-    @WorkerThread
-    private suspend fun populateInitialPlatforms(db: SupportSQLiteDatabase) {
+    private fun populateInitialPlatforms(db: SupportSQLiteDatabase) {
         val startDate = "2017-12-01T00:00Z".toInstant() ?: Instant.now()
         db.execSQL("""
             insert into `platform`(name, startDate)  
