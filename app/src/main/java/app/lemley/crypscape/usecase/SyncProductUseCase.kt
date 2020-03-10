@@ -1,5 +1,6 @@
 package app.lemley.crypscape.usecase
 
+import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.repository.CoinBaseRepository
 import app.lemley.crypscape.ui.base.Action
 import app.lemley.crypscape.ui.base.Result
@@ -14,7 +15,7 @@ class SyncProductUseCase(
 ) : UseCase {
 
     object SyncProductData : Action
-    object ProductSyncComplete : Result
+    data class ProductSyncComplete(val marketConfiguration: MarketConfiguration) : Result
 
     override fun canProcess(action: Action): Boolean = action == SyncProductData
 
@@ -24,8 +25,8 @@ class SyncProductUseCase(
         }
 
     private fun syncProductData(): Flow<Result> = channelFlow {
-        coinBaseRepository.syncProducts()
-        send(ProductSyncComplete)
+        val marketConfiguration = coinBaseRepository.syncProducts()
+        send(ProductSyncComplete(marketConfiguration))
     }.flowOn(Dispatchers.IO)
 
 }

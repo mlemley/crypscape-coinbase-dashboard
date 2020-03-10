@@ -1,10 +1,12 @@
 package app.lemley.crypscape.persistance
 
 import androidx.room.Room
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
+@ExperimentalCoroutinesApi
 val persistenceModule = module {
 
     single(named("dbName")) { "crypscape_db" }

@@ -29,7 +29,7 @@ object CoinBaseApiFactory {
     fun coinBaseWSClient(application: Application): CoinBaseWSService {
         val scarlet = Scarlet.Builder()
             .webSocketFactory(webSocketOkHttpClient().newWebSocketFactory(wsFeedUrl))
-            .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
+            .lifecycle(AndroidLifecycle.ofApplicationForeground(application).combineWith())
             .addMessageAdapterFactory(GsonMessageAdapter.Factory())
             .addStreamAdapterFactory(CoroutinesStreamAdapterFactory())
             .build()

@@ -12,6 +12,7 @@ import app.lemley.crypscape.persistance.entities.Currency
 import app.lemley.crypscape.persistance.entities.Platform
 import app.lemley.crypscape.persistance.entities.Product
 import com.crypscape.mobile.db.converter.DateConverter
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @Database(
     entities = [
@@ -23,6 +24,7 @@ import com.crypscape.mobile.db.converter.DateConverter
     version = 1
 )
 @TypeConverters(DateConverter::class)
+@ExperimentalCoroutinesApi
 abstract class CrypScapeDb : RoomDatabase() {
     abstract val candleDao: CandleDao
     abstract val currencyDao: CurrencyDao

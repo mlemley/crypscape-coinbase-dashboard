@@ -1,8 +1,12 @@
 package app.lemley.crypscape.charting
 
+import app.lemley.crypscape.extensions.toInstant
+import app.lemley.crypscape.persistance.entities.Candle
+import app.lemley.crypscape.persistance.entities.Granularity
 import app.lemley.crypscape.ui.market.candleSetLabel
 import com.github.mikephil.charting.data.*
 import com.google.common.truth.Truth.assertThat
+import io.mockk.mockk
 import org.junit.Test
 
 class ChartRendererTest {
@@ -33,84 +37,25 @@ class ChartRendererTest {
     }
 
     @Test
-    fun plot_entry__adds_new_entry__orders_by_x_coordinate__candle_data() {
+    fun plot_entry__defines_limit_line() {
         val chartRenderer = ChartRenderer()
+        chartRenderer.plot(DataSetType.CandleDataSet, "candles")
 
-        data class Case(
-            val type: DataSetType,
-            val label: String,
-            val entries: List<Entry>,
-            val expectedEntries: List<Entry>
+        val candle = Candle(
+            platform_id = 1,
+            product_id = 35,
+            time = 1583856000000.toInstant(),
+            granularity = Granularity.Hour,
+            high = 7.0,
+            low = 5.2,
+            open = 5.9,
+            close = 6.7,
+            volume = 10.0
         )
 
-        val cases = listOf<Case>(
-            Case(
-                DataSetType.CandleDataSet, candleSetLabel,
-                listOf(
-                    CandleEntry(2F, 100F, 90F, 91F, 98F),
-                    CandleEntry(1F, 90F, 80F, 81F, 88F)
-                ),
-                listOf(
-                    CandleEntry(1F, 90F, 80F, 81F, 88F),
-                    CandleEntry(2F, 100F, 90F, 91F, 98F)
-                )
-            ),
-            Case(
-                DataSetType.LineDataSet, "line data",
-                listOf(
-                    Entry(2F, 100F),
-                    Entry(1F, 90F)
-                ),
-                listOf(
-                    Entry(1F, 90F),
-                    Entry(2F, 100F)
-                )
-            ),
-            Case(
-                DataSetType.ScatterDataSet, "scatter data",
-                listOf(
-                    Entry(2F, 100F),
-                    Entry(1F, 90F)
-                ),
-                listOf(
-                    Entry(1F, 90F),
-                    Entry(2F, 100F)
-                )
-            )
-        )
+        chartRenderer.limitFor(candle, mockk(relaxed = true))
 
-        cases.forEach { testCase ->
-            chartRenderer.plot(testCase.type, testCase.label)
-
-            testCase.entries.forEach { entry ->
-                chartRenderer.plotEntry(testCase.label, entry)
-            }
-
-            when (testCase.type) {
-                is DataSetType.CandleDataSet -> {
-                    val values = (chartRenderer.candleData.dataSets[0] as CandleDataSet).values
-                    values.forEachIndexed { i, it ->
-                        assertThat(values[i].x).isEqualTo(testCase.expectedEntries[i].x)
-                        assertThat(values[i].y).isEqualTo(testCase.expectedEntries[i].y)
-                    }
-                }
-                is DataSetType.LineDataSet -> {
-                    val values = (chartRenderer.lineData.dataSets[0] as LineDataSet).values
-                    values.forEachIndexed { i, it ->
-                        assertThat(values[i].x).isEqualTo(testCase.expectedEntries[i].x)
-                        assertThat(values[i].y).isEqualTo(testCase.expectedEntries[i].y)
-                    }
-                }
-                is DataSetType.ScatterDataSet -> {
-                    val values = (chartRenderer.scatterData.dataSets[0] as ScatterDataSet).values
-                    values.forEachIndexed { i, it ->
-                        assertThat(values[i].x).isEqualTo(testCase.expectedEntries[i].x)
-                        assertThat(values[i].y).isEqualTo(testCase.expectedEntries[i].y)
-                    }
-                }
-                else -> throw java.lang.IllegalArgumentException("implement more types")
-            }
-        }
+        assertThat(chartRenderer.limitLine?.limit).isEqualTo(6.7F)
 
     }
 
@@ -210,7 +155,9 @@ class ChartRendererTest {
 
         assertThat(chartRenderer.setForLabel(candleLabel) as CandleDataSet).isEqualTo(chartRenderer.candleData.dataSets[0])
         assertThat(chartRenderer.setForLabel(lineLabel) as LineDataSet).isEqualTo(chartRenderer.lineData.dataSets[0])
-        assertThat(chartRenderer.setForLabel(scatterLabel) as ScatterDataSet).isEqualTo(chartRenderer.scatterData.dataSets[0])
+        assertThat(chartRenderer.setForLabel(scatterLabel) as ScatterDataSet).isEqualTo(
+            chartRenderer.scatterData.dataSets[0]
+        )
     }
 
     @Test
