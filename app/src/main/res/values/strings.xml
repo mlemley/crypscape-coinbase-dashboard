@@ -5,6 +5,7 @@
     <string name="nav_header_title">CrypScape</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
+    <string name="menu">menu</string>
 
     <!-- Splash Screen -->
     <string name="cryp">cryp</string>

@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat.getColor
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -118,7 +120,14 @@ class MarketFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_market, container, false)
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_market, container, false)
+        view.findViewById<View>(R.id.drawer_menu)?.setOnClickListener{ _ ->
+            activity?.findViewById<DrawerLayout>(R.id.drawer_layout)
+                ?.openDrawer(GravityCompat.START, true)
+        }
+        return view
+    }
 
     override fun onResume() {
         super.onResume()
