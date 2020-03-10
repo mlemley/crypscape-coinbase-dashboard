@@ -1,5 +1,7 @@
 package app.lemley.crypscape.extensions.app.persistance
 
+import android.content.Context
+import android.content.res.Configuration
 import app.lemley.crypscape.extensions.*
 import app.lemley.crypscape.persistance.entities.Granularity
 import org.threeten.bp.Instant
@@ -18,28 +20,27 @@ private val TimeScale: Instant = LocalDateTime.of(
     LocalTime.of(0, 0)
 ).toInstant(UTC)
 
-val Granularity.xAxisLabelCount: Int
-    get() = when (this) {
-        Granularity.Minute -> 14
-        Granularity.FiveMinutes -> 14
-        Granularity.FifteenMinutes -> 14
-        Granularity.Hour -> 14
-        Granularity.SixHours -> 14
-        Granularity.Day -> 14
-    }.exhaustive
-
-val Granularity.visibleXRange: Float
-    get() = when (this) {
-/*
-        Granularity.Minute -> 140.toFloat()
-        Granularity.FiveMinutes -> 150.toFloat() // 1/2 day
-        Granularity.FifteenMinutes -> 100.toFloat()
-        else -> {
-            (5 * 24 + Instant.now().atZone(ZoneId.systemDefault()).hour).toFloat()
-        }
-*/
-        else -> 65F
+fun Granularity.xAxisLabelCount(context: Context): Int {
+    return if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        14
+    } else {
+        7
     }
+}
+
+fun Granularity.visibleXRange(context: Context): Float {
+    return if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        when (this) {
+            Granularity.Minute -> 140.toFloat()
+            Granularity.FiveMinutes -> 150.toFloat() // 1/2 day
+            Granularity.FifteenMinutes -> 100.toFloat()
+            else -> 65F
+
+        }
+    } else {
+        35F
+    }
+}
 
 
 fun Granularity.toXCoordinate(instant: Instant): Float = scaleDown(instant, this).toFloat()
