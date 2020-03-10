@@ -59,6 +59,7 @@ fun CombinedChart.configureForCrypScape(candleGranularity: Granularity) {
         setDrawLabels(true)
         setDrawAxisLine(false)
         setDrawZeroLine(false)
+        setDrawLimitLinesBehindData(false)
         labelCount = 19
         valueFormatter = YAxisFormatter()
         gridColor = context.getColor(R.color.candlestick_markers)

@@ -1,20 +1,28 @@
 package app.lemley.crypscape.charting
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
+import app.lemley.crypscape.R
+import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.interfaces.datasets.IDataSet
 
 class ChartRenderer {
 
+    var limitLine: LimitLine? = null
     var granularity: Granularity? = null
     private val combinedData = CombinedData()
 
     private val setMap: MutableMap<String, DataSetType> = mutableMapOf()
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val candleData = CandleData()
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val lineData = LineData()
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val scatterData = ScatterData()
 
@@ -69,7 +77,7 @@ class ChartRenderer {
     }
 
     private fun removeEntryAtXCoordinateIfPresent(set: IDataSet<Entry>, entry: Entry) {
-        when(set) {
+        when (set) {
             is LineDataSet -> removeLineEntryAtXCoordinateIfPresent(set, entry)
             is ScatterDataSet -> removeScatterEntryAtXCoordinateIfPresent(set, entry)
             is CandleDataSet -> removeCandleEntryAtXCoordinateIfPresent(set, entry)
@@ -78,35 +86,36 @@ class ChartRenderer {
 
 
     private fun removeScatterEntryAtXCoordinateIfPresent(set: ScatterDataSet, entry: Entry) {
-        var indexToRemove:Int? = null
-        set.values.forEachIndexed { i , it ->
+        var indexToRemove: Int? = null
+        set.values.forEachIndexed { i, it ->
             if (it.x == entry.x) {
                 indexToRemove = i
                 return@forEachIndexed
             }
         }
-        indexToRemove?.let {set.removeEntry(it)}
+        indexToRemove?.let { set.removeEntry(it) }
     }
+
     private fun removeLineEntryAtXCoordinateIfPresent(set: LineDataSet, entry: Entry) {
-        var indexToRemove:Int? = null
-        set.values.forEachIndexed { i , it ->
+        var indexToRemove: Int? = null
+        set.values.forEachIndexed { i, it ->
             if (it.x == entry.x) {
                 indexToRemove = i
                 return@forEachIndexed
             }
         }
-        indexToRemove?.let {set.removeEntry(it)}
+        indexToRemove?.let { set.removeEntry(it) }
     }
 
     private fun removeCandleEntryAtXCoordinateIfPresent(set: CandleDataSet, entry: Entry) {
-        var indexToRemove:Int? = null
-        set.values.forEachIndexed { i , it ->
+        var indexToRemove: Int? = null
+        set.values.forEachIndexed { i, it ->
             if (it.x == entry.x) {
                 indexToRemove = i
                 return@forEachIndexed
             }
         }
-        indexToRemove?.let {set.removeEntry(it)}
+        indexToRemove?.let { set.removeEntry(it) }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -137,6 +146,18 @@ class ChartRenderer {
         if (scatterData.dataSetCount > 0)
             combinedData.setData(scatterData)
         return combinedData
+    }
+
+    fun limitFor(candle: Candle, context: Context) {
+        limitLine = LimitLine(candle.close.toFloat()).also {
+            it.enableDashedLine(2F, 3F, 0F)
+            it.lineWidth = 2F
+            it.lineColor =
+                if (candle.open < candle.close) context.getColor(R.color.candlestick_increasing) else context.getColor(
+                    R.color.candlestick_decreasing
+                )
+            it.labelPosition = LimitLine.LimitLabelPosition.LEFT_TOP
+        }
     }
 
 }

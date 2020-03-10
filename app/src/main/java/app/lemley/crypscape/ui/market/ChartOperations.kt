@@ -42,19 +42,28 @@ sealed class ChartOperations : IChartOperation {
 
     data class RenderCandles(val candles: List<Candle>) : IChartOperation {
         override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
+            chart.axisLeft.removeAllLimitLines()
             candles.forEach { candle ->
                 chartRenderer.plotEntry(
                     candleSetLabel,
                     candle.toChartEntry()
                 )
             }
+            chartRenderer.limitFor(candles.last(), chart.context)
             val combinedData = chartRenderer.buildData()
             chart.data = combinedData
             updateDataSetVisibility(chart)
-            chart.setVisibleXRangeMaximum(chartRenderer.granularity?.visibleXRange ?: Granularity.Hour.visibleXRange)
+            chart.setVisibleXRangeMaximum(
+                chartRenderer.granularity?.visibleXRange ?: Granularity.Hour.visibleXRange
+            )
             chart.isAutoScaleMinMaxEnabled = true
-            chart.xAxis.setAvoidFirstLastClipping(true)
-            chart.xAxis.granularity = .1f
+            chart.axisLeft.apply {
+                addLimitLine(chartRenderer.limitLine)
+            }
+            chart.xAxis.apply {
+                setAvoidFirstLastClipping(true)
+                granularity = 1f
+            }
             chart.moveViewToX(combinedData.candleData.dataSets[0].xMax)
             chart.notifyDataSetChanged()
             chart.invalidate()

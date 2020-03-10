@@ -89,7 +89,7 @@ class MarketFragment : Fragment() {
                     ChartOperations.ConfigureFor(candles.first().granularity)
                 )
             }
-            chartingManager.performChartingOperation(this, ChartOperations.RenderCandles(candles))
+            chartingManager.performChartingOperation(this, ChartOperations.RenderCandles(candles.reversed()))
         }
     }
 
