@@ -89,7 +89,10 @@ class MarketFragment : Fragment() {
                     ChartOperations.ConfigureFor(candles.first().granularity)
                 )
             }
-            chartingManager.performChartingOperation(this, ChartOperations.RenderCandles(candles.reversed()))
+            chartingManager.performChartingOperation(
+                this,
+                ChartOperations.RenderCandles(candles.reversed())
+            )
         }
     }
 
@@ -100,7 +103,10 @@ class MarketFragment : Fragment() {
                 ticker?.let { updateWithTicker(it) }
                 connectionStateView?.let {
                     it.setBackgroundColor(
-                        getColor(it.context, if (state.hasRealtimeConnection) R.color.aqua_marine else R.color.warm_pink)
+                        getColor(
+                            it.context,
+                            if (state.hasRealtimeConnection) R.color.aqua_marine else R.color.warm_pink
+                        )
                     )
                 }
 
@@ -138,9 +144,11 @@ class MarketFragment : Fragment() {
     private fun updateWithTicker(ticker: Ticker) {
         currencyValue?.text = ticker.price.toUsd().toFormattedCurrency()
         ticker.dailyPercentageChange.let { change ->
-            currencyPercentChange?.apply {
-                text = "$change%"
-                setTextAppearance(if (change >= 0) R.style.TextAppearance_RealTime_ChangePercentageUp else R.style.TextAppearance_RealTime_ChangePercentageDown)
+            if (ticker.isValid) {
+                currencyPercentChange?.apply {
+                    text = "$change%"
+                    setTextAppearance(if (change >= 0) R.style.TextAppearance_RealTime_ChangePercentageUp else R.style.TextAppearance_RealTime_ChangePercentageDown)
+                }
             }
         }
     }
