@@ -32,12 +32,9 @@ class CoinBaseRealTimeRepository constructor(
         object Connected : ConnectionState()
     }
 
-    // TODO inject as dependency
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var connectionStateChannel = ConflatedBroadcastChannel<ConnectionState>()
     val connectionStateFlow: Flow<ConnectionState> get() = connectionStateChannel.asFlow()
-
-    val webSocketEventFlow get() = coinBaseWSService.observeWebSocketEvent().consumeAsFlow()
     val tickerFlow: Flow<Ticker> get() = coinBaseWSService.observeTicker().consumeAsFlow()
 
     suspend fun subscribe(products: List<String>, channels: List<Subscribe.Channel>) =

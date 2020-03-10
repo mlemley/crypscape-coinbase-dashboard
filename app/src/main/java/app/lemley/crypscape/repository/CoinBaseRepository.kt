@@ -12,12 +12,14 @@ class CoinBaseRepository(
     val currencyRepository: CoinBaseCurrencyRepository,
     val productRepository: CoinBaseProductRepository,
     val candleRepository: CoinBaseCandleRepository,
-    val tickerRepository: CoinBaseTickerRepository
+    val tickerRepository: CoinBaseTickerRepository,
+    val defaultMarketDataRepository: DefaultMarketDataRepository
 ) {
 
-    suspend fun syncProducts() {
+    suspend fun syncProducts(): MarketConfiguration {
         currencyRepository.sync()
         productRepository.sync()
+        return defaultMarketDataRepository.loadDefault()
     }
 
     suspend fun candlesForConfiguration(marketConfiguration: MarketConfiguration): Flow<List<Candle>> {

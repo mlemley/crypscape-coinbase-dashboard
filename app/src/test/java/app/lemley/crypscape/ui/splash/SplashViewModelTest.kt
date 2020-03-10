@@ -54,7 +54,7 @@ class SplashViewModelTest {
         runBlocking {
 
             with(viewModel) {
-                makeInitState() + SyncProductUseCase.ProductSyncComplete
+                makeInitState() + SyncProductUseCase.ProductSyncComplete(mockk(relaxed = true))
             }
 
         }

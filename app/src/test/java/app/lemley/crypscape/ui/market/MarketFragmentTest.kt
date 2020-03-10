@@ -1,5 +1,6 @@
 package app.lemley.crypscape.ui.market
 
+import android.widget.TextView
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.lifecycle.LiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -118,11 +119,24 @@ class MarketFragmentTest {
 
     @Test
     fun renders_percentage_change() {
-        val ticker = Ticker(price = 45.5, open24h = 35.0)
+        val ticker = Ticker(price = 45.5, open24h = 35.0, sequence = 12786392165, time = "2020-03-10T17:47:46.419048Z")
         createFragmentScenario().onFragment { fragment ->
             fragment.stateObserver.onChanged(MarketState(ticker = ticker))
 
             assertThat(fragment.currency_change.text).isEqualTo("30.0%")
+        }
+    }
+
+    @Test
+    fun renders_percentage_change__skips_when_ticker_data_not_complete() {
+        val ticker = Ticker()
+        createFragmentScenario().onFragment { fragment ->
+            val currencyChange:TextView = fragment.currency_change
+            currencyChange.text = "30.0%"
+
+            fragment.stateObserver.onChanged(MarketState(ticker = ticker))
+
+            assertThat(currencyChange.text.toString()).isEqualTo("30.0%")
         }
     }
 

@@ -1,8 +1,10 @@
 package app.lemley.crypscape.usecase
 
+import app.lemley.crypscape.model.MarketConfiguration
 import app.lemley.crypscape.repository.CoinBaseRepository
 import app.lemley.crypscape.ui.base.Action
 import com.google.common.truth.Truth.assertThat
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,7 +29,10 @@ class SyncProductUseCaseTest {
 
     @Test
     fun handle_action__sync_product_data__instructs_repo_to_sync() {
-        val coinBaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true)
+        val marketConfiguration = mockk<MarketConfiguration>(relaxUnitFun = true)
+        val coinBaseRepository: CoinBaseRepository = mockk(relaxUnitFun = true) {
+            every { runBlocking { syncProducts() } } returns marketConfiguration
+        }
         val useCase = createUseCase(coinBaseRepository)
 
         var actualResult: SyncProductUseCase.ProductSyncComplete? = null
@@ -36,7 +41,7 @@ class SyncProductUseCaseTest {
                 actualResult = it as SyncProductUseCase.ProductSyncComplete
             }
         }
-        assertThat(actualResult).isEqualTo(SyncProductUseCase.ProductSyncComplete)
+        assertThat(actualResult).isEqualTo(SyncProductUseCase.ProductSyncComplete(marketConfiguration))
 
         verify {
             runBlocking {

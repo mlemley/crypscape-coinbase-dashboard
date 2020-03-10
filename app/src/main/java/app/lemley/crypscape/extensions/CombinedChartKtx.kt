@@ -24,7 +24,7 @@ fun CombinedChart.configureForCrypScape(candleGranularity: Granularity) {
     setDrawBarShadow(false)
     isHighlightFullBarEnabled = false
     renderer = CombinedChartRenderer(this, this.animator, this.viewPortHandler)
-    setVisibleXRangeMaximum(candleGranularity.visibleXRange)
+    setVisibleXRangeMaximum(candleGranularity.visibleXRange(context))
 
     // draw bars behind lines
     this.drawOrder = arrayOf(
@@ -59,6 +59,7 @@ fun CombinedChart.configureForCrypScape(candleGranularity: Granularity) {
         setDrawLabels(true)
         setDrawAxisLine(false)
         setDrawZeroLine(false)
+        setDrawLimitLinesBehindData(false)
         labelCount = 19
         valueFormatter = YAxisFormatter()
         gridColor = context.getColor(R.color.candlestick_markers)
@@ -74,10 +75,10 @@ fun CombinedChart.configureForCrypScape(candleGranularity: Granularity) {
         this.granularity = 1f
         spaceMax = 1.5F
         textSize = 8f
-        labelCount = candleGranularity.xAxisLabelCount
+        labelCount = candleGranularity.xAxisLabelCount(context)
         valueFormatter = XAxisFormatter(candleGranularity)
         setDrawLimitLinesBehindData(true)
-        setAvoidFirstLastClipping(false)
+        setAvoidFirstLastClipping(true)
     }
 
     legend.apply {

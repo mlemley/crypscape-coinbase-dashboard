@@ -44,4 +44,6 @@ data class Ticker(
             BigDecimal(
                 ((price - open24h) / open24h) * 100.0
             ).setScale(2, RoundingMode.HALF_UP).toDouble()
+
+    val isValid:Boolean get() = time.isNotEmpty() && sequence > 0
 }

@@ -1,5 +1,6 @@
 package app.lemley.crypscape.ui.market
 
+import android.content.Context
 import app.lemley.crypscape.charting.ChartRenderer
 import app.lemley.crypscape.charting.DataSetType
 import app.lemley.crypscape.extensions.app.persistance.toChartEntry
@@ -9,8 +10,7 @@ import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.*
-import com.github.mikephil.charting.interfaces.datasets.IDataSet
+import com.github.mikephil.charting.data.CombinedData
 import io.mockk.*
 import org.junit.Ignore
 import org.junit.Test
@@ -127,10 +127,12 @@ class ChartOperationsTest {
                 })
             }
         }
+        val context: Context = mockk(relaxed = true)
         val xaxis: XAxis = mockk(relaxUnitFun = true)
         val chart: CombinedChart = mockk(relaxUnitFun = true) {
             every { xAxis } returns xaxis
             every { data } returns null
+            every { context } returns context
         }
         val chartRenderer: ChartRenderer = mockk(relaxUnitFun = true) {
             every { granularity } returns configuredGranularity
@@ -177,7 +179,7 @@ class ChartOperationsTest {
             chartRenderer.plotEntry(candleSetLabel, candle1Entry)
             chartRenderer.plotEntry(candleSetLabel, candle2Entry)
             chart.data = combinedData
-            chart.setVisibleXRangeMaximum(configuredGranularity.visibleXRange)
+            chart.setVisibleXRangeMaximum(configuredGranularity.visibleXRange(context))
             chart.isAutoScaleMinMaxEnabled = true
             xaxis.setAvoidFirstLastClipping(true)
             chart.moveViewToX(moveToXValue)
