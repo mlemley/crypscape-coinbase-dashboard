@@ -20,7 +20,6 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Dark"/>
 
-
     <style name="Crypscape.Widget.MaterialComponents.TabLayout" parent="Widget.MaterialComponents.TabLayout">
         <item name="enforceTextAppearance">true</item>
         <item name="android:background">@color/dashboard_background</item>
