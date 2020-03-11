@@ -3,6 +3,7 @@ package app.lemley.crypscape.repository
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import app.lemley.crypscape.client.coinbase.CoinBaseWSService
+import app.lemley.crypscape.client.coinbase.model.OrderBook
 import app.lemley.crypscape.client.coinbase.model.Subscribe
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.client.coinbase.model.subscriptionFor
@@ -36,6 +37,7 @@ class CoinBaseRealTimeRepository constructor(
     var connectionStateChannel = ConflatedBroadcastChannel<ConnectionState>()
     val connectionStateFlow: Flow<ConnectionState> get() = connectionStateChannel.asFlow()
     val tickerFlow: Flow<Ticker> get() = coinBaseWSService.observeTicker().consumeAsFlow()
+    val orderBookFlow: Flow<OrderBook> get() = coinBaseWSService.observeOrderBook().consumeAsFlow()
 
     suspend fun subscribe(products: List<String>, channels: List<Subscribe.Channel>) =
         withContext(Dispatchers.Default) {

@@ -20,18 +20,23 @@ data class Bid(val price: Double, val size: Double)
 data class Ask(val price: Double, val size: Double)
 data class Change(val side: Side, val price: Double, val size: Double)
 
-sealed class OrderBook {
+interface IOrderBook {
+    val productId:String
+    val type:OrderBookType
+}
+
+sealed class OrderBook: IOrderBook {
     data class SnapShot(
-        val type: OrderBookType = OrderBookType.SnapShot,
-        val productId: String,
+        override val type: OrderBookType = OrderBookType.SnapShot,
+        override val productId: String,
         val bids: List<Bid> = emptyList(),
         val asks: List<Ask> = emptyList()
     ) : OrderBook()
 
     data class L2Update(
-        val type: OrderBookType = OrderBookType.L2Update,
+        override val type: OrderBookType = OrderBookType.L2Update,
         val time: String,
-        val productId: String,
+        override val productId: String,
         val changes: List<Change> = emptyList()
     ) : OrderBook()
 }
