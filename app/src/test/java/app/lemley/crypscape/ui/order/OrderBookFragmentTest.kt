@@ -61,7 +61,7 @@ class OrderBookFragmentTest {
     @Test
     fun updates_adapter_with_new_order_book_state_on_state_change() {
         val adapter = mockk<OrderBookAdapter>(relaxed = true)
-        val orderBook:OrderBook = mockk()
+        val orderBook:OrderBook.SnapShot = mockk()
 
         createScenario(adapter).onFragment { fragment ->
             fragment.orderBookStateObserver.onChanged(orderBook)

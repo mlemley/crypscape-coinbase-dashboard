@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.lemley.crypscape.client.coinbase.model.OrderBook
 import app.lemley.crypscape.databinding.FragmentOrderBookBinding
+import app.lemley.crypscape.extensions.exhaustive
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.koin.android.ext.android.inject
@@ -28,7 +29,10 @@ class OrderBookFragment : Fragment() {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val orderBookStateObserver: Observer<in OrderBook> = Observer {
-        orderBookAdapter.updateWith(it)
+        when (it) {
+            is OrderBook.SnapShot -> orderBookAdapter.updateWith(it)
+            is OrderBook.L2Update -> TODO()
+        }.exhaustive
     }
 
     override fun onCreateView(
