@@ -46,6 +46,7 @@ class OrderBookViewModel constructor(
                     Crashlytics.logException(it)
                     it.printStackTrace()
                 }
+                .collect()
         }
     }
 
