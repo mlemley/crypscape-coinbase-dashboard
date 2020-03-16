@@ -1,5 +1,6 @@
 package app.lemley.crypscape.client.coinbase.model
 
+import app.lemley.crypscape.extensions.exhaustive
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -16,22 +17,40 @@ sealed class Side {
     object Sell : Side()
 }
 
-data class Bid(val price: Double, val size: Double)
-data class Ask(val price: Double, val size: Double)
+data class Bid(val price: Double, val size: Double, val changed: Boolean = false)
+data class Ask(val price: Double, val size: Double, val changed: Boolean = false)
 data class Change(val side: Side, val price: Double, val size: Double)
 
 interface IOrderBook {
-    val productId:String
-    val type:OrderBookType
+    val productId: String
+    val type: OrderBookType
 }
 
-sealed class OrderBook: IOrderBook {
+sealed class OrderBook : IOrderBook {
+
     data class SnapShot(
         override val type: OrderBookType = OrderBookType.SnapShot,
         override val productId: String,
-        val bids: List<Bid> = emptyList(),
-        val asks: List<Ask> = emptyList()
-    ) : OrderBook()
+        val bids: Map<Double, Bid> = emptyMap(),
+        val asks: Map<Double, Ask> = emptyMap()
+    ) : OrderBook() {
+        fun askAtPosition(i: Int): Ask? {
+            return asks[asks.keys.toList()[i]]
+        }
+
+        fun bidAtPosition(i: Int): Bid? {
+            return bids[bids.keys.toList()[i]]
+        }
+
+        val spread: Double
+            get() {
+                return asks[asks.keys.minBy { it }!!]?.price?.let { lowestAsk ->
+                    bids[bids.keys.maxBy { it }!!]?.price?.let { highestBid ->
+                        lowestAsk - highestBid
+                    } ?: Double.NaN
+                } ?: Double.NaN
+            }
+    }
 
     data class L2Update(
         override val type: OrderBookType = OrderBookType.L2Update,
@@ -85,21 +104,54 @@ class OrderBookDeserializer : JsonDeserializer<OrderBook> {
     }
 
     private fun deserializeSnapShot(json: JsonObject): OrderBook {
-        val asks: MutableList<Ask> = mutableListOf()
+        val asks: MutableMap<Double, Ask> = mutableMapOf()
         json.get("asks").asJsonArray.forEach {
             val ask = it.asJsonArray
-            asks.add(Ask(ask[0].asDouble, ask[1].asDouble))
+            asks[ask[0].asDouble] = Ask(ask[0].asDouble, ask[1].asDouble)
         }
-        val bids: MutableList<Bid> = mutableListOf()
+        val bids: MutableMap<Double, Bid> = mutableMapOf()
         json.get("bids").asJsonArray.forEach {
             val bid = it.asJsonArray
-            bids.add(Bid(bid[0].asDouble, bid[1].asDouble))
+            bids[bid[0].asDouble] = Bid(bid[0].asDouble, bid[1].asDouble)
         }
         return OrderBook.SnapShot(
             productId = json.get("product_id").asString,
-            asks = asks,
-            bids = bids
+            asks = asks.toSortedMap(reverseOrder()),
+            bids = bids.toSortedMap(reverseOrder())
         )
     }
 
 }
+
+fun OrderBook.SnapShot.mergeChanges(change: OrderBook.L2Update): OrderBook.SnapShot {
+    val bids = bids.toMutableMap()
+    val asks = asks.toMutableMap()
+
+    change.changes.forEach { it ->
+        when (it.side) {
+            is Side.Buy -> bids[it.price] = Bid(it.price, it.size, true)
+            is Side.Sell -> asks[it.price] = Ask(it.price, it.size, true)
+        }.exhaustive
+    }
+    return copy(asks = asks, bids = bids)
+}
+
+fun OrderBook.SnapShot.acknowledgeChanges(): OrderBook.SnapShot = copy(
+    asks = asks.mapValues {
+        if (it.value.changed)
+            it.value.copy(changed = false)
+        else
+            it.value
+    },
+    bids = bids.mapValues {
+        if (it.value.changed)
+            it.value.copy(changed = false)
+        else
+            it.value
+    }
+)
+
+fun OrderBook.SnapShot.clearEmpty(): OrderBook.SnapShot = copy(
+    asks = asks - asks.values.partition { it.size > 0 }.second.map { it.price },
+    bids = bids - bids.values.partition { it.size > 0 }.second.map { it.price }
+)

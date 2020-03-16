@@ -18,7 +18,7 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Dark"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Dark" />
 
     <style name="Crypscape.Widget.MaterialComponents.TabLayout" parent="Widget.MaterialComponents.TabLayout">
         <item name="enforceTextAppearance">true</item>
@@ -61,7 +61,7 @@
         <item name="fontFamily">@font/avenir_heavy</item>
     </style>
 
-    <style name="CrypScape.Section"/>
+    <style name="CrypScape.Section" />
 
     <style name="TextAppearance.RealTime">
         <item name="android:textSize">16sp</item>
@@ -81,6 +81,16 @@
     <style name="TextAppearance.RealTime.ChangePercentageDown">
         <item name="android:textColor">@color/warm_pink</item>
     </style>
+
+    <style name="TextAppearance.OrderBook.Ask" parent="TextAppearance">
+        <item name="android:textColor">@color/warm_pink</item>
+    </style>
+
+    <style name="TextAppearance.OrderBook.Bid" parent="TextAppearance">
+        <item name="android:textColor">@color/aqua_marine</item>
+    </style>
+
+    <style name="TextAppearance.OrderBook.Spread" parent="TextAppearance.AppCompat.Title" />
 
     <style name="Dashboard">
         <item name="android:background">@color/dashboard_background</item>
@@ -112,4 +122,6 @@
         <item name="tabRippleColor">@color/bluishGray</item>
         <item name="tabUnboundedRipple">true</item>
     </style>
+
+
 </resources>

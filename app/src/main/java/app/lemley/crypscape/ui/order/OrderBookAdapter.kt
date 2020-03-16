@@ -4,22 +4,27 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.lemley.crypscape.client.coinbase.model.OrderBook
 
-class OrderBookAdapter: RecyclerView.Adapter<OrderBookViewItemHolder>() {
+class OrderBookAdapter constructor(
+    private val orderBookDataManager: OrderBookDataManager
+) : RecyclerView.Adapter<OrderBookViewItemHolder>() {
 
     fun updateWith(orderBook: OrderBook) {
-        TODO("Not yet implemented")
+        orderBookDataManager.updateData(orderBook)
+        notifyDataSetChanged()
     }
+
+    override fun getItemCount(): Int = orderBookDataManager.size
+
+    override fun getItemViewType(position: Int): Int =
+        orderBookDataManager.typeForPosition(position).id
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderBookViewItemHolder {
-        TODO("Not yet implemented")
-    }
-
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+        val orderBookItemViewType = OrderBookItemViewType.typeFromId(viewType)
+        return orderBookDataManager.holderForType(orderBookItemViewType, parent)
     }
 
     override fun onBindViewHolder(holder: OrderBookViewItemHolder, position: Int) {
-        TODO("Not yet implemented")
+        orderBookDataManager.bindToHolder(holder, position)
     }
 
 }

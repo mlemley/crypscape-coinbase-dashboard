@@ -43,7 +43,6 @@ class OrderBookFragment : Fragment() {
         return view
     }
 
-
     private fun setupOrderBook() {
         binder.orderBook.apply {
             adapter = orderBookAdapter
