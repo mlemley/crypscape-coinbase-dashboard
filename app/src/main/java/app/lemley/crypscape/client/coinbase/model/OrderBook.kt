@@ -155,3 +155,10 @@ fun OrderBook.SnapShot.clearEmpty(): OrderBook.SnapShot = copy(
     asks = asks - asks.values.partition { it.size > 0 }.second.map { it.price },
     bids = bids - bids.values.partition { it.size > 0 }.second.map { it.price }
 )
+
+fun OrderBook.SnapShot.reduceTo(maxPerSide: Int): OrderBook.SnapShot = copy(
+    asks = if (maxPerSide + 1 < asks.size) asks - asks.keys.sorted()
+        .slice(maxPerSide until asks.size) else asks,
+    bids = if (maxPerSide + 1 < bids.size) bids - bids.keys.sortedDescending()
+        .slice(maxPerSide until bids.size) else bids
+)

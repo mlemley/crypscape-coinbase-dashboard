@@ -184,4 +184,54 @@ class OrderBookTest {
             )
         )
     }
+
+    @Test
+    fun reduces_to_number_of_instances_per_side() {
+        val snapshot = OrderBook.SnapShot(
+            productId = "BTC-USD",
+            asks = mapOf(
+                2.9 to Ask(2.9, 2.0),
+                2.8 to Ask(2.8, 2.0),
+                2.7 to Ask(2.7, 2.0),
+                2.6 to Ask(2.6, 2.0),
+                2.5 to Ask(2.5, 2.0),
+                2.4 to Ask(2.4, 2.0),
+                2.3 to Ask(2.3, 2.0),
+                2.2 to Ask(2.2, 2.0),
+                2.1 to Ask(2.1, 2.0),
+                2.0 to Ask(2.0, 2.0)
+            ),
+            bids = mapOf(
+                1.9 to Bid(1.9, 2.0),
+                1.8 to Bid(1.8, 2.0),
+                1.7 to Bid(1.7, 2.0),
+                1.6 to Bid(1.6, 2.0),
+                1.5 to Bid(1.5, 2.0),
+                1.4 to Bid(1.4, 2.0),
+                1.3 to Bid(1.3, 2.0),
+                1.2 to Bid(1.2, 2.0),
+                1.1 to Bid(1.1, 2.0),
+                1.0 to Bid(1.0, 2.0)
+            )
+        )
+
+        assertThat(snapshot.reduceTo(5)).isEqualTo(
+            snapshot.copy(
+                asks = mapOf(
+                    2.4 to Ask(2.4, 2.0),
+                    2.3 to Ask(2.3, 2.0),
+                    2.2 to Ask(2.2, 2.0),
+                    2.1 to Ask(2.1, 2.0),
+                    2.0 to Ask(2.0, 2.0)
+                ),
+                bids = mapOf(
+                    1.9 to Bid(1.9, 2.0),
+                    1.8 to Bid(1.8, 2.0),
+                    1.7 to Bid(1.7, 2.0),
+                    1.6 to Bid(1.6, 2.0),
+                    1.5 to Bid(1.5, 2.0)
+                )
+            )
+        )
+    }
 }

@@ -23,7 +23,7 @@ class OrderBookFragmentTest {
 
     private fun createScenario(
         adapter: OrderBookAdapter = mockk(relaxed = true),
-        liveDataState: LiveData<OrderBook> = mockk(relaxUnitFun = true),
+        liveDataState: LiveData<OrderBook.SnapShot> = mockk(relaxUnitFun = true),
         orderBookViewModel: OrderBookViewModel = mockk(relaxUnitFun = true) {
             every { orderBookState } returns liveDataState
         }
@@ -37,7 +37,7 @@ class OrderBookFragmentTest {
 
     @Test
     fun observes_order_book_state_changes() {
-        val liveDataState: LiveData<OrderBook> = mockk(relaxUnitFun = true)
+        val liveDataState: LiveData<OrderBook.SnapShot> = mockk(relaxUnitFun = true)
         val orderBookViewModel: OrderBookViewModel = mockk(relaxUnitFun = true) {
             every { orderBookState } returns liveDataState
         }
