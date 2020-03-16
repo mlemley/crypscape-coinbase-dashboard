@@ -44,11 +44,13 @@ sealed class OrderBook : IOrderBook {
 
         val spread: Double
             get() {
-                return asks[asks.keys.minBy { it }!!]?.price?.let { lowestAsk ->
-                    bids[bids.keys.maxBy { it }!!]?.price?.let { highestBid ->
-                        lowestAsk - highestBid
-                    } ?: Double.NaN
-                } ?: Double.NaN
+                return with(clearEmpty()) {
+                    asks.keys.min()?.let { lowestAsk ->
+                        bids.keys.max()?.let { highestBid ->
+                            lowestAsk - highestBid
+                        } ?: 0.0
+                    } ?: 0.0
+                }
             }
     }
 

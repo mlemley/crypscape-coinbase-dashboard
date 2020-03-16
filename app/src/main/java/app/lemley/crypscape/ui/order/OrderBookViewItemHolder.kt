@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import app.lemley.crypscape.R
 import app.lemley.crypscape.client.coinbase.model.Ask
 import app.lemley.crypscape.client.coinbase.model.Bid
-import app.lemley.crypscape.extensions.app.gone
-import app.lemley.crypscape.extensions.app.show
 import java.text.DecimalFormat
 
 const val sizeFormat: String = "#,###.0000"
@@ -26,36 +24,25 @@ sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view)
 
     class AskViewHolder(view: View) : OrderBookViewItemHolder(view) {
         fun bind(ask: Ask) {
-            if (ask.size > 0) {
-                itemView.findViewById<TextView>(R.id.price).text =
-                    DecimalFormat(currencyFormat).format(ask.price)
-                itemView.findViewById<TextView>(R.id.market_size).text =
-                    DecimalFormat(sizeFormat).format(ask.size)
-                itemView.findViewById<TextView>(R.id.my_size).text = "-"
-                itemView.show()
-            } else {
-                itemView.gone()
-            }
+            itemView.findViewById<TextView>(R.id.price).text =
+                DecimalFormat(currencyFormat).format(ask.price)
+            itemView.findViewById<TextView>(R.id.market_size).text =
+                DecimalFormat(sizeFormat).format(ask.size)
+            itemView.findViewById<TextView>(R.id.my_size).text = "-"
         }
     }
 
     class BidViewHolder(view: View) : OrderBookViewItemHolder(view) {
         fun bind(bid: Bid) {
-            if (bid.size > 0) {
-                itemView.findViewById<TextView>(R.id.price).text =
-                    DecimalFormat(currencyFormat).format(bid.price)
-                itemView.findViewById<TextView>(R.id.market_size).text =
-                    DecimalFormat(sizeFormat).format(bid.size)
-                itemView.findViewById<TextView>(R.id.my_size).text = "-"
-                itemView.layoutParams = RecyclerView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                itemView.show()
-            } else {
-                itemView.gone()
-                itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
-            }
+            itemView.findViewById<TextView>(R.id.price).text =
+                DecimalFormat(currencyFormat).format(bid.price)
+            itemView.findViewById<TextView>(R.id.market_size).text =
+                DecimalFormat(sizeFormat).format(bid.size)
+            itemView.findViewById<TextView>(R.id.my_size).text = "-"
+            itemView.layoutParams = RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
         }
     }
 

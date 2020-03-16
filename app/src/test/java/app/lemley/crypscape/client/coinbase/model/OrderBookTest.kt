@@ -61,7 +61,8 @@ class OrderBookTest {
             productId = "BTC-USD",
             asks = mapOf(
                 10102.55 to Ask(10102.55, 0.57753524),
-                10102.56 to Ask(10102.56, 0.57753524)
+                10102.56 to Ask(10102.56, 0.57753524),
+                10101.09 to Ask(10101.09, 0.0)
             ),
             bids = mapOf(
                 10101.10 to Bid(10101.10, 0.45054140),

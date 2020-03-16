@@ -6,19 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import app.lemley.crypscape.app.CoroutineContextProvider
-import app.lemley.crypscape.client.coinbase.model.OrderBook
-import app.lemley.crypscape.client.coinbase.model.Subscribe
-import app.lemley.crypscape.client.coinbase.model.reduceTo
+import app.lemley.crypscape.client.coinbase.model.*
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.repository.CoinBaseRealTimeRepository
 import app.lemley.crypscape.repository.DefaultMarketDataRepository
 import com.crashlytics.android.Crashlytics
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -27,6 +22,17 @@ class OrderBookViewModel constructor(
     private val contextProvider: CoroutineContextProvider,
     defaultMarketDataRepository: DefaultMarketDataRepository
 ) : ViewModel() {
+
+    private val pauseTime: Long = 300
+    private val maxSizePerSide: Int = 50
+    private var fullSnapShot: OrderBook.SnapShot = OrderBook.SnapShot(productId = "BTC-USD")
+    private val mergeFlow = flow {
+        while (true) {
+            emit(fullSnapShot.reduceTo(maxSizePerSide))
+            fullSnapShot = fullSnapShot.clearEmpty()
+            delay(pauseTime)
+        }
+    }.flowOn(Dispatchers.IO)
 
     init {
         viewModelScope.launch {
@@ -46,13 +52,18 @@ class OrderBookViewModel constructor(
                     Crashlytics.logException(it)
                     it.printStackTrace()
                 }
+                .flowOn(Dispatchers.IO)
                 .collect()
         }
-    }
 
-    private val maxSizePerSide: Int = 20
-    private var fullSnapShot: OrderBook.SnapShot? = null
-    private var partialSnapshot: OrderBook.SnapShot? = null
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                mergeFlow.collect {
+                    orderBookChannel.offer(it)
+                }
+            }
+        }
+    }
 
     private val orderBookChannel = ConflatedBroadcastChannel<OrderBook.SnapShot>()
     val orderBookState: LiveData<OrderBook.SnapShot> = orderBookChannel
@@ -74,18 +85,19 @@ class OrderBookViewModel constructor(
             }
         }
 
-
-    private fun updateBook(book: OrderBook) {
+    private suspend fun updateBook(book: OrderBook) {
         when (book) {
             is OrderBook.SnapShot -> updateWithSnapshot(book)
-            is OrderBook.L2Update -> TODO()
+            is OrderBook.L2Update -> updateWithUpdate(book)
         }.exhaustive
     }
 
-    private fun updateWithSnapshot(book: OrderBook.SnapShot) {
-        fullSnapShot = book
-        partialSnapshot = book.reduceTo(maxSizePerSide).also {
-            orderBookChannel.offer(it)
-        }
+    private suspend fun updateWithSnapshot(book: OrderBook.SnapShot) {
+        fullSnapShot = book.reduceTo(100)
+        orderBookChannel.offer(book)
+    }
+
+    private suspend fun updateWithUpdate(update: OrderBook.L2Update) {
+        fullSnapShot = fullSnapShot.mergeChanges(update)
     }
 }
