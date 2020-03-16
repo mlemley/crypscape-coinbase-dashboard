@@ -86,6 +86,10 @@
         <item name="android:textColor">@color/warm_pink</item>
     </style>
 
+    <style name="TextAppearance.OrderBook.Disabled" parent="TextAppearance">
+        <item name="android:textColor">@color/foreground_disabled_order_book</item>
+    </style>
+
     <style name="TextAppearance.OrderBook.Bid" parent="TextAppearance">
         <item name="android:textColor">@color/aqua_marine</item>
     </style>
