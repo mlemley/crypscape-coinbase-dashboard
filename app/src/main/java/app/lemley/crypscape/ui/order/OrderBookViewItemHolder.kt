@@ -1,7 +1,6 @@
 package app.lemley.crypscape.ui.order
 
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.lemley.crypscape.R
@@ -25,23 +24,26 @@ sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view)
     class AskViewHolder(view: View) : OrderBookViewItemHolder(view) {
         fun bind(ask: Ask) {
             itemView.background = null
-            itemView.findViewById<TextView>(R.id.price).text =
-                DecimalFormat(currencyFormat).format(ask.price)
-            itemView.findViewById<TextView>(R.id.market_size).text =
-                DecimalFormat(sizeFormat).format(ask.size)
-            itemView.findViewById<TextView>(R.id.my_size).text = "-"
-            itemView.findViewById<TextView>(R.id.price).setTextAppearance(R.style.TextAppearance_OrderBook_Ask)
-            itemView.findViewById<TextView>(R.id.market_size).setTextAppearance(R.style.TextAppearance)
-            itemView.findViewById<TextView>(R.id.my_size).setTextAppearance(R.style.TextAppearance)
+            val price = itemView.findViewById<TextView>(R.id.price)
+            val size = itemView.findViewById<TextView>(R.id.market_size)
+            val my_size = itemView.findViewById<TextView>(R.id.my_size)
+
+            price.text = DecimalFormat(currencyFormat).format(ask.price)
+            price.setTextAppearance(R.style.TextAppearance_OrderBook_Ask)
+            size.text = DecimalFormat(sizeFormat).format(
+                if (ask.size == 0.0) ask.historicalSize
+                else ask.size
+            )
+            size.setTextAppearance(R.style.TextAppearance)
+            my_size.text = "-"
+            my_size.setTextAppearance(R.style.TextAppearance)
 
             if (ask.size == 0.0) {
                 itemView.background =
                     itemView.context.getDrawable(R.drawable.background_order_book_zero_size)
-                itemView.findViewById<TextView>(R.id.price).setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
-                itemView.findViewById<TextView>(R.id.market_size).setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
-                itemView.findViewById<TextView>(R.id.my_size).setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
-            } else {
-                itemView.background = null
+                price.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+                size.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+                my_size.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
             }
         }
     }
@@ -49,27 +51,26 @@ sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view)
     class BidViewHolder(view: View) : OrderBookViewItemHolder(view) {
         fun bind(bid: Bid) {
             itemView.background = null
-            itemView.findViewById<TextView>(R.id.price).text =
-                DecimalFormat(currencyFormat).format(bid.price)
-            itemView.findViewById<TextView>(R.id.market_size).text =
-                DecimalFormat(sizeFormat).format(bid.size)
-            itemView.findViewById<TextView>(R.id.my_size).text = "-"
-            itemView.layoutParams = RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+            val price = itemView.findViewById<TextView>(R.id.price)
+            val size = itemView.findViewById<TextView>(R.id.market_size)
+            val my_size = itemView.findViewById<TextView>(R.id.my_size)
+
+            price.text = DecimalFormat(currencyFormat).format(bid.price)
+            price.setTextAppearance(R.style.TextAppearance_OrderBook_Bid)
+            size.text = DecimalFormat(sizeFormat).format(
+                if (bid.size == 0.0) bid.historicalSize
+                else bid.size
             )
-            itemView.findViewById<TextView>(R.id.price).setTextAppearance(R.style.TextAppearance_OrderBook_Bid)
-            itemView.findViewById<TextView>(R.id.market_size).setTextAppearance(R.style.TextAppearance)
-            itemView.findViewById<TextView>(R.id.my_size).setTextAppearance(R.style.TextAppearance)
+            size.setTextAppearance(R.style.TextAppearance)
+            my_size.text = "-"
+            my_size.setTextAppearance(R.style.TextAppearance)
 
             if (bid.size == 0.0) {
                 itemView.background =
                     itemView.context.getDrawable(R.drawable.background_order_book_zero_size)
-                itemView.findViewById<TextView>(R.id.price)
-                    .setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
-                itemView.findViewById<TextView>(R.id.market_size)
-                    .setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
-                itemView.findViewById<TextView>(R.id.my_size).setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+                price.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+                size.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+                my_size.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
             }
         }
     }

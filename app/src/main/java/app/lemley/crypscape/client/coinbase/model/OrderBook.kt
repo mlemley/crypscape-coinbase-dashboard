@@ -17,8 +17,20 @@ sealed class Side {
     object Sell : Side()
 }
 
-data class Bid(val price: Double, val size: Double, val changed: Boolean = false)
-data class Ask(val price: Double, val size: Double, val changed: Boolean = false)
+data class Bid(
+    val price: Double,
+    val size: Double,
+    val historicalSize: Double = 0.0,
+    val changed: Boolean = false
+)
+
+data class Ask(
+    val price: Double,
+    val size: Double,
+    val historicalSize: Double = 0.0,
+    val changed: Boolean = false
+)
+
 data class Change(val side: Side, val price: Double, val size: Double)
 
 interface IOrderBook {
@@ -131,8 +143,10 @@ fun OrderBook.SnapShot.mergeChanges(change: OrderBook.L2Update): OrderBook.SnapS
 
     change.changes.forEach { it ->
         when (it.side) {
-            is Side.Buy -> bids[it.price] = Bid(it.price, it.size, true)
-            is Side.Sell -> asks[it.price] = Ask(it.price, it.size, true)
+            is Side.Buy -> bids[it.price] =
+                Bid(it.price, it.size, bids[it.price]?.size ?: 0.0, changed = true)
+            is Side.Sell -> asks[it.price] =
+                Ask(it.price, it.size, asks[it.price]?.size ?: 0.0, changed = true)
         }.exhaustive
     }
     return copy(asks = asks, bids = bids)
