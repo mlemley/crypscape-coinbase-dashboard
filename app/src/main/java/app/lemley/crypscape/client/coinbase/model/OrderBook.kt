@@ -21,14 +21,16 @@ data class Bid(
     val price: Double,
     val size: Double,
     val historicalSize: Double = 0.0,
-    val changed: Boolean = false
+    val changed: Boolean = false,
+    val new: Boolean = false
 )
 
 data class Ask(
     val price: Double,
     val size: Double,
     val historicalSize: Double = 0.0,
-    val changed: Boolean = false
+    val changed: Boolean = false,
+    val new: Boolean = false
 )
 
 data class Change(val side: Side, val price: Double, val size: Double)
@@ -143,10 +145,20 @@ fun OrderBook.SnapShot.mergeChanges(change: OrderBook.L2Update): OrderBook.SnapS
 
     change.changes.forEach { it ->
         when (it.side) {
-            is Side.Buy -> bids[it.price] =
-                Bid(it.price, it.size, bids[it.price]?.size ?: 0.0, changed = true)
-            is Side.Sell -> asks[it.price] =
-                Ask(it.price, it.size, asks[it.price]?.size ?: 0.0, changed = true)
+            is Side.Buy -> bids[it.price] = Bid(
+                it.price,
+                it.size,
+                bids[it.price]?.size ?: 0.0,
+                changed = bids[it.price] != null,
+                new = bids[it.price] == null
+            )
+            is Side.Sell -> asks[it.price] = Ask(
+                it.price,
+                it.size,
+                asks[it.price]?.size ?: 0.0,
+                changed = asks[it.price] != null,
+                new = asks[it.price] == null
+            )
         }.exhaustive
     }
     return copy(asks = asks, bids = bids)
