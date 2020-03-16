@@ -32,12 +32,14 @@ sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view)
             itemView.findViewById<TextView>(R.id.my_size).text = "-"
             itemView.findViewById<TextView>(R.id.price).setTextAppearance(R.style.TextAppearance_OrderBook_Ask)
             itemView.findViewById<TextView>(R.id.market_size).setTextAppearance(R.style.TextAppearance)
+            itemView.findViewById<TextView>(R.id.my_size).setTextAppearance(R.style.TextAppearance)
 
             if (ask.size == 0.0) {
                 itemView.background =
                     itemView.context.getDrawable(R.drawable.background_order_book_zero_size)
                 itemView.findViewById<TextView>(R.id.price).setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
                 itemView.findViewById<TextView>(R.id.market_size).setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+                itemView.findViewById<TextView>(R.id.my_size).setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
             } else {
                 itemView.background = null
             }
@@ -58,6 +60,7 @@ sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view)
             )
             itemView.findViewById<TextView>(R.id.price).setTextAppearance(R.style.TextAppearance_OrderBook_Bid)
             itemView.findViewById<TextView>(R.id.market_size).setTextAppearance(R.style.TextAppearance)
+            itemView.findViewById<TextView>(R.id.my_size).setTextAppearance(R.style.TextAppearance)
 
             if (bid.size == 0.0) {
                 itemView.background =
@@ -66,6 +69,7 @@ sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view)
                     .setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
                 itemView.findViewById<TextView>(R.id.market_size)
                     .setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+                itemView.findViewById<TextView>(R.id.my_size).setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
             }
         }
     }
