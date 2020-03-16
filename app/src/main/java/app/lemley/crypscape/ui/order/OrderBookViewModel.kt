@@ -29,7 +29,7 @@ class OrderBookViewModel constructor(
     private val mergeFlow = flow {
         while (true) {
             emit(fullSnapShot.reduceTo(maxSizePerSide))
-            fullSnapShot = fullSnapShot.clearEmpty()
+            fullSnapShot = fullSnapShot.clearEmpty().acknowledgeChanges()
             delay(pauseTime)
         }
     }.flowOn(Dispatchers.IO)

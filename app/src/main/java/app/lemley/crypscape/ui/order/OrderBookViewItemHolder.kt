@@ -44,6 +44,9 @@ sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view)
                 price.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
                 size.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
                 my_size.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+            } else if (ask.changed) {
+                itemView.background =
+                    itemView.context.getDrawable(R.drawable.background_order_book_ask_change)
             }
         }
     }
@@ -71,6 +74,9 @@ sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view)
                 price.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
                 size.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
                 my_size.setTextAppearance(R.style.TextAppearance_OrderBook_Disabled)
+            } else if (bid.changed) {
+                itemView.background =
+                    itemView.context.getDrawable(R.drawable.background_order_book_bid_change)
             }
         }
     }

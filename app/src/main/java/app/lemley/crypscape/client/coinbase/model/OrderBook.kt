@@ -166,14 +166,14 @@ fun OrderBook.SnapShot.mergeChanges(change: OrderBook.L2Update): OrderBook.SnapS
 
 fun OrderBook.SnapShot.acknowledgeChanges(): OrderBook.SnapShot = copy(
     asks = asks.mapValues {
-        if (it.value.changed)
-            it.value.copy(changed = false)
+        if (it.value.changed || it.value.new)
+            it.value.copy(changed = false, new = false)
         else
             it.value
     },
     bids = bids.mapValues {
-        if (it.value.changed)
-            it.value.copy(changed = false)
+        if (it.value.changed || it.value.new)
+            it.value.copy(changed = false, new = false)
         else
             it.value
     }

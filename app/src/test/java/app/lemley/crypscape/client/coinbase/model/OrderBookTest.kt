@@ -134,11 +134,11 @@ class OrderBookTest {
             productId = "BTC-USD",
             asks = mapOf(
                 10202.8 to Ask(10202.8, 0.262567, changed = true),
-                10202.55 to Ask(10202.55, 0.0, changed = true),
+                10202.55 to Ask(10202.55, 0.0, changed = false, new = true),
                 10202.56 to Ask(10202.56, 0.57753524, changed = false)
             ),
             bids = mapOf(
-                10101.8 to Bid(10101.8, 0.162567, changed = true),
+                10101.8 to Bid(10101.8, 0.162567, changed = false, new = true),
                 10101.10 to Bid(10101.10, 0.1, changed = true)
             )
         )
@@ -146,13 +146,13 @@ class OrderBookTest {
         assertThat(snapshot.acknowledgeChanges()).isEqualTo(
             snapshot.copy(
                 asks = mapOf(
-                    10202.8 to Ask(10202.8, 0.262567, changed = false),
-                    10202.55 to Ask(10202.55, 0.0, changed = false),
-                    10202.56 to Ask(10202.56, 0.57753524, changed = false)
+                    10202.8 to Ask(10202.8, 0.262567, changed = false, new = false),
+                    10202.55 to Ask(10202.55, 0.0, changed = false, new = false),
+                    10202.56 to Ask(10202.56, 0.57753524, changed = false, new = false)
                 ),
                 bids = mapOf(
-                    10101.8 to Bid(10101.8, 0.162567, changed = false),
-                    10101.10 to Bid(10101.10, 0.1, changed = false)
+                    10101.8 to Bid(10101.8, 0.162567, changed = false, new = false),
+                    10101.10 to Bid(10101.10, 0.1, changed = false, new = false)
                 )
             )
         )

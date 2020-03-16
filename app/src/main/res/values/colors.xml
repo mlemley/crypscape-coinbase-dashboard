@@ -79,6 +79,8 @@
     <color name="portfolio_buy_and_hold">#46a3fb</color>
 
     <!-- Order Book -->
-    <color name="background_disabled_order_book">#40000000</color>
-    <color name="foreground_disabled_order_book">#30efefef</color>
+    <color name="background_disabled_order_book">#10000000</color>
+    <color name="foreground_disabled_order_book">#20efefef</color>
+    <color name="background_order_book_ask_change">#10ff4081</color>
+    <color name="background_order_book_bid_change">#101de9b6</color>
 </resources>
