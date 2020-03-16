@@ -26,14 +26,18 @@ class OrderBookViewModel constructor(
     private val pauseTime: Long = 250
     private val maxSizePerSide: Int = 50
 
+    @Volatile
     private var fullSnapShot: OrderBook.SnapShot = OrderBook.SnapShot(productId = "BTC-USD")
-        @Synchronized
-        set
+
+    @Synchronized
+    private fun setFullSnapShot(snapshot: OrderBook.SnapShot) {
+        fullSnapShot = snapshot
+    }
 
     private val mergeFlow = flow {
         while (true) {
             emit(fullSnapShot.reduceTo(maxSizePerSide))
-            fullSnapShot = fullSnapShot.clearEmpty().acknowledgeChanges()
+            setFullSnapShot(fullSnapShot.clearEmpty().acknowledgeChanges())
             delay(pauseTime)
         }
     }.flowOn(Dispatchers.IO)
@@ -98,7 +102,7 @@ class OrderBookViewModel constructor(
     }
 
     private suspend fun updateWithSnapshot(book: OrderBook.SnapShot) {
-        fullSnapShot = book.reduceTo(100)
+        setFullSnapShot(book.reduceTo(100))
         orderBookChannel.offer(book.reduceTo(maxSizePerSide))
     }
 
