@@ -80,4 +80,6 @@ class OrderBookAdapter : RecyclerView.Adapter<OrderBookViewItemHolder>() {
             is OrderBookItemViewType.Bid -> OrderBookViewItemHolder.BidViewHolder(view)
         }.exhaustive
     }
+
+    fun isEmpty(): Boolean = orderBook?.asks?.isEmpty() ?: true && orderBook?.bids?.isEmpty() ?: true
 }

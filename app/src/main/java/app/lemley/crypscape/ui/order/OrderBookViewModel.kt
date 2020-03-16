@@ -23,9 +23,13 @@ class OrderBookViewModel constructor(
     defaultMarketDataRepository: DefaultMarketDataRepository
 ) : ViewModel() {
 
-    private val pauseTime: Long = 300
+    private val pauseTime: Long = 250
     private val maxSizePerSide: Int = 50
+
     private var fullSnapShot: OrderBook.SnapShot = OrderBook.SnapShot(productId = "BTC-USD")
+        @Synchronized
+        set
+
     private val mergeFlow = flow {
         while (true) {
             emit(fullSnapShot.reduceTo(maxSizePerSide))
@@ -48,11 +52,11 @@ class OrderBookViewModel constructor(
                 .onEach {
                     updateBook(it)
                 }
+                .flowOn(Dispatchers.IO)
                 .catch {
                     Crashlytics.logException(it)
                     it.printStackTrace()
                 }
-                .flowOn(Dispatchers.IO)
                 .collect()
         }
 
@@ -69,6 +73,7 @@ class OrderBookViewModel constructor(
     val orderBookState: LiveData<OrderBook.SnapShot> = orderBookChannel
         .asFlow()
         .conflate()
+        .distinctUntilChanged()
         .asLiveData(viewModelScope.coroutineContext)
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -94,7 +99,7 @@ class OrderBookViewModel constructor(
 
     private suspend fun updateWithSnapshot(book: OrderBook.SnapShot) {
         fullSnapShot = book.reduceTo(100)
-        orderBookChannel.offer(book)
+        orderBookChannel.offer(book.reduceTo(maxSizePerSide))
     }
 
     private suspend fun updateWithUpdate(update: OrderBook.L2Update) {

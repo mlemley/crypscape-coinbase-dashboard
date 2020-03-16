@@ -225,4 +225,27 @@ class OrderBookAdapterTest {
         assertThat(viewHolder.itemView.findViewById<TextView>(R.id.price)).isNotNull()
         assertThat(viewHolder.itemView.findViewById<TextView>(R.id.my_size)).isNotNull()
     }
+
+    @Test
+    fun empty_when_ask_and_bids_are_0() {
+        val adapter = createAdapter()
+        assertThat(adapter.isEmpty()).isTrue()
+
+        adapter.updateWith(
+            OrderBook.SnapShot(
+                productId = "BTC-USD",
+                type = OrderBookType.SnapShot,
+                asks = mapOf(
+                    2.0 to Ask(2.0, 20.1),
+                    2.1 to Ask(2.1, 21.0)
+                ),
+                bids = mapOf(
+                    1.9 to Bid(1.9, 19.0),
+                    1.8 to Bid(1.8, 18.0),
+                    1.7 to Bid(1.7, 17.0)
+                )
+            )
+        )
+        assertThat(adapter.isEmpty()).isFalse()
+    }
 }
