@@ -32,13 +32,15 @@ class OrderBookAdapter : IStickyHeader, RecyclerView.Adapter<OrderBookViewItemHo
     fun isEmpty(): Boolean =
         orderBook?.asks?.isEmpty() ?: true && orderBook?.bids?.isEmpty() ?: true
 
-    /*
-     *  NOTE, if ever we want to show the current spread as the header look up
-     *  view type from position, if type is a bid, return location of spread
-     */
-    override fun headerPositionForItem(itemPosition: Int): Int = 0
+    override fun headerPositionForItem(itemPosition: Int): Int =
+        when (OrderBookItemViewType.typeFromId(getItemViewType(itemPosition))) {
+            OrderBookItemViewType.Header -> headerPosition
+            OrderBookItemViewType.Ask -> headerPosition
+            OrderBookItemViewType.Spread -> spreadPosition
+            OrderBookItemViewType.Bid -> spreadPosition
+        }.exhaustive
 
-    override fun bindHeaderData(parent:ViewGroup, header: View, headerPosition: Int) {
+    override fun bindHeaderData(parent: ViewGroup, header: View, headerPosition: Int) {
         onBindViewHolder(
             holderForType(
                 OrderBookItemViewType.typeFromId(getItemViewType(headerPosition)),
@@ -49,9 +51,20 @@ class OrderBookAdapter : IStickyHeader, RecyclerView.Adapter<OrderBookViewItemHo
     }
 
     override fun isHeader(itemPosition: Int): Boolean =
-        getItemViewType(itemPosition) == OrderBookItemViewType.Header.id
+        when (OrderBookItemViewType.typeFromId(getItemViewType(itemPosition))) {
+            OrderBookItemViewType.Header -> true
+            OrderBookItemViewType.Ask -> false
+            OrderBookItemViewType.Spread -> true
+            OrderBookItemViewType.Bid -> false
+        }.exhaustive
 
-    override fun headerLayout(headerPosition: Int): Int = OrderBookItemViewType.Header.layoutId
+    override fun headerLayout(position: Int): Int =
+        when (OrderBookItemViewType.typeFromId(getItemViewType(position))) {
+            OrderBookItemViewType.Header -> OrderBookItemViewType.Header.layoutId
+            OrderBookItemViewType.Spread -> OrderBookItemViewType.Spread.layoutId
+            OrderBookItemViewType.Ask -> OrderBookItemViewType.Ask.layoutId
+            OrderBookItemViewType.Bid -> OrderBookItemViewType.Bid.layoutId
+        }.exhaustive
 
     override fun getItemCount(): Int =
         headerSlots + spreadSlots + (orderBook?.asks?.size ?: 0) + (orderBook?.bids?.size

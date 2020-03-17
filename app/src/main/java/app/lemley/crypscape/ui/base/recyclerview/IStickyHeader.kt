@@ -21,11 +21,11 @@ interface IStickyHeader {
      * This method gets called by {@link StickHeaderItemDecoration} to get layout resource
      * id for the header item at specified adapter's position.
      *
-     * @param headerPosition int. Position of the header item in the adapter.
+     * @param position int. Position of the header item in the adapter.
      *
      * @return int. Layout resource id.
      */
-    fun headerLayout(headerPosition: Int): Int
+    fun headerLayout(position: Int): Int
 
     /**
      * This method gets called by {@link StickHeaderItemDecoration} to setup the header View.
