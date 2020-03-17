@@ -1,13 +1,15 @@
 package app.lemley.crypscape.ui.order
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
 import app.lemley.crypscape.client.coinbase.model.OrderBook
 import app.lemley.crypscape.extensions.app.inflate
 import app.lemley.crypscape.extensions.exhaustive
+import app.lemley.crypscape.ui.base.recyclerview.IStickyHeader
 
-class OrderBookAdapter : RecyclerView.Adapter<OrderBookViewItemHolder>() {
+class OrderBookAdapter : IStickyHeader, RecyclerView.Adapter<OrderBookViewItemHolder>() {
 
     companion object {
         const val headerSlots: Int = 1
@@ -26,6 +28,30 @@ class OrderBookAdapter : RecyclerView.Adapter<OrderBookViewItemHolder>() {
         spreadPosition = headerSlots + (this.orderBook?.asks?.size ?: 0)
         notifyDataSetChanged()
     }
+
+    fun isEmpty(): Boolean =
+        orderBook?.asks?.isEmpty() ?: true && orderBook?.bids?.isEmpty() ?: true
+
+    /*
+     *  NOTE, if ever we want to show the current spread as the header look up
+     *  view type from position, if type is a bid, return location of spread
+     */
+    override fun headerPositionForItem(itemPosition: Int): Int = 0
+
+    override fun bindHeaderData(parent:ViewGroup, header: View, headerPosition: Int) {
+        onBindViewHolder(
+            holderForType(
+                OrderBookItemViewType.typeFromId(getItemViewType(headerPosition)),
+                parent = parent,
+                view = header
+            ), headerPosition
+        )
+    }
+
+    override fun isHeader(itemPosition: Int): Boolean =
+        getItemViewType(itemPosition) == OrderBookItemViewType.Header.id
+
+    override fun headerLayout(headerPosition: Int): Int = OrderBookItemViewType.Header.layoutId
 
     override fun getItemCount(): Int =
         headerSlots + spreadSlots + (orderBook?.asks?.size ?: 0) + (orderBook?.bids?.size
@@ -70,9 +96,9 @@ class OrderBookAdapter : RecyclerView.Adapter<OrderBookViewItemHolder>() {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun holderForType(
         viewType: OrderBookItemViewType,
-        parent: ViewGroup
+        parent: ViewGroup,
+        view: View = parent.inflate(viewType.layoutId)
     ): OrderBookViewItemHolder {
-        val view = parent.inflate(viewType.layoutId)
         return when (viewType) {
             is OrderBookItemViewType.Header -> OrderBookViewItemHolder.HeaderViewHolder(view)
             is OrderBookItemViewType.Ask -> OrderBookViewItemHolder.AskViewHolder(view)
@@ -80,6 +106,4 @@ class OrderBookAdapter : RecyclerView.Adapter<OrderBookViewItemHolder>() {
             is OrderBookItemViewType.Bid -> OrderBookViewItemHolder.BidViewHolder(view)
         }.exhaustive
     }
-
-    fun isEmpty(): Boolean = orderBook?.asks?.isEmpty() ?: true && orderBook?.bids?.isEmpty() ?: true
 }

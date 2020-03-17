@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.lemley.crypscape.client.coinbase.model.OrderBook
 import app.lemley.crypscape.databinding.FragmentOrderBookBinding
+import app.lemley.crypscape.ui.base.recyclerview.StickyHeaderDecoration
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.koin.android.ext.android.inject
@@ -53,6 +54,11 @@ class OrderBookFragment : Fragment() {
             adapter = orderBookAdapter
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(false)
+            addItemDecoration(
+                StickyHeaderDecoration(
+                    orderBookAdapter
+                )
+            )
         }
     }
 

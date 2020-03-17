@@ -52,6 +52,7 @@ class CoinBaseRealTimeRepository constructor(
                 connectionStateFlow.collect { connectionState ->
                     when (connectionState) {
                         ConnectionState.Connected -> {
+                            Log.w("--- Foo 1", "-------- subscribe 00001")
                             coinBaseWSService.sendSubscribe(it)
                         }
                         ConnectionState.Disconnected -> {
@@ -66,11 +67,16 @@ class CoinBaseRealTimeRepository constructor(
         coinBaseWSService.observeWebSocketEvent().consumeEach {
             when (it) {
                 is WebSocket.Event.OnConnectionOpened<Any> -> {
-                    subscription?.let { coinBaseWSService.sendSubscribe(it) }
-                    connectionStateChannel.offer(ConnectionState.Connected)
+                    subscription?.let {
+                        Log.w("--- Foo 1", "-------- subscribe 00002")
+                        coinBaseWSService.sendSubscribe(it)
+                    }
+                    if (!connectionStateChannel.isClosedForSend)
+                        connectionStateChannel.offer(ConnectionState.Connected)
                 }
                 is WebSocket.Event.OnConnectionClosed -> {
-                    connectionStateChannel.offer(ConnectionState.Disconnected)
+                    if (!connectionStateChannel.isClosedForSend)
+                        connectionStateChannel.offer(ConnectionState.Disconnected)
                 }
                 is WebSocket.Event.OnMessageReceived -> {
                     Log.v("CoinBaseRealTimeRepository", it.message.toString())

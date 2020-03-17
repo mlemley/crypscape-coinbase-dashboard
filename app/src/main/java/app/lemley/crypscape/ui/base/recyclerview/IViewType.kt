@@ -1,4 +1,4 @@
-package app.lemley.crypscape.ui.base
+package app.lemley.crypscape.ui.base.recyclerview
 
 import androidx.annotation.LayoutRes
 

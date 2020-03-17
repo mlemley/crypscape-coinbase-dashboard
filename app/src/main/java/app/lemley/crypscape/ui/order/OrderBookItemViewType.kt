@@ -2,9 +2,10 @@ package app.lemley.crypscape.ui.order
 
 import androidx.annotation.LayoutRes
 import app.lemley.crypscape.R
-import app.lemley.crypscape.ui.base.IViewType
+import app.lemley.crypscape.ui.base.recyclerview.IViewType
 
-sealed class OrderBookItemViewType : IViewType {
+sealed class OrderBookItemViewType :
+    IViewType {
     companion object {
 
         fun typeFromId(id: Int): OrderBookItemViewType = when (id) {
