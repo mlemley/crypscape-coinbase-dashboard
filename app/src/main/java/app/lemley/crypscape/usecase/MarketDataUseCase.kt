@@ -1,5 +1,6 @@
 package app.lemley.crypscape.usecase
 
+import android.util.Log
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.model.MarketConfiguration
@@ -72,8 +73,10 @@ class MarketDataUseCase constructor(
     }.flowOn(Dispatchers.IO)
 
     private fun handleTickerChange(ticker: Ticker) = channelFlow<Result> {
-        coinBaseRepository.updatePeriodWith(defaultMarketDataRepository.loadDefault(), ticker)
-        send(MarketResults.TickerResult(ticker))
+        if (ticker.isValid){
+            coinBaseRepository.updatePeriodWith(defaultMarketDataRepository.loadDefault(), ticker)
+            send(MarketResults.TickerResult(ticker))
+        }
     }
 
 }

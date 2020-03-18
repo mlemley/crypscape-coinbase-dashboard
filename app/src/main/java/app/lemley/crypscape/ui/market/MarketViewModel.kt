@@ -28,19 +28,22 @@ import kotlinx.coroutines.launch
 class MarketViewModel(
     marketDataUseCase: MarketDataUseCase,
     coinBaseRepository: CoinBaseRepository,
-    val coinBaseRealTimeRepository: CoinBaseRealTimeRepository,
-    val contextProvider: CoroutineContextProvider
+    private val coinBaseRealTimeRepository: CoinBaseRealTimeRepository,
+    private val contextProvider: CoroutineContextProvider
 ) : BaseViewModel<MarketEvents, MarketState>() {
+
 
     init {
         viewModelScope.launch {
-            coinBaseRealTimeRepository.connectionStateFlow.collect {
-                dispatchEvent(
-                    MarketEvents.RealtimeConnectionChangedEvent(
-                        it is CoinBaseRealTimeRepository.ConnectionState.Connected
+            coinBaseRealTimeRepository.connectionStateFlow
+                .conflate()
+                .collect {
+                    dispatchEvent(
+                        MarketEvents.RealtimeConnectionChangedEvent(
+                            it is CoinBaseRealTimeRepository.ConnectionState.Connected
+                        )
                     )
-                )
-            }
+                }
         }
 
         viewModelScope.launch {
@@ -48,15 +51,10 @@ class MarketViewModel(
                 .filter {
                     it.productId == productId
                 }
-                .onEach {
+                .conflate()
+                .collect {
                     dispatchEvent(MarketEvents.TickerChangedEvent(it))
                 }
-                .catch {
-                    Crashlytics.logException(it)
-                    it.printStackTrace()
-                }
-                .conflate()
-                .collect()
 
         }
     }
@@ -64,15 +62,18 @@ class MarketViewModel(
     private var productId: String? = null
         set(value) {
             field = value
-            viewModelScope.launch {
-                value?.let {
-                    coinBaseRealTimeRepository.subscribe(
-                        listOf(it),
-                        listOf(Subscribe.Channel.Ticker)
-                    )
-                }
-            }
+
+            productId?.let { subscribeToProduct(it) }
         }
+
+    private fun subscribeToProduct(productId: String) {
+        viewModelScope.launch {
+            coinBaseRealTimeRepository.subscribe(
+                listOf(productId),
+                listOf(Subscribe.Channel.Ticker)
+            )
+        }
+    }
 
     data class CandleFilter(val marketConfiguration: MarketConfiguration)
 

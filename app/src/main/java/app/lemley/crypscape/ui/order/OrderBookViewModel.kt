@@ -1,5 +1,6 @@
 package app.lemley.crypscape.ui.order
 
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +11,6 @@ import app.lemley.crypscape.client.coinbase.model.*
 import app.lemley.crypscape.extensions.exhaustive
 import app.lemley.crypscape.repository.CoinBaseRealTimeRepository
 import app.lemley.crypscape.repository.DefaultMarketDataRepository
-import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.*
 class OrderBookViewModel constructor(
     private val coinBaseRealTimeRepository: CoinBaseRealTimeRepository,
     private val contextProvider: CoroutineContextProvider,
-    defaultMarketDataRepository: DefaultMarketDataRepository
+    private val defaultMarketDataRepository: DefaultMarketDataRepository
 ) : ViewModel() {
 
     private val pauseTime: Long = 250
@@ -43,6 +43,10 @@ class OrderBookViewModel constructor(
     }.flowOn(Dispatchers.IO)
 
     init {
+        loadProduct()
+    }
+
+    private fun loadProduct() {
         viewModelScope.launch {
             productId = withContext(contextProvider.IO) {
                 defaultMarketDataRepository.loadDefault().productRemoteId
@@ -53,20 +57,23 @@ class OrderBookViewModel constructor(
                 .filter {
                     it.productId == productId
                 }
-                .onEach {
+                .collect {
                     updateBook(it)
                 }
-                .flowOn(Dispatchers.IO)
-                .catch {
-                    Crashlytics.logException(it)
-                    it.printStackTrace()
-                }
-                .collect()
         }
 
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 mergeFlow.collect {
+                    if (fullSnapShot.spread < 0) {
+                        productId?.let {
+                            Log.w(
+                                "-- SPREAD --",
+                                "--- Value of spread went negative resubscribing --- fullSnapShot.spread.toString()"
+                            )
+                            subscribeToLevel2(it)
+                        }
+                    }
                     orderBookChannel.offer(it)
                 }
             }
@@ -84,29 +91,33 @@ class OrderBookViewModel constructor(
     var productId: String? = null
         set(value) {
             field = value
-            viewModelScope.launch {
-                value?.let {
-                    coinBaseRealTimeRepository.subscribe(
-                        listOf(it),
-                        listOf(Subscribe.Channel.Level2)
-                    )
-                }
+            value?.let {
+                subscribeToLevel2(it)
             }
         }
 
-    private suspend fun updateBook(book: OrderBook) {
+    private fun subscribeToLevel2(productId: String) {
+        viewModelScope.launch {
+            coinBaseRealTimeRepository.subscribe(
+                listOf(productId),
+                listOf(Subscribe.Channel.Level2)
+            )
+        }
+    }
+
+    private fun updateBook(book: OrderBook) {
         when (book) {
             is OrderBook.SnapShot -> updateWithSnapshot(book)
             is OrderBook.L2Update -> updateWithUpdate(book)
         }.exhaustive
     }
 
-    private suspend fun updateWithSnapshot(book: OrderBook.SnapShot) {
+    private fun updateWithSnapshot(book: OrderBook.SnapShot) {
         setFullSnapShot(book.reduceTo(100))
         orderBookChannel.offer(book.reduceTo(maxSizePerSide))
     }
 
-    private suspend fun updateWithUpdate(update: OrderBook.L2Update) {
-        fullSnapShot = fullSnapShot.mergeChanges(update)
+    private fun updateWithUpdate(update: OrderBook.L2Update) {
+        setFullSnapShot(fullSnapShot.mergeChanges(update))
     }
 }

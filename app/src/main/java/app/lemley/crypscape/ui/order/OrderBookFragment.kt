@@ -44,9 +44,18 @@ class OrderBookFragment : Fragment() {
     ): View? {
         binder = FragmentOrderBookBinding.inflate(layoutInflater)
         val view = binder.root
-        orderBookViewModel.orderBookState.observe(viewLifecycleOwner, orderBookStateObserver)
         setupOrderBook()
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        orderBookViewModel.orderBookState.observe(viewLifecycleOwner, orderBookStateObserver)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        orderBookViewModel.orderBookState.removeObserver(orderBookStateObserver)
     }
 
     private fun setupOrderBook() {

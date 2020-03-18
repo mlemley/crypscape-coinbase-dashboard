@@ -12,8 +12,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.whenResumed
-import androidx.lifecycle.whenStarted
 import app.lemley.crypscape.R
 import app.lemley.crypscape.client.coinbase.model.Ticker
 import app.lemley.crypscape.extensions.app.withView
@@ -27,7 +25,6 @@ import com.github.mikephil.charting.charts.CombinedChart
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -106,7 +103,7 @@ class MarketFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_market, container, false)
-        view.findViewById<View>(R.id.drawer_menu)?.setOnClickListener{ _ ->
+        view.findViewById<View>(R.id.drawer_menu)?.setOnClickListener { _ ->
             activity?.findViewById<DrawerLayout>(R.id.drawer_layout)
                 ?.openDrawer(GravityCompat.START, true)
         }
@@ -125,6 +122,12 @@ class MarketFragment : Fragment() {
         marketViewModel.state.observe(viewLifecycleOwner, stateObserver)
         marketViewModel.dispatchEvent(MarketEvents.Init)
         granularity?.addOnTabSelectedListener(granularitySelectedListener)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        marketViewModel.candles.removeObserver(candleObserver)
+        marketViewModel.state.removeObserver(stateObserver)
     }
 
     private fun updateMarketConfiguration(marketConfiguration: MarketConfiguration) {

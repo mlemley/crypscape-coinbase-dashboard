@@ -132,7 +132,7 @@ class OrderBookDeserializer : JsonDeserializer<OrderBook> {
         }
         return OrderBook.SnapShot(
             productId = json.get("product_id").asString,
-            asks = asks.toSortedMap(reverseOrder()),
+            asks = asks.toSortedMap(),
             bids = bids.toSortedMap(reverseOrder())
         )
     }
@@ -161,7 +161,7 @@ fun OrderBook.SnapShot.mergeChanges(change: OrderBook.L2Update): OrderBook.SnapS
             )
         }.exhaustive
     }
-    return copy(asks = asks, bids = bids)
+    return copy(asks = asks.toSortedMap(), bids = bids.toSortedMap(reverseOrder()))
 }
 
 fun OrderBook.SnapShot.acknowledgeChanges(): OrderBook.SnapShot = copy(
@@ -180,13 +180,15 @@ fun OrderBook.SnapShot.acknowledgeChanges(): OrderBook.SnapShot = copy(
 )
 
 fun OrderBook.SnapShot.clearEmpty(): OrderBook.SnapShot = copy(
-    asks = asks - asks.values.partition { it.size > 0 }.second.map { it.price },
-    bids = bids - bids.values.partition { it.size > 0 }.second.map { it.price }
+    asks = (asks - asks.values.partition { it.size > 0 }.second.map { it.price }).toSortedMap(),
+    bids = (bids - bids.values.partition { it.size > 0 }.second.map { it.price }).toSortedMap(
+        reverseOrder()
+    )
 )
 
 fun OrderBook.SnapShot.reduceTo(maxPerSide: Int): OrderBook.SnapShot = copy(
-    asks = if (maxPerSide + 1 < asks.size) asks - asks.keys.sorted()
-        .slice(maxPerSide until asks.size) else asks,
-    bids = if (maxPerSide + 1 < bids.size) bids - bids.keys.sortedDescending()
-        .slice(maxPerSide until bids.size) else bids
+    asks = if (maxPerSide + 1 < asks.size) (asks - asks.keys.sorted()
+        .slice(maxPerSide until asks.size)).toSortedMap() else asks,
+    bids = if (maxPerSide + 1 < bids.size) (bids - bids.keys.sortedDescending()
+        .slice(maxPerSide until bids.size)).toSortedMap(reverseOrder()) else bids
 )

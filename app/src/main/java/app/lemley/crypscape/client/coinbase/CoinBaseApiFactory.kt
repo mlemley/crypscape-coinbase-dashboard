@@ -29,14 +29,14 @@ object CoinBaseApiFactory {
         .addConverterFactory(GsonConverterFactory.create())
         .build().create(CoinBaseApi::class.java)
 
-    fun coinBaseWSClient(application: Application): CoinBaseWSService {
+    fun coinBaseWSClient(application:Application): CoinBaseWSService {
         val gson = GsonBuilder().registerTypeAdapter(
             OrderBook::class.java,
             OrderBookDeserializer()
         ).create()
         val scarlet = Scarlet.Builder()
             .webSocketFactory(webSocketOkHttpClient().newWebSocketFactory(wsFeedUrl))
-            .lifecycle(AndroidLifecycle.ofApplicationForeground(application).combineWith())
+            .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
             .addMessageAdapterFactory(GsonMessageAdapter.Factory(gson = gson))
             .addStreamAdapterFactory(CoroutinesStreamAdapterFactory())
             .build()

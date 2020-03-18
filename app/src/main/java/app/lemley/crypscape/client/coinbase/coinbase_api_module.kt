@@ -5,5 +5,5 @@ import org.koin.dsl.module
 
 val coinbaseApiModule = module {
     single { CoinBaseApiFactory.coinbaseApi() }
-    factory { CoinBaseApiFactory.coinBaseWSClient(androidApplication()) }
+    single { CoinBaseApiFactory.coinBaseWSClient(androidApplication()) }
 }
