@@ -34,7 +34,7 @@ class OrderBookViewModel constructor(
         fullSnapShot = snapshot
     }
 
-    private val mergeFlow = flow {
+    private val mergeFlow get() = flow {
         while (true) {
             emit(fullSnapShot.reduceTo(maxSizePerSide))
             setFullSnapShot(fullSnapShot.clearEmpty().acknowledgeChanges())
@@ -52,7 +52,7 @@ class OrderBookViewModel constructor(
                 defaultMarketDataRepository.loadDefault().productRemoteId
             }
         }
-        viewModelScope.launch {
+        GlobalScope.launch {
             coinBaseRealTimeRepository.orderBookFlow
                 .filter {
                     it.productId == productId
@@ -63,19 +63,17 @@ class OrderBookViewModel constructor(
         }
 
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                mergeFlow.collect {
-                    if (fullSnapShot.spread < 0) {
-                        productId?.let {
-                            Log.w(
-                                "-- SPREAD --",
-                                "--- Value of spread went negative resubscribing --- fullSnapShot.spread.toString()"
-                            )
-                            subscribeToLevel2(it)
-                        }
+            mergeFlow.collect {
+                if (fullSnapShot.spread < 0) {
+                    productId?.let {
+                        Log.w(
+                            "-- SPREAD --",
+                            "--- Value of spread went negative resubscribing --- ${fullSnapShot.spread}"
+                        )
+                        subscribeToLevel2(it)
                     }
-                    orderBookChannel.offer(it)
                 }
+                orderBookChannel.offer(it)
             }
         }
     }

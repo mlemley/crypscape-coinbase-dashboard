@@ -21,7 +21,6 @@ import org.koin.core.context.startKoin
 @InternalCoroutinesApi
 open class CrypScapeApplication : Application() {
 
-
     val coinBaseRealTimeRepository: CoinBaseRealTimeRepository by inject()
     val coinBaseWSService: CoinBaseWSService by inject()
 
@@ -55,6 +54,11 @@ open class CrypScapeApplication : Application() {
                         }
                     }
                 }
+        }
+
+        GlobalScope.launch {
+            coinBaseWSService.observeTicker()
+            coinBaseWSService.observeOrderBook()
         }
 
         GlobalScope.launch {

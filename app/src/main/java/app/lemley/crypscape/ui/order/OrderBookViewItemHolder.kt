@@ -9,7 +9,7 @@ import app.lemley.crypscape.client.coinbase.model.Bid
 import java.text.DecimalFormat
 
 const val sizeFormat: String = "#,###.0000"
-const val currencyFormat: String = "#,###.00"
+const val currencyFormat: String = "#,##0.00"
 
 sealed class OrderBookViewItemHolder(view: View) : RecyclerView.ViewHolder(view) {
 

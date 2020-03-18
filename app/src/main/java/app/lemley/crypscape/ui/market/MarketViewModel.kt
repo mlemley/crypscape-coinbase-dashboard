@@ -1,5 +1,6 @@
 package app.lemley.crypscape.ui.market
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import app.lemley.crypscape.usecase.UseCase
 import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -34,7 +36,7 @@ class MarketViewModel(
 
 
     init {
-        viewModelScope.launch {
+        GlobalScope.launch {
             coinBaseRealTimeRepository.connectionStateFlow
                 .conflate()
                 .collect {
@@ -46,7 +48,7 @@ class MarketViewModel(
                 }
         }
 
-        viewModelScope.launch {
+        GlobalScope.launch {
             coinBaseRealTimeRepository.tickerFlow
                 .filter {
                     it.productId == productId

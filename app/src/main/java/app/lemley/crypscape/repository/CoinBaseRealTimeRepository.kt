@@ -1,6 +1,5 @@
 package app.lemley.crypscape.repository
 
-import androidx.annotation.VisibleForTesting
 import app.lemley.crypscape.client.coinbase.CoinBaseWSService
 import app.lemley.crypscape.client.coinbase.model.OrderBook
 import app.lemley.crypscape.client.coinbase.model.Subscribe
@@ -23,29 +22,28 @@ class CoinBaseRealTimeRepository constructor(
     private val coinBaseWSService: CoinBaseWSService
 ) {
     data class Subscriptions(val old: Subscribe? = null, val current: Subscribe? = null)
-
-    private var subscriptions: Subscriptions = Subscriptions()
-    var subscriptionChannel = ConflatedBroadcastChannel<Subscriptions>()
-
     sealed class ConnectionState {
         object Disconnected : ConnectionState()
         object Connected : ConnectionState()
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var connectionStateChannel = ConflatedBroadcastChannel<ConnectionState>()
+    val subscriptionChannel = ConflatedBroadcastChannel<Subscriptions>()
+    val connectionStateChannel = ConflatedBroadcastChannel<ConnectionState>()
+
     val connectionStateFlow: Flow<ConnectionState>
         get() = connectionStateChannel.asFlow().flowOn(Dispatchers.IO)
+
     val tickerFlow: Flow<Ticker>
         get() = coinBaseWSService.observeTicker().consumeAsFlow().flowOn(Dispatchers.IO)
+
     val orderBookFlow: Flow<OrderBook>
         get() = coinBaseWSService.observeOrderBook().consumeAsFlow().flowOn(Dispatchers.IO)
-
 
     suspend fun subscribe(
         products: List<String>,
         channels: List<Subscribe.Channel>
     ) = withContext(Dispatchers.IO) {
+        val subscriptions = subscriptionChannel.valueOrNull ?: Subscriptions()
         subscriptionChannel.offer(
             subscriptions.copy(
                 old = subscriptions.current,
