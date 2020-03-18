@@ -18,7 +18,6 @@ import org.koin.core.context.startKoin
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-@InternalCoroutinesApi
 open class CrypScapeApplication : Application() {
 
     val coinBaseRealTimeRepository: CoinBaseRealTimeRepository by inject()
@@ -39,7 +38,7 @@ open class CrypScapeApplication : Application() {
         }
     }
 
-    private fun startSocketIO() {
+    protected open fun startSocketIO() {
         var currentSubscription: Subscribe? = null
         GlobalScope.launch {
             coinBaseRealTimeRepository.subscriptionChannel.asFlow()
