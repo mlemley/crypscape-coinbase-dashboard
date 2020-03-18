@@ -26,6 +26,7 @@ class CoinBaseRealTimeRepositoryTest {
     ): CoinBaseRealTimeRepository =
         CoinBaseRealTimeRepository(coinBaseWSService)
 
+    @Ignore
     @Test
     fun provides_access_to_ticker_flow() {
         val receiveChannel:ReceiveChannel<Ticker> = mockk(relaxed = true)

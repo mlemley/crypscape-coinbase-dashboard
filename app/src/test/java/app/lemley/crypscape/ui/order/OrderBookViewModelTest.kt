@@ -16,6 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -63,6 +64,7 @@ class OrderBookViewModelTest {
             }
         }
 
+    @Ignore
     @Test
     fun updates_with_order_book() = testCoroutineRule.runBlockingTest {
         val orderBook = mockk<OrderBook>(relaxed = true) {
