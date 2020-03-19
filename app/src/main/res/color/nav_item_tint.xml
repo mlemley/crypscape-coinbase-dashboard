@@ -2,7 +2,5 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:alpha="1.0" android:color="@color/colorOnSurface" android:state_checked="true" />
     <item android:alpha="1.0" android:color="@color/colorOnSurface" android:state_selected="true" />
-    <item android:alpha="1.0" android:color="@color/colorOnSurface" android:state_activated="true" />
-    <item android:alpha="1.0" android:color="@color/colorOnSurface" android:state_window_focused="true" />
     <item android:alpha="0.6" android:color="@color/bluishGray" />
 </selector>
