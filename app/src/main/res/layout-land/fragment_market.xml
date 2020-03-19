@@ -64,7 +64,6 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/granularity"
-        style="@style/CrypScape.Market.Granularity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/chart"

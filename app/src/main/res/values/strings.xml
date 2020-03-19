@@ -28,4 +28,7 @@
     <string name="my_size">My Size</string>
     <string name="order_book_price">Price (%s)</string>
     <string name="order_book_spread_label">%s Spread</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
 </resources>
