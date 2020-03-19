@@ -1,5 +1,6 @@
 package app.lemley.crypscape.ui.market
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import app.lemley.crypscape.usecase.UseCase
 import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -28,35 +30,33 @@ import kotlinx.coroutines.launch
 class MarketViewModel(
     marketDataUseCase: MarketDataUseCase,
     coinBaseRepository: CoinBaseRepository,
-    val coinBaseRealTimeRepository: CoinBaseRealTimeRepository,
-    val contextProvider: CoroutineContextProvider
+    private val coinBaseRealTimeRepository: CoinBaseRealTimeRepository,
+    private val contextProvider: CoroutineContextProvider
 ) : BaseViewModel<MarketEvents, MarketState>() {
 
+
     init {
-        viewModelScope.launch {
-            coinBaseRealTimeRepository.connectionStateFlow.collect {
-                dispatchEvent(
-                    MarketEvents.RealtimeConnectionChangedEvent(
-                        it is CoinBaseRealTimeRepository.ConnectionState.Connected
+        GlobalScope.launch {
+            coinBaseRealTimeRepository.connectionStateFlow
+                .conflate()
+                .collect {
+                    dispatchEvent(
+                        MarketEvents.RealtimeConnectionChangedEvent(
+                            it is CoinBaseRealTimeRepository.ConnectionState.Connected
+                        )
                     )
-                )
-            }
+                }
         }
 
-        viewModelScope.launch {
+        GlobalScope.launch {
             coinBaseRealTimeRepository.tickerFlow
                 .filter {
                     it.productId == productId
                 }
-                .onEach {
+                .conflate()
+                .collect {
                     dispatchEvent(MarketEvents.TickerChangedEvent(it))
                 }
-                .catch {
-                    Crashlytics.logException(it)
-                    it.printStackTrace()
-                }
-                .conflate()
-                .collect()
 
         }
     }
@@ -64,15 +64,18 @@ class MarketViewModel(
     private var productId: String? = null
         set(value) {
             field = value
-            viewModelScope.launch {
-                value?.let {
-                    coinBaseRealTimeRepository.subscribe(
-                        listOf(it),
-                        listOf(Subscribe.Channel.Ticker)
-                    )
-                }
-            }
+
+            productId?.let { subscribeToProduct(it) }
         }
+
+    private fun subscribeToProduct(productId: String) {
+        viewModelScope.launch {
+            coinBaseRealTimeRepository.subscribe(
+                listOf(productId),
+                listOf(Subscribe.Channel.Ticker)
+            )
+        }
+    }
 
     data class CandleFilter(val marketConfiguration: MarketConfiguration)
 

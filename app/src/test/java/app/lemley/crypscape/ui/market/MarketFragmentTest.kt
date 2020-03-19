@@ -14,6 +14,7 @@ import io.mockk.*
 import kotlinx.android.synthetic.main.fragment_market.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.android.viewmodel.dsl.viewModel
@@ -32,6 +33,7 @@ class MarketFragmentTest {
         },
         marketChartingManager: MarketChartingManager = mockk(relaxUnitFun = true)
     ): FragmentScenario<MarketFragment> {
+
         loadModules(module {
             viewModel { marketViewModel }
             factory { marketChartingManager }

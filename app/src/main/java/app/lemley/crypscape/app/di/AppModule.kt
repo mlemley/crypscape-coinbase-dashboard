@@ -9,6 +9,8 @@ import app.lemley.crypscape.repository.DefaultMarketDataRepository
 import app.lemley.crypscape.repository.repositoryModule
 import app.lemley.crypscape.ui.main.mainScreenModule
 import app.lemley.crypscape.ui.market.MarketViewModel
+import app.lemley.crypscape.ui.order.OrderBookAdapter
+import app.lemley.crypscape.ui.order.OrderBookViewModel
 import app.lemley.crypscape.ui.splash.SplashViewModel
 import app.lemley.crypscape.usecase.DelayedCallback
 import app.lemley.crypscape.usecase.MarketDataUseCase
@@ -40,9 +42,12 @@ val appModule = module {
     // View Models
     viewModel { SplashViewModel(get(), get(), get(named("SplashLoadingMillis"))) }
     viewModel { MarketViewModel(get(), get(), get(), get()) }
+    viewModel { OrderBookViewModel(get(), get(), get()) }
+
+    // Adapters
+    factory { OrderBookAdapter() }
 
     // Repositories
-
     factory { DefaultMarketDataRepository(get(), get(), get()) }
 }
 

@@ -96,7 +96,7 @@ class MarketDataUseCaseTest {
 
     @Test
     fun handle__ticker_tick() {
-        val ticker = Ticker(price = 8_998.00)
+        val ticker = Ticker(price = 8_998.00, time = "2015-11-14T20:46:03.511254Z", sequence = 1)
         val coinBaseRepository:CoinBaseRepository = mockk(relaxed = true)
         val marketConfiguration:MarketConfiguration = mockk()
         val defaultMarketDataRepository: DefaultMarketDataRepository = mockk {

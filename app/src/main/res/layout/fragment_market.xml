@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/CrypScape.Section">
+
     <View
         android:id="@+id/connection_state"
         android:layout_width="4dp"
@@ -13,6 +14,20 @@
         android:background="@color/candlestick_decreasing"
         app:layout_constraintBottom_toBottomOf="@id/currency_name"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/currency_name" />
+
+    <ImageButton
+        android:id="@+id/drawer_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/menu"
+        android:focusable="true"
+        android:src="@drawable/ic_menu"
+        app:layout_constraintBottom_toBottomOf="@id/currency_name"
+        app:layout_constraintEnd_toStartOf="@id/currency_name"
+        app:layout_constraintStart_toStartOf="@id/connection_state"
         app:layout_constraintTop_toTopOf="@id/currency_name" />
 
     <TextView
@@ -23,10 +38,10 @@
         android:layout_marginTop="16dp"
         android:textAppearance="@style/TextAppearance.RealTime.CurrencyName"
         app:layout_constraintBottom_toTopOf="@id/granularity"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/drawer_menu"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="BTC"/>
+        tools:text="BTC" />
 
 
     <TextView

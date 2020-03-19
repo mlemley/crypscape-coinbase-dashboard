@@ -16,6 +16,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/currency_name" />
 
+    <ImageButton
+        android:id="@+id/drawer_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_menu"
+        android:contentDescription="@string/menu"
+        app:layout_constraintBottom_toBottomOf="@id/currency_name"
+        app:layout_constraintEnd_toStartOf="@id/currency_name"
+        app:layout_constraintStart_toStartOf="@id/connection_state"
+        app:layout_constraintTop_toTopOf="@id/currency_name" />
+
     <TextView
         android:id="@+id/currency_name"
         android:layout_width="wrap_content"
@@ -23,7 +36,7 @@
         android:layout_marginStart="8dp"
         android:textAppearance="@style/TextAppearance.RealTime.CurrencyName"
         app:layout_constraintBottom_toBottomOf="@id/granularity"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/drawer_menu"
         app:layout_constraintTop_toTopOf="@+id/granularity"
         tools:text="BTC" />
 

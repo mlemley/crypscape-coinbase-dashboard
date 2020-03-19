@@ -1,6 +1,9 @@
 package app.lemley.crypscape.client.coinbase
 
 import android.app.Application
+import app.lemley.crypscape.client.coinbase.model.OrderBook
+import app.lemley.crypscape.client.coinbase.model.OrderBookDeserializer
+import com.google.gson.GsonBuilder
 import com.tinder.scarlet.Scarlet
 import com.tinder.scarlet.lifecycle.android.AndroidLifecycle
 import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter
@@ -26,11 +29,15 @@ object CoinBaseApiFactory {
         .addConverterFactory(GsonConverterFactory.create())
         .build().create(CoinBaseApi::class.java)
 
-    fun coinBaseWSClient(application: Application): CoinBaseWSService {
+    fun coinBaseWSClient(application:Application): CoinBaseWSService {
+        val gson = GsonBuilder().registerTypeAdapter(
+            OrderBook::class.java,
+            OrderBookDeserializer()
+        ).create()
         val scarlet = Scarlet.Builder()
             .webSocketFactory(webSocketOkHttpClient().newWebSocketFactory(wsFeedUrl))
-            .lifecycle(AndroidLifecycle.ofApplicationForeground(application).combineWith())
-            .addMessageAdapterFactory(GsonMessageAdapter.Factory())
+            .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
+            .addMessageAdapterFactory(GsonMessageAdapter.Factory(gson = gson))
             .addStreamAdapterFactory(CoroutinesStreamAdapterFactory())
             .build()
         return scarlet.create()

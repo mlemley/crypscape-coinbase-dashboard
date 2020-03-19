@@ -7,7 +7,7 @@ object TestData {
             "epoch": 1420674445.201
         }
     """
-    const val ticker:String = """
+    const val ticker: String = """
         {
           "trade_id": 4729088,
           "price": "333.99",
@@ -48,5 +48,40 @@ object TestData {
             [ 1415398768, 0.32, 4.2, 0.35, 4.2, 12.3 ],
             [ 1415398767, 0.31, 4.1, 0.34, 4.1, 12.2 ]
        ] 
+    """
+
+    const val orderBookSnapshot: String = """
+    {
+        "type": "snapshot",
+        "product_id": "BTC-USD",
+        "bids": [
+            ["10101.11", "0.45054140"],
+            ["10101.10", "0.45054140"]
+        ],
+        "asks": [
+            ["10102.56", "0.57753524"],
+            ["10102.55", "0.57753524"]
+        ]
+    }
+    """
+
+    const val orderBookL2Update: String = """
+    {
+        "type": "l2update",
+        "product_id": "BTC-USD",
+        "time": "2019-08-14T20:42:27.265Z",
+        "changes": [
+            [
+                "buy",
+                "10101.80000000",
+                "0.162567"
+            ],
+            [
+                "sell",
+                "10202.80000000",
+                "0.262567"
+            ]
+        ]
+    } 
     """
 }

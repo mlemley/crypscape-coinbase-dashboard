@@ -26,54 +26,7 @@ class CoinBaseRealTimeRepositoryTest {
     ): CoinBaseRealTimeRepository =
         CoinBaseRealTimeRepository(coinBaseWSService)
 
-    // TODO  test without connection subscribes when connection opened
-
-    @Ignore // test with connection immediatlly subscribes
-    @Test
-    fun subscribes_to_topics() {
-        val wsService: CoinBaseWSService = mockk(relaxed = true)
-        val repository = createRepository(wsService)
-        val expectedSubscribe = Subscribe(
-            Subscribe.Type.Subscribe.toString(),
-            listOf("BTC-USD"),
-            listOf(Subscribe.Channel.Ticker.toString())
-        )
-        val products = listOf("BTC-USD")
-        val channels = listOf(Subscribe.Channel.Ticker)
-
-        runBlocking {
-            repository.subscribe(products, channels)
-        }
-
-        verify {
-            wsService.sendSubscribe(expectedSubscribe)
-        }
-    }
-
-    @Ignore // TODO ensure that subscribe unsubscribes from channels first
-    @Test
-    fun un_subscribes_from_topics() {
-        val wsService: CoinBaseWSService = mockk(relaxed = true)
-        val repository = createRepository(wsService)
-        val expectedSubscribe = Subscribe(
-            Subscribe.Type.Unsubscribe.toString(),
-            listOf("BTC-USD"),
-            listOf(Subscribe.Channel.Ticker.toString())
-        )
-        val products = listOf("BTC-USD")
-        val channels = listOf(Subscribe.Channel.Ticker)
-
-        runBlocking {
-            repository.subscribe(products, channels)
-
-            repository.unsubscribe()
-        }
-
-        verify {
-            wsService.sendSubscribe(expectedSubscribe)
-        }
-    }
-
+    @Ignore
     @Test
     fun provides_access_to_ticker_flow() {
         val receiveChannel:ReceiveChannel<Ticker> = mockk(relaxed = true)
