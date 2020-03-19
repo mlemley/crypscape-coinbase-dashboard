@@ -3,10 +3,10 @@
     <!-- Base application theme. -->
     <style name="CrypScape" parent="Theme.MaterialComponents">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/tv_white</item>
+        <item name="colorOnSurface">@color/bluishGray</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="android:colorBackground">@color/colorPrimaryDark</item>
         <item name="android:textAppearance">@style/TextAppearance</item>
@@ -18,9 +18,15 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+    <style name="CrypScape.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar">
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Dark" />
+    <style name="CrypScape.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Dark">
+    </style>
+
+    <style name="Widget.AppCompat.Toolbar" parent="CrypScape">
+        <item name="android:background">@color/colorSurface</item>
+    </style>
 
     <style name="Widget.MaterialComponents.TabLayout" parent="CrypScape">
         <item name="enforceTextAppearance">false</item>
@@ -51,7 +57,6 @@
         <item name="itemTextColor">@color/nav_item_tint</item>
         <item name="itemRippleColor">@color/bluishGray</item>
     </style>
-
 
     <style name="TextAppearance" parent="TextAppearance.MaterialComponents.Body1">
         <item name="fontFamily">@font/avenir_book</item>
@@ -139,4 +144,7 @@
     </style>
 
 
+    <dimen name="icon_padding">14dp</dimen>
+    <dimen name="navigation_item_icon_size">24dp</dimen>
+    <dimen name="navigation_item_horizontal_padding">22dp</dimen>
 </resources>
