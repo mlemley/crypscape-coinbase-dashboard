@@ -132,7 +132,7 @@ class OrderBookDeserializer : JsonDeserializer<OrderBook> {
         }
         return OrderBook.SnapShot(
             productId = json.get("product_id").asString,
-            asks = asks.toSortedMap(),
+            asks = asks.toSortedMap(reverseOrder()),
             bids = bids.toSortedMap(reverseOrder())
         )
     }
@@ -161,34 +161,34 @@ fun OrderBook.SnapShot.mergeChanges(change: OrderBook.L2Update): OrderBook.SnapS
             )
         }.exhaustive
     }
-    return copy(asks = asks.toSortedMap(), bids = bids.toSortedMap(reverseOrder()))
+    return copy(asks = asks.toSortedMap(reverseOrder()), bids = bids.toSortedMap(reverseOrder()))
 }
 
 fun OrderBook.SnapShot.acknowledgeChanges(): OrderBook.SnapShot = copy(
-    asks = asks.mapValues {
+    asks = (asks.mapValues {
         if (it.value.changed || it.value.new)
             it.value.copy(changed = false, new = false)
         else
             it.value
-    },
-    bids = bids.mapValues {
+    }).toSortedMap(reverseOrder()),
+    bids = (bids.mapValues {
         if (it.value.changed || it.value.new)
             it.value.copy(changed = false, new = false)
         else
             it.value
-    }
+    }).toSortedMap(reverseOrder())
 )
 
 fun OrderBook.SnapShot.clearEmpty(): OrderBook.SnapShot = copy(
-    asks = (asks - asks.values.partition { it.size > 0 }.second.map { it.price }).toSortedMap(),
+    asks = (asks - asks.values.partition { it.size > 0 }.second.map { it.price }).toSortedMap(
+        reverseOrder()),
     bids = (bids - bids.values.partition { it.size > 0 }.second.map { it.price }).toSortedMap(
-        reverseOrder()
-    )
+        reverseOrder())
 )
 
 fun OrderBook.SnapShot.reduceTo(maxPerSide: Int): OrderBook.SnapShot = copy(
     asks = if (maxPerSide + 1 < asks.size) (asks - asks.keys.sorted()
-        .slice(maxPerSide until asks.size)).toSortedMap() else asks,
+        .slice(maxPerSide until asks.size)).toSortedMap(reverseOrder()) else asks,
     bids = if (maxPerSide + 1 < bids.size) (bids - bids.keys.sortedDescending()
         .slice(maxPerSide until bids.size)).toSortedMap(reverseOrder()) else bids
 )
