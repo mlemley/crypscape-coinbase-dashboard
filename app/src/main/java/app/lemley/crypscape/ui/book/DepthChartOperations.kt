@@ -2,6 +2,7 @@ package app.lemley.crypscape.ui.book
 
 import app.lemley.crypscape.charting.ChartRenderer
 import app.lemley.crypscape.charting.DataSetType
+import app.lemley.crypscape.charting.axis.DepthXAxisFormatter
 import app.lemley.crypscape.charting.operations.ILineChartOperations
 import app.lemley.crypscape.client.coinbase.model.DepthEntry
 import app.lemley.crypscape.client.coinbase.model.OrderBook
@@ -63,6 +64,7 @@ sealed class DepthChartOperations : ILineChartOperations {
             updateDataSetVisibility(chart)
             chart.isAutoScaleMinMaxEnabled = true
             chart.xAxis.apply {
+                valueFormatter = DepthXAxisFormatter(depth)
                 removeAllLimitLines()
                 addLimitLine(LimitLine(bidsSize.toFloat()).also {
                     it.labelPosition = LimitLine.LimitLabelPosition.LEFT_TOP

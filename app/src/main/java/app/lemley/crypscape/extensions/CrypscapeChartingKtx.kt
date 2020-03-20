@@ -2,6 +2,7 @@ package app.lemley.crypscape.extensions
 
 import android.graphics.Paint
 import app.lemley.crypscape.R
+import app.lemley.crypscape.charting.axis.DepthXAxisFormatter
 import app.lemley.crypscape.charting.axis.DepthXAxisRenderer
 import app.lemley.crypscape.charting.axis.XAxisFormatter
 import app.lemley.crypscape.charting.axis.YAxisFormatter
@@ -149,7 +150,6 @@ fun LineChart.configureForDepth() {
         this.granularity = 1f
         spaceMax = 1.5F
         textSize = 8f
-        //valueFormatter = XAxisFormatter(candleGranularity)
         setDrawLimitLinesBehindData(true)
         setAvoidFirstLastClipping(true)
     }
