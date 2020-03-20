@@ -13,11 +13,13 @@ sealed class OrderBookType {
             return "SnapShot"
         }
     }
+
     object L2Update : OrderBookType() {
         override fun toString(): String {
             return "L2Update"
         }
     }
+
     object Depth : OrderBookType() {
         override fun toString(): String {
             return "Depth"
@@ -31,6 +33,7 @@ sealed class Side {
             return "buy"
         }
     }
+
     object Sell : Side() {
         override fun toString(): String {
             return "sell"
@@ -75,6 +78,14 @@ sealed class OrderBook : IOrderBook {
         val bids: Map<Double, DepthEntry> = emptyMap(),
         val asks: Map<Double, DepthEntry> = emptyMap()
     ) : OrderBook() {
+
+        val midMarketPrice: Double
+            get() {
+                val minAsk = asks.keys.min() ?: 0.0
+                val maxBid = bids.keys.max() ?: 0.0
+                return minAsk - ((minAsk - maxBid) / 2.0)
+            }
+
         override fun toString(): String {
             return "type:$type, productId:$productId, bids:$bids, asks:$asks"
         }
@@ -236,7 +247,7 @@ fun OrderBook.SnapShot.reduceTo(maxPerSide: Int): OrderBook.SnapShot = copy(
 fun OrderBook.SnapShot.forDepth(): OrderBook.Depth {
     var size: Float = 0F
     val bidsDepth: MutableMap<Double, DepthEntry> = mutableMapOf()
-    bids.toSortedMap().values.forEach {
+    bids.toSortedMap(reverseOrder()).values.forEach {
         size += it.size.toFloat()
         bidsDepth[it.price] = DepthEntry(Side.Buy, it.price, size)
     }
@@ -251,6 +262,6 @@ fun OrderBook.SnapShot.forDepth(): OrderBook.Depth {
     return OrderBook.Depth(
         productId = this.productId,
         asks = askDepth.toSortedMap(),
-        bids = bidsDepth.toSortedMap(reverseOrder())
+        bids = bidsDepth.toSortedMap()
     )
 }

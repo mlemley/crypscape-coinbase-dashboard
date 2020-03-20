@@ -263,11 +263,31 @@ class OrderBookTest {
                     10202.55 to DepthEntry(Side.Sell, 10202.55, 10.0F)
                 ),
                 bids = mapOf(
-                    10101.10 to DepthEntry(Side.Buy, 10101.10, 1.0F),
+                    10101.8 to DepthEntry(Side.Buy, 10101.8, 1.0F),
                     10101.7 to DepthEntry(Side.Buy, 10101.7, 2.0F),
-                    10101.8 to DepthEntry(Side.Buy, 10101.8, 3.0F)
+                    10101.10 to DepthEntry(Side.Buy, 10101.10, 3.0F)
                 )
             )
         )
+    }
+
+    @Test
+    fun depth_calculates_mid_market_price() {
+        val depthData = OrderBook.Depth(
+            type = OrderBookType.Depth,
+            productId = "BTC-USD",
+            asks = mapOf(
+                10202.8 to DepthEntry(Side.Sell, 10202.8, 30.0F),
+                10202.56 to DepthEntry(Side.Sell, 10202.56, 20.0F),
+                10202.00 to DepthEntry(Side.Sell, 10202.00, 10.0F)
+            ),
+            bids = mapOf(
+                10201.8 to DepthEntry(Side.Buy, 10201.8, 1.0F),
+                10201.75 to DepthEntry(Side.Buy, 10201.75, 2.0F),
+                10201.7 to DepthEntry(Side.Buy, 10201.7, 3.0F)
+            )
+        )
+
+        assertThat(depthData.midMarketPrice).isEqualTo(10201.9)
     }
 }

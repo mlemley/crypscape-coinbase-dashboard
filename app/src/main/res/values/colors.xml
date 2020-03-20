@@ -86,4 +86,7 @@
     <color name="foreground_disabled_order_book">#20efefef</color>
     <color name="background_order_book_ask_change">#10ff4081</color>
     <color name="background_order_book_bid_change">#101de9b6</color>
+
+    <!-- Depth Chart -->
+    <color name="depth_limit_line_color">#505050</color>
 </resources>

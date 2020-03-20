@@ -8,7 +8,9 @@ import app.lemley.crypscape.client.coinbase.model.OrderBook
 import app.lemley.crypscape.extensions.configureForAsksDepth
 import app.lemley.crypscape.extensions.configureForBidsDepth
 import app.lemley.crypscape.extensions.configureForDepth
+import app.lemley.crypscape.extensions.limitForDepth
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
 
@@ -52,14 +54,21 @@ sealed class DepthChartOperations : ILineChartOperations {
             val bidsSize = depth.bids.size - 1
             depth.asks.values.forEachIndexed { index, entry ->
                 chartRenderer.plotEntry(
-                    asksLabel,
-                    entry.toChartEntry(index + bidsSize)
+                    label = asksLabel,
+                    entry = entry.toChartEntry(index + bidsSize)
                 )
             }
             val lineData = chartRenderer.lineData
             chart.data = lineData
             updateDataSetVisibility(chart)
             chart.isAutoScaleMinMaxEnabled = true
+            chart.xAxis.apply {
+                removeAllLimitLines()
+                addLimitLine(LimitLine(bidsSize.toFloat()).also {
+                    it.labelPosition = LimitLine.LimitLabelPosition.LEFT_TOP
+                    it.limitForDepth(chart)
+                })
+            }
             chart.notifyDataSetChanged()
             chart.invalidate()
         }

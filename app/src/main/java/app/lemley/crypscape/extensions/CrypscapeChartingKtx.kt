@@ -2,6 +2,7 @@ package app.lemley.crypscape.extensions
 
 import android.graphics.Paint
 import app.lemley.crypscape.R
+import app.lemley.crypscape.charting.axis.DepthXAxisRenderer
 import app.lemley.crypscape.charting.axis.XAxisFormatter
 import app.lemley.crypscape.charting.axis.YAxisFormatter
 import app.lemley.crypscape.extensions.app.persistance.visibleXRange
@@ -10,6 +11,7 @@ import app.lemley.crypscape.persistance.entities.Granularity
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.CandleDataSet
@@ -114,6 +116,7 @@ fun LineChart.configureForDepth() {
     requestDisallowInterceptTouchEvent(true)
     resetZoom()
     setViewPortOffsets(100f, 0f, 100f, 50f)
+    setXAxisRenderer(DepthXAxisRenderer(viewPortHandler, xAxis, getTransformer(YAxis.AxisDependency.RIGHT)))
 
     axisRight.apply {
         isEnabled = false
@@ -174,4 +177,9 @@ fun LineDataSet.configureForBidsDepth(chart: LineChart) {
     setDrawValues(false)
     setDrawCircles(false)
     axisDependency = YAxis.AxisDependency.LEFT
+}
+
+fun LimitLine.limitForDepth(chart: LineChart) {
+    lineWidth = 2F
+    lineColor = chart.context.getColor(R.color.depth_limit_line_color)
 }
