@@ -1,4 +1,4 @@
-package app.lemley.crypscape.ui.order
+package app.lemley.crypscape.ui.book
 
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.lifecycle.LiveData

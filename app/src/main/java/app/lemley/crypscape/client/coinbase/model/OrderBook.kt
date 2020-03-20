@@ -8,13 +8,34 @@ import com.google.gson.JsonObject
 import java.lang.reflect.Type
 
 sealed class OrderBookType {
-    object SnapShot : OrderBookType()
-    object L2Update : OrderBookType()
+    object SnapShot : OrderBookType() {
+        override fun toString(): String {
+            return "SnapShot"
+        }
+    }
+    object L2Update : OrderBookType() {
+        override fun toString(): String {
+            return "L2Update"
+        }
+    }
+    object Depth : OrderBookType() {
+        override fun toString(): String {
+            return "Depth"
+        }
+    }
 }
 
 sealed class Side {
-    object Buy : Side()
-    object Sell : Side()
+    object Buy : Side() {
+        override fun toString(): String {
+            return "buy"
+        }
+    }
+    object Sell : Side() {
+        override fun toString(): String {
+            return "sell"
+        }
+    }
 }
 
 data class Bid(
@@ -35,12 +56,29 @@ data class Ask(
 
 data class Change(val side: Side, val price: Double, val size: Double)
 
+data class DepthEntry(val side: Side, val price: Double, val depth: Float) {
+    override fun toString(): String {
+        return "side:$side, price:$price, depth:$depth"
+    }
+}
+
 interface IOrderBook {
     val productId: String
     val type: OrderBookType
 }
 
 sealed class OrderBook : IOrderBook {
+
+    data class Depth(
+        override val type: OrderBookType = OrderBookType.Depth,
+        override val productId: String,
+        val bids: Map<Double, DepthEntry> = emptyMap(),
+        val asks: Map<Double, DepthEntry> = emptyMap()
+    ) : OrderBook() {
+        override fun toString(): String {
+            return "type:$type, productId:$productId, bids:$bids, asks:$asks"
+        }
+    }
 
     data class SnapShot(
         override val type: OrderBookType = OrderBookType.SnapShot,
@@ -181,9 +219,11 @@ fun OrderBook.SnapShot.acknowledgeChanges(): OrderBook.SnapShot = copy(
 
 fun OrderBook.SnapShot.clearEmpty(): OrderBook.SnapShot = copy(
     asks = (asks - asks.values.partition { it.size > 0 }.second.map { it.price }).toSortedMap(
-        reverseOrder()),
+        reverseOrder()
+    ),
     bids = (bids - bids.values.partition { it.size > 0 }.second.map { it.price }).toSortedMap(
-        reverseOrder())
+        reverseOrder()
+    )
 )
 
 fun OrderBook.SnapShot.reduceTo(maxPerSide: Int): OrderBook.SnapShot = copy(
@@ -192,3 +232,25 @@ fun OrderBook.SnapShot.reduceTo(maxPerSide: Int): OrderBook.SnapShot = copy(
     bids = if (maxPerSide + 1 < bids.size) (bids - bids.keys.sortedDescending()
         .slice(maxPerSide until bids.size)).toSortedMap(reverseOrder()) else bids
 )
+
+fun OrderBook.SnapShot.forDepth(): OrderBook.Depth {
+    var size: Float = 0F
+    val bidsDepth: MutableMap<Double, DepthEntry> = mutableMapOf()
+    bids.toSortedMap().values.forEach {
+        size += it.size.toFloat()
+        bidsDepth[it.price] = DepthEntry(Side.Buy, it.price, size)
+    }
+
+    size = 0F
+    val askDepth: MutableMap<Double, DepthEntry> = mutableMapOf()
+    asks.toSortedMap().values.forEach {
+        size += it.size.toFloat()
+        askDepth[it.price] = DepthEntry(Side.Sell, it.price, size)
+    }
+
+    return OrderBook.Depth(
+        productId = this.productId,
+        asks = askDepth.toSortedMap(),
+        bids = bidsDepth.toSortedMap(reverseOrder())
+    )
+}

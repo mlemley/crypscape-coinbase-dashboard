@@ -31,4 +31,5 @@
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
+    <string name="depth_chart">Depth Chart</string>
 </resources>

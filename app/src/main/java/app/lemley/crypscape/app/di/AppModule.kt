@@ -7,10 +7,11 @@ import app.lemley.crypscape.extensions.app.sharedPreferences
 import app.lemley.crypscape.persistance.persistenceModule
 import app.lemley.crypscape.repository.DefaultMarketDataRepository
 import app.lemley.crypscape.repository.repositoryModule
+import app.lemley.crypscape.ui.book.DepthChartViewModel
 import app.lemley.crypscape.ui.main.mainScreenModule
 import app.lemley.crypscape.ui.market.MarketViewModel
-import app.lemley.crypscape.ui.order.OrderBookAdapter
-import app.lemley.crypscape.ui.order.OrderBookViewModel
+import app.lemley.crypscape.ui.book.OrderBookAdapter
+import app.lemley.crypscape.ui.book.OrderBookViewModel
 import app.lemley.crypscape.ui.splash.SplashViewModel
 import app.lemley.crypscape.usecase.DelayedCallback
 import app.lemley.crypscape.usecase.MarketDataUseCase
@@ -33,7 +34,6 @@ val appModule = module {
     // Android Services
     single { androidContext().sharedPreferences }
 
-
     // Use Cases
     factory { DelayedCallback() }
     factory { SyncProductUseCase(get()) }
@@ -43,6 +43,7 @@ val appModule = module {
     viewModel { SplashViewModel(get(), get(), get(named("SplashLoadingMillis"))) }
     viewModel { MarketViewModel(get(), get(), get(), get()) }
     viewModel { OrderBookViewModel(get(), get(), get()) }
+    viewModel { DepthChartViewModel(get(), get(), get()) }
 
     // Adapters
     factory { OrderBookAdapter() }

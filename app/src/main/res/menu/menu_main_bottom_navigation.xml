@@ -13,5 +13,10 @@
             android:icon="@drawable/ic_order_book"
             android:title="@string/order_book" />
 
+        <item
+            android:id="@+id/nav_depth_chart"
+            android:icon="@drawable/ic_order_book"
+            android:title="@string/depth_chart" />
+
     </group>
 </menu>

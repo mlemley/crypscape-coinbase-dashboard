@@ -2,6 +2,7 @@ package app.lemley.crypscape.extensions.app
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Configuration
 
 
 val Context.sharedPreferences: SharedPreferences
@@ -9,3 +10,6 @@ val Context.sharedPreferences: SharedPreferences
         "CrypScapePreferences",
         Context.MODE_PRIVATE
     )
+
+fun Context.isLandscape(): Boolean =
+    this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
