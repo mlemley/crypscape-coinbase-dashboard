@@ -1,4 +1,4 @@
-package app.lemley.crypscape.ui.order
+package app.lemley.crypscape.ui.book
 
 import android.util.Log
 import androidx.annotation.VisibleForTesting
@@ -52,6 +52,7 @@ class OrderBookViewModel constructor(
                 defaultMarketDataRepository.loadDefault().productRemoteId
             }
         }
+
         GlobalScope.launch {
             coinBaseRealTimeRepository.orderBookFlow
                 .filter {
@@ -107,6 +108,7 @@ class OrderBookViewModel constructor(
         when (book) {
             is OrderBook.SnapShot -> updateWithSnapshot(book)
             is OrderBook.L2Update -> updateWithUpdate(book)
+            is OrderBook.Depth -> {}
         }.exhaustive
     }
 

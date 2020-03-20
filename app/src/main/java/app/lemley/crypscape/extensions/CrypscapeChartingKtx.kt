@@ -2,6 +2,8 @@ package app.lemley.crypscape.extensions
 
 import android.graphics.Paint
 import app.lemley.crypscape.R
+import app.lemley.crypscape.charting.axis.DepthXAxisFormatter
+import app.lemley.crypscape.charting.axis.DepthXAxisRenderer
 import app.lemley.crypscape.charting.axis.XAxisFormatter
 import app.lemley.crypscape.charting.axis.YAxisFormatter
 import app.lemley.crypscape.extensions.app.persistance.visibleXRange
@@ -9,9 +11,12 @@ import app.lemley.crypscape.extensions.app.persistance.xAxisLabelCount
 import app.lemley.crypscape.persistance.entities.Granularity
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.CombinedChart
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.CandleDataSet
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.renderer.CombinedChartRenderer
 
 
@@ -98,5 +103,83 @@ fun CandleDataSet.configureForCrypScape(chart: CombinedChart) {
     neutralColor = chart.context.getColor(R.color.candlestick_neutral)
     setDrawValues(false)
     axisDependency = YAxis.AxisDependency.LEFT
+}
 
+fun LineChart.configureForDepth() {
+    description.isEnabled = false
+    setBackgroundColor(context.getColor(R.color.chart_background))
+    setDrawGridBackground(false)
+    isAutoScaleMinMaxEnabled = true
+    isHighlightPerDragEnabled = true
+    setDrawBorders(false)
+    setBorderColor(context.getColor(R.color.candlestick_markers))
+    isAutoScaleMinMaxEnabled = false
+    requestDisallowInterceptTouchEvent(true)
+    resetZoom()
+    setViewPortOffsets(100f, 0f, 100f, 50f)
+    setXAxisRenderer(DepthXAxisRenderer(viewPortHandler, xAxis, getTransformer(YAxis.AxisDependency.RIGHT)))
+
+    axisRight.apply {
+        isEnabled = false
+        setDrawGridLines(false)
+        setDrawLabels(true)
+        setDrawAxisLine(false)
+        setDrawZeroLine(false)
+        valueFormatter = YAxisFormatter()
+    }
+
+    axisLeft.apply {
+        textColor = context.getColor(R.color.candlestick_labels)
+        spaceBottom = 0F
+        spaceTop = 10F
+        setDrawGridLines(false)
+        setDrawLabels(true)
+        setDrawAxisLine(false)
+        setDrawZeroLine(false)
+        setDrawLimitLinesBehindData(false)
+        valueFormatter = YAxisFormatter()
+    }
+
+    xAxis.apply {
+        setDrawGridLines(false)// disable x axis grid lines
+        gridColor = context.getColor(R.color.candlestick_markers)
+        setDrawLabels(true)
+        setDrawAxisLine(false)
+        position = XAxis.XAxisPosition.BOTTOM
+        textColor = context.getColor(R.color.candlestick_labels)
+        this.granularity = 1f
+        spaceMax = 1.5F
+        textSize = 8f
+        setDrawLimitLinesBehindData(true)
+        setAvoidFirstLastClipping(true)
+    }
+
+    legend.apply {
+        isEnabled = false
+    }
+}
+
+fun LineDataSet.configureForAsksDepth(chart: LineChart) {
+    color = chart.context.getColor(R.color.warm_pink)
+    fillAlpha = 60
+    fillColor = color
+    setDrawCircles(false)
+    setDrawFilled(true)
+    setDrawValues(false)
+    axisDependency = YAxis.AxisDependency.LEFT
+}
+
+fun LineDataSet.configureForBidsDepth(chart: LineChart) {
+    color = chart.context.getColor(R.color.greenish_cyan)
+    fillColor = color
+    fillAlpha = 60
+    setDrawFilled(true)
+    setDrawValues(false)
+    setDrawCircles(false)
+    axisDependency = YAxis.AxisDependency.LEFT
+}
+
+fun LimitLine.limitForDepth(chart: LineChart) {
+    lineWidth = 2F
+    lineColor = chart.context.getColor(R.color.depth_limit_line_color)
 }

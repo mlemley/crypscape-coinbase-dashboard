@@ -31,4 +31,6 @@
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
+    <string name="depth_chart">Depth Chart</string>
+    <string name="mid_market_price">Mid Market Price</string>
 </resources>

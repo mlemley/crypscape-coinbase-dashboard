@@ -1,4 +1,4 @@
-package app.lemley.crypscape.ui.order
+package app.lemley.crypscape.ui.book
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test

@@ -5,7 +5,7 @@ import com.github.mikephil.charting.charts.CombinedChart
 
 class MarketChartingManager constructor(val chartRenderer: ChartRenderer) {
 
-    fun performChartingOperation(chart: CombinedChart?, operation: IChartOperation) {
+    fun performChartingOperation(chart: CombinedChart?, operation: ICombinedChartOperation) {
         chart?.let { operation.operateWith(it, chartRenderer) }
     }
 

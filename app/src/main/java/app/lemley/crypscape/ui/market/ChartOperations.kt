@@ -10,13 +10,13 @@ import app.lemley.crypscape.persistance.entities.Granularity
 import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.data.CandleDataSet
 
-interface IChartOperation {
+interface ICombinedChartOperation {
     fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer)
 }
 
 const val candleSetLabel = "candles"
 
-sealed class ChartOperations : IChartOperation {
+sealed class ChartOperations : ICombinedChartOperation {
     object Clear : ChartOperations() {
         override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
             chart.data = null
@@ -40,7 +40,7 @@ sealed class ChartOperations : IChartOperation {
         }
     }
 
-    data class RenderCandles(val candles: List<Candle>) : IChartOperation {
+    data class RenderCandles(val candles: List<Candle>) : ICombinedChartOperation {
         override fun operateWith(chart: CombinedChart, chartRenderer: ChartRenderer) {
             chart.axisLeft.removeAllLimitLines()
             candles.forEach { candle ->
