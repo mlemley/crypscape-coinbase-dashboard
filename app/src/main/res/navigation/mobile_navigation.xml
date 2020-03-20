@@ -24,8 +24,8 @@
     <fragment
         android:id="@+id/nav_depth_chart"
         android:name="app.lemley.crypscape.ui.book.DepthChartFragment"
-        android:label="@string/order_book"
-        tools:layout="@layout/fragment_order_book" />
+        android:label="@string/depth_chart"
+        tools:layout="@layout/fragment_depth_chart" />
 
 
     <fragment
