@@ -9,39 +9,44 @@
 
     <TextView
         android:id="@+id/market_size"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/order_book_header_start_margin"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:gravity="end"
         android:text="@string/market_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/price"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/price"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="end"
         app:layout_constraintBottom_toBottomOf="@+id/market_size"
         app:layout_constraintEnd_toStartOf="@+id/my_size"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/market_size"
         app:layout_constraintTop_toTopOf="@+id/market_size"
         tools:text="Price (USD)" />
 
     <TextView
         android:id="@+id/my_size"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
+        android:gravity="end"
         android:text="@string/my_size"
         app:layout_constraintBottom_toBottomOf="@+id/price"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/price"
         app:layout_constraintTop_toTopOf="@+id/price" />
 </androidx.constraintlayout.widget.ConstraintLayout>

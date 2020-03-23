@@ -86,6 +86,14 @@ class OrderBookViewModel constructor(
         .distinctUntilChanged()
         .asLiveData(viewModelScope.coroutineContext)
 
+    private val depthChannel = ConflatedBroadcastChannel<OrderBook.Depth>()
+    val depthChartState: LiveData<OrderBook.Depth> = depthChannel
+        .asFlow()
+        .conflate()
+        .distinctUntilChanged()
+        .asLiveData(viewModelScope.coroutineContext)
+
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var productId: String? = null
         set(value) {
@@ -114,7 +122,14 @@ class OrderBookViewModel constructor(
 
     private fun updateWithSnapshot(book: OrderBook.SnapShot) {
         setFullSnapShot(book.reduceTo(100))
-        orderBookChannel.offer(book.reduceTo(maxSizePerSide))
+        viewModelScope.launch {
+            async {
+                orderBookChannel.offer(book.reduceTo(maxSizePerSide))
+            }
+            async {
+                depthChannel.offer(book.reduceTo(maxSizePerSide).forDepth())
+            }
+        }
     }
 
     private fun updateWithUpdate(update: OrderBook.L2Update) {

@@ -8,10 +8,10 @@ import app.lemley.crypscape.persistance.persistenceModule
 import app.lemley.crypscape.repository.DefaultMarketDataRepository
 import app.lemley.crypscape.repository.repositoryModule
 import app.lemley.crypscape.ui.book.DepthChartViewModel
-import app.lemley.crypscape.ui.main.mainScreenModule
-import app.lemley.crypscape.ui.market.MarketViewModel
 import app.lemley.crypscape.ui.book.OrderBookAdapter
 import app.lemley.crypscape.ui.book.OrderBookViewModel
+import app.lemley.crypscape.ui.main.mainScreenModule
+import app.lemley.crypscape.ui.market.MarketViewModel
 import app.lemley.crypscape.ui.splash.SplashViewModel
 import app.lemley.crypscape.usecase.DelayedCallback
 import app.lemley.crypscape.usecase.MarketDataUseCase
@@ -28,6 +28,7 @@ import org.koin.dsl.module
 @ExperimentalCoroutinesApi
 val appModule = module {
     // Injectable Constants
+    single(named("MidMarketPriceFormat")) { "#,##0.000" }
     single(named("SplashLoadingMillis")) { 1_000 }
     single { CoroutineContextProvider() }
 
