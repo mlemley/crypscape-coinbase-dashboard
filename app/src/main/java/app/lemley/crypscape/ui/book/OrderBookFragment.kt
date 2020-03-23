@@ -27,7 +27,7 @@ class OrderBookFragment : Fragment() {
     private val orderBookAdapter: OrderBookAdapter by inject()
     private val depthChartViewModel: DepthChartViewModel by viewModel()
     private val depthChartManager: DepthChartManager by inject()
-    private val midMarketPriceFormat:String by inject(named("MidMarketPriceFormat"))
+    private val midMarketPriceFormat: String by inject(named("MidMarketPriceFormat"))
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     lateinit var binding: FragmentOrderBookBinding
@@ -42,12 +42,14 @@ class OrderBookFragment : Fragment() {
         }
     }
 
-    val depthChartStateObserver:Observer<OrderBook.Depth> = Observer {
-        updateMidMarketPrice(it.midMarketPrice)
-        depthChartManager.performChartingOperation(
-            binding.depthChart,
-            DepthChartOperations.RenderDepth(it)
-        )
+    val depthChartStateObserver: Observer<OrderBook.Depth> = Observer { state ->
+        binding.depthChart?.let { chart ->
+            updateMidMarketPrice(state.midMarketPrice)
+            depthChartManager.performChartingOperation(
+                chart,
+                DepthChartOperations.RenderDepth(state)
+            )
+        }
     }
 
     override fun onCreateView(
@@ -65,9 +67,7 @@ class OrderBookFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         orderBookViewModel.orderBookState.observe(viewLifecycleOwner, orderBookStateObserver)
-        binding.depthChart?.let {
-            orderBookViewModel.depthChartState.observe(viewLifecycleOwner, depthChartStateObserver)
-        }
+        orderBookViewModel.depthChartState.observe(viewLifecycleOwner, depthChartStateObserver)
     }
 
     override fun onPause() {
@@ -95,7 +95,7 @@ class OrderBookFragment : Fragment() {
         )
     }
 
-    private fun updateMidMarketPrice(price:Double) {
+    private fun updateMidMarketPrice(price: Double) {
         binding.midMarketPrice?.text = price.toDecimalFormat(midMarketPriceFormat)
     }
 

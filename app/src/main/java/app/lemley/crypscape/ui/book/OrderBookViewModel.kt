@@ -34,13 +34,14 @@ class OrderBookViewModel constructor(
         fullSnapShot = snapshot
     }
 
-    private val mergeFlow get() = flow {
-        while (true) {
-            emit(fullSnapShot.reduceTo(maxSizePerSide))
-            setFullSnapShot(fullSnapShot.clearEmpty().acknowledgeChanges())
-            delay(pauseTime)
-        }
-    }.flowOn(Dispatchers.IO)
+    private val mergeFlow
+        get() = flow {
+            while (true) {
+                emit(fullSnapShot.reduceTo(maxSizePerSide))
+                setFullSnapShot(fullSnapShot.clearEmpty().acknowledgeChanges())
+                delay(pauseTime)
+            }
+        }.flowOn(Dispatchers.IO)
 
     init {
         loadProduct()
@@ -75,6 +76,7 @@ class OrderBookViewModel constructor(
                     }
                 }
                 orderBookChannel.offer(it)
+                depthChannel.offer(it.forDepth())
             }
         }
     }
@@ -116,18 +118,19 @@ class OrderBookViewModel constructor(
         when (book) {
             is OrderBook.SnapShot -> updateWithSnapshot(book)
             is OrderBook.L2Update -> updateWithUpdate(book)
-            is OrderBook.Depth -> {}
+            is OrderBook.Depth -> {
+            }
         }.exhaustive
     }
 
     private fun updateWithSnapshot(book: OrderBook.SnapShot) {
         setFullSnapShot(book.reduceTo(100))
         viewModelScope.launch {
-            async {
-                orderBookChannel.offer(book.reduceTo(maxSizePerSide))
-            }
-            async {
-                depthChannel.offer(book.reduceTo(maxSizePerSide).forDepth())
+            book.reduceTo(maxSizePerSide).also {
+                withContext(Dispatchers.Default) {
+                    depthChannel.offer(it.forDepth())
+                    orderBookChannel.offer(it)
+                }
             }
         }
     }
