@@ -13,13 +13,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.qualifier.named
 
 @FlowPreview
 @ExperimentalCoroutinesApi
 class DepthChartFragment : Fragment() {
-    companion object {
-        const val midMarketPriceFormat:String = "#,##0.000"
-    }
+
+    private val midMarketPriceFormat:String by inject(named("MidMarketPriceFormat"))
     private val depthChartViewModel: DepthChartViewModel by viewModel()
     private val depthChartManager: DepthChartManager by inject()
 

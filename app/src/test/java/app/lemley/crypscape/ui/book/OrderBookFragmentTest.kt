@@ -23,28 +23,35 @@ class OrderBookFragmentTest {
 
     private fun createScenario(
         adapter: OrderBookAdapter = mockk(relaxed = true),
-        liveDataState: LiveData<OrderBook.SnapShot> = mockk(relaxUnitFun = true),
+        orderBookState: LiveData<OrderBook.SnapShot> = mockk(relaxUnitFun = true),
+        depthChartState: LiveData<OrderBook.Depth> = mockk(relaxUnitFun = true),
+        depthChartManager: DepthChartManager = mockk(relaxUnitFun = true),
         orderBookViewModel: OrderBookViewModel = mockk(relaxUnitFun = true) {
-            every { orderBookState } returns liveDataState
+            every { this@mockk.orderBookState } returns orderBookState
+            every { this@mockk.depthChartState } returns depthChartState
         }
     ): FragmentScenario<OrderBookFragment> {
         Helpers.loadModules(module {
             viewModel { orderBookViewModel }
             single { adapter }
+            single { depthChartManager }
         })
         return FragmentScenario.launch(OrderBookFragment::class.java)
     }
 
     @Test
     fun observes_order_book_state_changes() {
-        val liveDataState: LiveData<OrderBook.SnapShot> = mockk(relaxUnitFun = true)
+        val orderBookState: LiveData<OrderBook.SnapShot> = mockk(relaxUnitFun = true)
+        val depthChartState: LiveData<OrderBook.Depth> = mockk(relaxUnitFun = true)
         val orderBookViewModel: OrderBookViewModel = mockk(relaxUnitFun = true) {
-            every { orderBookState } returns liveDataState
+            every { this@mockk.orderBookState } returns orderBookState
+            every { this@mockk.depthChartState } returns depthChartState
         }
 
         createScenario(orderBookViewModel = orderBookViewModel).onFragment { fragment ->
             verify {
-                liveDataState.observe(fragment.viewLifecycleOwner, fragment.orderBookStateObserver)
+                orderBookState.observe(fragment.viewLifecycleOwner, fragment.orderBookStateObserver)
+                depthChartState.observe(fragment.viewLifecycleOwner, fragment.depthChartStateObserver)
             }
         }
     }
@@ -61,7 +68,7 @@ class OrderBookFragmentTest {
     @Test
     fun updates_adapter_with_new_order_book_state_on_state_change() {
         val adapter = mockk<OrderBookAdapter>(relaxed = true)
-        val orderBook:OrderBook.SnapShot = mockk()
+        val orderBook: OrderBook.SnapShot = mockk()
 
         createScenario(adapter).onFragment { fragment ->
             fragment.orderBookStateObserver.onChanged(orderBook)

@@ -13,9 +13,17 @@ class DepthXAxisFormatter constructor(
         val position = value.toInt()
         val numBids = depth.bids.size
         return if (position > numBids)
-            depth.asks.values.toList()[position - numBids].price.toDecimalFormat("#,##0.00#")
+            try {
+                depth.asks.values.toList()[position - numBids].price.toDecimalFormat("#,##0.00#")
+            } finally {
+                position.toString()
+            }
         else
-            depth.bids.values.toList()[position].price.toDecimalFormat("#,##0.00#")
+            try {
+                depth.bids.values.toList()[position].price.toDecimalFormat("#,##0.00#")
+            } finally {
+                position.toString()
+            }
     }
 
 }

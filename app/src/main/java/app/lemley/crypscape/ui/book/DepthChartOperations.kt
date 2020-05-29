@@ -43,8 +43,7 @@ sealed class DepthChartOperations : ILineChartOperations {
         }
     }
 
-    data class RenderDepth(val depth: OrderBook.Depth) :
-        DepthChartOperations() {
+    data class RenderDepth(val depth: OrderBook.Depth) : DepthChartOperations() {
         override fun operateWith(chart: LineChart, chartRenderer: ChartRenderer) {
             depth.bids.values.forEachIndexed { index, entry ->
                 chartRenderer.plotEntry(
