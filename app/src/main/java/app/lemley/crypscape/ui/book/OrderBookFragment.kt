@@ -30,20 +30,21 @@ class OrderBookFragment : Fragment() {
     private val midMarketPriceFormat: String by inject(named("MidMarketPriceFormat"))
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    lateinit var binding: FragmentOrderBookBinding
+    lateinit var binder: FragmentOrderBookBinding
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val orderBookStateObserver: Observer<in OrderBook.SnapShot> = Observer {
         if (orderBookAdapter.isEmpty()) {
             orderBookAdapter.updateWith(it)
-            binding.orderBook.layoutManager?.scrollToPosition(orderBookAdapter.spreadPosition + 21)
+            binder.orderBook.layoutManager?.scrollToPosition(orderBookAdapter.spreadPosition + 21)
         } else {
             orderBookAdapter.updateWith(it)
         }
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val depthChartStateObserver: Observer<OrderBook.Depth> = Observer { state ->
-        binding.depthChart?.let { chart ->
+        binder.depthChart?.let { chart ->
             updateMidMarketPrice(state.midMarketPrice)
             depthChartManager.performChartingOperation(
                 chart,
@@ -57,8 +58,8 @@ class OrderBookFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentOrderBookBinding.inflate(layoutInflater)
-        val view = binding.root
+        binder = FragmentOrderBookBinding.inflate(layoutInflater)
+        val view = binder.root
         setupOrderBook()
         setupDepthChart()
         return view
@@ -76,7 +77,7 @@ class OrderBookFragment : Fragment() {
     }
 
     private fun setupOrderBook() {
-        binding.orderBook.apply {
+        binder.orderBook.apply {
             adapter = orderBookAdapter
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(false)
@@ -90,13 +91,13 @@ class OrderBookFragment : Fragment() {
 
     private fun setupDepthChart() {
         depthChartManager.performChartingOperation(
-            binding.depthChart,
+            binder.depthChart,
             DepthChartOperations.Configure
         )
     }
 
     private fun updateMidMarketPrice(price: Double) {
-        binding.midMarketPrice?.text = price.toDecimalFormat(midMarketPriceFormat)
+        binder.midMarketPrice?.text = price.toDecimalFormat(midMarketPriceFormat)
     }
 
 
