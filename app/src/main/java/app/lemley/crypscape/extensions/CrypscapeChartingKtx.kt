@@ -46,7 +46,7 @@ fun CombinedChart.configureForCrypScape(candleGranularity: Granularity) {
     animateY(300, Easing.EasingOption.EaseInElastic)
     requestDisallowInterceptTouchEvent(true)
     resetZoom()
-    setViewPortOffsets(100f, 0f, 0f, 50f)
+    setViewPortOffsets(130f, 0f, 0f, 50f)
 
     axisRight.apply {
         isEnabled = false

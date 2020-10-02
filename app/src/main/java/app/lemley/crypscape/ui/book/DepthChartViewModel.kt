@@ -87,7 +87,7 @@ class DepthChartViewModel(
         .distinctUntilChanged()
         .asLiveData(viewModelScope.coroutineContext)
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     var productId: String? = null
         set(value) {
             field = value

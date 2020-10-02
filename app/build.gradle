@@ -89,7 +89,8 @@ dependencies {
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
     implementation "com.google.firebase:firebase-analytics:$firebase_core_version"
     implementation "com.google.firebase:firebase-messaging:$firebase_messaging"
-    implementation "com.crashlytics.sdk.android:crashlytics:$firebase_crashlytics"
+    implementation "com.google.firebase:firebase-crashlytics:$firebase_crashlytics"
+
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'

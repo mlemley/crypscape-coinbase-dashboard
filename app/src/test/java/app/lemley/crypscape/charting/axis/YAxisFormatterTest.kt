@@ -9,6 +9,8 @@ class YAxisFormatterTest {
 
     @Test
     fun formats_axis() {
-        assertThat(YAxisFormatter().getFormattedValue(1_000.00F, mockk())).isEqualTo("1000")
+        assertThat(
+            YAxisFormatter().getFormattedValue(1_000.00F, mockk())
+        ).isEqualTo("1,000")
     }
 }

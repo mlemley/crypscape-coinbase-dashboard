@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import app.lemley.crypscape.app.AppConfig
 import app.lemley.crypscape.client.coinbase.model.OrderBook
 import app.lemley.crypscape.databinding.FragmentOrderBookBinding
 import app.lemley.crypscape.extensions.app.toDecimalFormat
@@ -25,9 +26,8 @@ class OrderBookFragment : Fragment() {
 
     private val orderBookViewModel: OrderBookViewModel by viewModel()
     private val orderBookAdapter: OrderBookAdapter by inject()
-    private val depthChartViewModel: DepthChartViewModel by viewModel()
     private val depthChartManager: DepthChartManager by inject()
-    private val midMarketPriceFormat: String by inject(named("MidMarketPriceFormat"))
+    private val midMarketPriceFormat: String = AppConfig.MidMarketPriceFormat
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     lateinit var binder: FragmentOrderBookBinding
@@ -99,6 +99,4 @@ class OrderBookFragment : Fragment() {
     private fun updateMidMarketPrice(price: Double) {
         binder.midMarketPrice?.text = price.toDecimalFormat(midMarketPriceFormat)
     }
-
-
 }

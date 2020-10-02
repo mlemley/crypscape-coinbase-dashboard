@@ -1,5 +1,6 @@
 package app.lemley.crypscape.app.di
 
+import app.lemley.crypscape.app.AppConfig
 import app.lemley.crypscape.app.CoroutineContextProvider
 import app.lemley.crypscape.charting.chartingModule
 import app.lemley.crypscape.client.coinbase.coinbaseApiModule
@@ -28,8 +29,6 @@ import org.koin.dsl.module
 @ExperimentalCoroutinesApi
 val appModule = module {
     // Injectable Constants
-    single(named("MidMarketPriceFormat")) { "#,##0.000" }
-    single(named("SplashLoadingMillis")) { 1_000 }
     single { CoroutineContextProvider() }
 
     // Android Services
@@ -41,7 +40,7 @@ val appModule = module {
     factory { MarketDataUseCase(get(), get()) }
 
     // View Models
-    viewModel { SplashViewModel(get(), get(), get(named("SplashLoadingMillis"))) }
+    viewModel { SplashViewModel(get(), get(), AppConfig.SplashLoadingMillis) }
     viewModel { MarketViewModel(get(), get(), get(), get()) }
     viewModel { OrderBookViewModel(get(), get(), get()) }
     viewModel { DepthChartViewModel(get(), get(), get()) }

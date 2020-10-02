@@ -15,6 +15,7 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -32,7 +33,7 @@ open class CrypScapeApplication : Application() {
 
     protected open fun loadKoin() {
         startKoin {
-            androidLogger()
+            androidLogger(Level.ERROR)
             androidContext(this@CrypScapeApplication)
             modules(appModules)
         }

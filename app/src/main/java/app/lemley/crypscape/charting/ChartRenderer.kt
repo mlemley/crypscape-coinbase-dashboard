@@ -7,6 +7,7 @@ import app.lemley.crypscape.persistance.entities.Candle
 import app.lemley.crypscape.persistance.entities.Granularity
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.data.*
+
 import com.github.mikephil.charting.interfaces.datasets.IDataSet
 
 class ChartRenderer {
@@ -17,13 +18,13 @@ class ChartRenderer {
 
     private val setMap: MutableMap<String, DataSetType> = mutableMapOf()
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     val candleData = CandleData()
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     val lineData = LineData()
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     val scatterData = ScatterData()
 
 

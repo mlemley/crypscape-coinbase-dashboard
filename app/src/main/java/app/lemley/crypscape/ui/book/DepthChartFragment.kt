@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import app.lemley.crypscape.app.AppConfig
 import app.lemley.crypscape.client.coinbase.model.OrderBook
 import app.lemley.crypscape.databinding.FragmentDepthChartBinding
 import app.lemley.crypscape.extensions.app.toDecimalFormat
@@ -19,7 +20,7 @@ import org.koin.core.qualifier.named
 @ExperimentalCoroutinesApi
 class DepthChartFragment : Fragment() {
 
-    private val midMarketPriceFormat:String by inject(named("MidMarketPriceFormat"))
+    private val midMarketPriceFormat:String = AppConfig.MidMarketPriceFormat
     private val depthChartViewModel: DepthChartViewModel by viewModel()
     private val depthChartManager: DepthChartManager by inject()
 

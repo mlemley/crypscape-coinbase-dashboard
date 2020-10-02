@@ -1,6 +1,5 @@
 package app.lemley.crypscape.ui.market
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -17,7 +16,7 @@ import app.lemley.crypscape.ui.base.Result
 import app.lemley.crypscape.usecase.MarketDataUseCase
 import app.lemley.crypscape.usecase.MarketDataUseCase.MarketActions
 import app.lemley.crypscape.usecase.UseCase
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.GlobalScope
@@ -86,7 +85,7 @@ class MarketViewModel(
         }
         .flowOn(contextProvider.IO)
         .catch {
-            Crashlytics.logException(it)
+            FirebaseCrashlytics.getInstance().recordException(it)
             it.printStackTrace()
         }
         .asLiveData(viewModelScope.coroutineContext)

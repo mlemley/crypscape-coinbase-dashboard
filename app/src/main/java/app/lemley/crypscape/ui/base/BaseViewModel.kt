@@ -5,7 +5,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import app.lemley.crypscape.usecase.UseCase
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
@@ -42,7 +42,7 @@ abstract class BaseViewModel<E : Event, S : State> : ViewModel() {
             }
             .distinctUntilChanged()
             .catch {
-                Crashlytics.logException(it)
+                FirebaseCrashlytics.getInstance().recordException(it)
                 Log.e("BaseModelView", it.localizedMessage ?: "")
                 it.printStackTrace()
             }
